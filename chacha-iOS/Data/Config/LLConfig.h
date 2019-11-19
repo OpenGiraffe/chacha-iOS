@@ -9,6 +9,8 @@
 #pragma mark - 环信SDK配置 -
 
 #define EASE_MOB_APP_KEY @"1172161124178919#llwechat"
+#define APPROXY_CLUSTERIP @"ipxdev.routeyo.net"
+#define APPROXY_CLUSTERPO 50033
 
 #pragma mark - ID配置 -
 

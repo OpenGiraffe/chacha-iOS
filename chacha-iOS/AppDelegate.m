@@ -130,6 +130,10 @@
 //
 //    [[EMClient sharedClient] initializeSDKWithOptions:options];
     ApproxySDKOptions *options = [ApproxySDKOptions optionsWithAppkey:appkey];
+    [options setClusterIP:APPROXY_CLUSTERIP];
+    [options setClusterPort:APPROXY_CLUSTERPO];
+    [options setIsAutoLogin:YES];
+    
     ApproxySDK *sdk = [ApproxySDK getInstance];
     [sdk initSDK:options];
 

@@ -16,6 +16,7 @@
 #import "LLMessageModelManager.h"
 
 #import "AppDelegate.h"
+#import "ApproxySDK.h"
 
 #define KNOTIFICATION_LOGINCHANGE @"NOTIFICATION_LOGINCHANG"
 
@@ -97,8 +98,8 @@ CREATE_SHARED_MANAGER(LLClientManager)
 #pragma mark - 处理登录、登出
 
 - (void)prepareLogin {
-    [self loginWithResult:[EMClient sharedClient].isAutoLogin];
-    
+//    [self loginWithResult:[EMClient sharedClient].isAutoLogin];
+    [self loginWithResult:[ApproxySDK getInstance].isAutoLogin];
 }
 
 - (void)loginWithResult:(BOOL)successed {
@@ -121,31 +122,51 @@ CREATE_SHARED_MANAGER(LLClientManager)
 - (void)loginWithUsername:(NSString *)username password:(NSString *)password HUD:(MBProgressHUD *)HUD {
     WEAK_SELF;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMError *error = [[EMClient sharedClient] loginWithUsername:username password:password];
         
-        if (!error) {
-            [[LLUserProfile myUserProfile] initUserProfileWithUserName:username nickName:username avatarURL:nil];
-            
-            //SDK要求
-            [[EMClient sharedClient] dataMigrationTo3];
-            //获取消息推送通知
-            [weakSelf loadPushOptionsFromServer];
-            //获取联系人
-            [[LLContactManager sharedManager] asynGetContactsFromServer:nil];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [LLUtils hideHUD:HUD animated:YES];
-                [weakSelf loginWithResult:YES];
-            });
-            
-            [weakSelf saveLastLoginUsername:username];
-            
-        }else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [LLUtils hideHUD:HUD animated:YES];
-                [weakSelf didLoginFailedWithError:error];
-            });
-        }
+            ApxErrorCode *err = [[ApproxySDK getInstance] loginWithUserName:username szLoginPass:password];
+            if(err && err.errorCode == ApxErrorCode.BS_OK.errorCode){
+                //获取消息推送通知
+                [weakSelf loadPushOptionsFromServer];
+                //获取联系人
+                [[LLContactManager sharedManager] asynGetContactsFromServer:nil];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [LLUtils hideHUD:HUD animated:YES];
+                    [weakSelf loginWithResult:YES];
+                });
+                
+            }else{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [LLUtils hideHUD:HUD animated:YES];
+                    [LLUtils showMessageAlertWithTitle:nil message:err.errorMsg];
+                });
+            }
+//        EMError *error = [[EMClient sharedClient] loginWithUsername:username password:password];
+//
+//        if (!error) {
+//            [[LLUserProfile myUserProfile] initUserProfileWithUserName:username nickName:username avatarURL:nil];
+//
+//            //SDK要求
+//            [[EMClient sharedClient] dataMigrationTo3];
+//            //获取消息推送通知
+//            [weakSelf loadPushOptionsFromServer];
+//            //获取联系人
+//            [[LLContactManager sharedManager] asynGetContactsFromServer:nil];
+//
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [LLUtils hideHUD:HUD animated:YES];
+//                [weakSelf loginWithResult:YES];
+//            });
+//
+//            [weakSelf saveLastLoginUsername:username];
+//
+//        }else {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [LLUtils hideHUD:HUD animated:YES];
+//                [weakSelf didLoginFailedWithError:error];
+//            });
+//        }
+        
     });
 }
 
