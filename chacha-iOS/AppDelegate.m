@@ -18,6 +18,8 @@
 #import <AMapFoundationKit/AMapFoundationKit.h>
 #import "LLAudioManager.h"
 #import "LLMessageThumbnailManager.h"
+#import "ApproxySDK.h"
+#import "ApproxySDKOptions.h"
 
 @interface AppDelegate ()
 
@@ -29,7 +31,7 @@
     
     [[LLEmotionModelManager sharedManager] prepareEmotionModel];
     
-    [self configureAPIKey];
+    [self configureAPIKey];//配置高德地图
     [self initializeSDK];
     [self initUIAppearance];
     [self playTrick];
@@ -117,16 +119,19 @@
         [ud setObject:appkey forKey:@"identifier_appkey"];
     }
 
-    //初始化EMClient
-    EMOptions *options = [EMOptions optionsWithAppkey:appkey];
-    options.apnsCertName = apnsCertName;
-    options.isAutoAcceptGroupInvitation = NO;
-    options.isAutoAcceptFriendInvitation = NO;
-    options.isAutoLogin = YES;
-    options.enableConsoleLog = YES;
-    options.isSandboxMode = NO; //YES为SDK内部测试使用
-    
-    [[EMClient sharedClient] initializeSDKWithOptions:options];
+//    //初始化EMClient
+//    EMOptions *options = [EMOptions optionsWithAppkey:appkey];
+//    options.apnsCertName = apnsCertName;
+//    options.isAutoAcceptGroupInvitation = NO;
+//    options.isAutoAcceptFriendInvitation = NO;
+//    options.isAutoLogin = YES;
+//    options.enableConsoleLog = YES;
+//    options.isSandboxMode = NO; //YES为SDK内部测试使用
+//
+//    [[EMClient sharedClient] initializeSDKWithOptions:options];
+    ApproxySDKOptions *options = [ApproxySDKOptions optionsWithAppkey:appkey];
+    ApproxySDK *sdk = [ApproxySDK getInstance];
+    [sdk initSDK:options];
 
 }
 
@@ -157,7 +162,7 @@
     if ([APIKey length] == 0) {
         [LLUtils showMessageAlertWithTitle:@"OK" message:@"apiKey为空，请检查key是否正确设置。"];
     }
-    
+//    [AMapServices sharedServices].enableHTTPS = YES;
     [AMapServices sharedServices].apiKey = (NSString *)APIKey;
 }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		076615072383FA41000A0C9A /* libapproxySDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076615062383FA41000A0C9A /* libapproxySDK.a */; };
 		5E4122E08811E0EBB5AA4DC2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E41296DC217873C62A365DE /* AppDelegate.m */; };
 		5E412F26264EAFAD9063F20C /* LLCollectionTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E412B5873C1BA92248C4493 /* LLCollectionTextCell.m */; };
 		DD066A6A1D5306A2009EB4BC /* Emotion.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DD066A691D5306A2009EB4BC /* Emotion.bundle */; };
@@ -232,6 +233,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		076615062383FA41000A0C9A /* libapproxySDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapproxySDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E41224EF07118FC49275287 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "chacha-iOS/AppDelegate.h"; sourceTree = SOURCE_ROOT; };
 		5E412773A8BD0D9DB6CBD14F /* LLCollectionTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLCollectionTextCell.h; sourceTree = "<group>"; };
 		5E41296DC217873C62A365DE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "chacha-iOS/AppDelegate.m"; sourceTree = SOURCE_ROOT; };
@@ -684,6 +686,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				076615072383FA41000A0C9A /* libapproxySDK.a in Frameworks */,
 				DDEEF79E1DDAF10800FCCE5A /* libcrypto.a in Frameworks */,
 				DDEEF79F1DDAF10800FCCE5A /* libcurl.a in Frameworks */,
 				DDEEF7A01DDAF10800FCCE5A /* libssl.a in Frameworks */,
@@ -921,6 +924,7 @@
 		DD4C47F71D3B35C200ED4EA9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				076615062383FA41000A0C9A /* libapproxySDK.a */,
 				DDEEF79B1DDAF10800FCCE5A /* libcrypto.a */,
 				DDEEF79C1DDAF10800FCCE5A /* libcurl.a */,
 				DDEEF79D1DDAF10800FCCE5A /* libssl.a */,
@@ -2017,9 +2021,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-Objc",
+					"-all_load",
+				);
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2057,8 +2066,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-Objc",
+					"-all_load",
+				);
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2089,10 +2103,12 @@
 					"$(PROJECT_DIR)/HyphenateSDK/lib/3rdparty",
 					"$(PROJECT_DIR)/HyphenateSDK/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = routeyo.net;
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "chacha-ios.routeyo.net";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/** $(BUILT_PRODUCTS_DIR)/**";
+				VALID_ARCHS = "armv7 armv7s arm64 arm64e";
 			};
 			name = Debug;
 		};
@@ -2121,10 +2137,12 @@
 					"$(PROJECT_DIR)/HyphenateSDK/lib/3rdparty",
 					"$(PROJECT_DIR)/HyphenateSDK/lib",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = routeyo.net;
+				OTHER_LDFLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = "chacha-ios.routeyo.net";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/** $(BUILT_PRODUCTS_DIR)/**";
+				VALID_ARCHS = "armv7 armv7s arm64 arm64e";
 			};
 			name = Release;
 		};
