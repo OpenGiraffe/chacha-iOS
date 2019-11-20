@@ -17,6 +17,7 @@
 
 #import "AppDelegate.h"
 #import "ApproxySDK.h"
+#import "ApproxySDKOptions.h"
 
 #define KNOTIFICATION_LOGINCHANGE @"NOTIFICATION_LOGINCHANG"
 

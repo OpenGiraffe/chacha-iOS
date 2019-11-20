@@ -6,7 +6,7 @@
   Copyright © 2016 GYJZH. All rights reserved.
 */
 
-"CFBundleDisplayName" = "LL微信";
+"CFBundleDisplayName" = "喳喳";
 
 "NSCalendarsUsageDescription" = "If not allowed, WeChat will be unable to access your phone calendar and add schedule messages to your calendar.";
 
