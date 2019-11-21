@@ -175,13 +175,14 @@ CREATE_SHARED_MANAGER(LLClientManager)
 - (void)logout {
     MBProgressHUD *HUD = [LLUtils showActivityIndicatiorHUDWithTitle:@"正在退出..."];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMError *error = [[EMClient sharedClient] logout:YES];
-        
+        [[ApproxySDK getInstance] logouWithUserName];
+//        EMError *error = [[EMClient sharedClient] logout:YES];
+//
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (error != nil) {
-                [LLUtils showTextHUD:@"解除消息通知失败"];
-            }
-           
+//            if (error != nil) {
+//                [LLUtils showTextHUD:@"解除消息通知失败"];
+//            }
+
             [LLUtils hideHUD:HUD animated:YES];
             [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
         });

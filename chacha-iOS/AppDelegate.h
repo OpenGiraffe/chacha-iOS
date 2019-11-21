@@ -19,6 +19,9 @@
 @property (nonatomic) LLMainViewController *mainViewController;
 
 - (void)showRootControllerForLoginStatus:(BOOL)successed;
-
+// 密码错误
+- (void) onLoginPassError:(id)o;
+// 登录状态
+- (void) onLoginSta:(id)o;
 @end
 

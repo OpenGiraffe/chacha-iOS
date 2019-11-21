@@ -20,6 +20,7 @@
 #import "LLMessageThumbnailManager.h"
 #import "ApproxySDK.h"
 #import "ApproxySDKOptions.h"
+#import "ApproxySDKNotificationCenter.h"
 
 @interface AppDelegate ()
 
@@ -36,7 +37,7 @@
     [self initUIAppearance];
     [self playTrick];
     
-    [self registerRemoteNotification];
+//    [self registerRemoteNotification];
 
     //准备用户登录
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -45,6 +46,7 @@
     
     [[LLClientManager sharedManager] prepareLogin];
     
+    [[ApproxySDK getInstance] uploadLogFile];
     return YES;
 }
 
@@ -82,8 +84,9 @@
     UIStoryboard *storyboard = [LLUtils mainStoryboard];
 
     if (successed) {
-        [[LLUserProfile myUserProfile] initUserProfileWithUserName:[EMClient sharedClient].currentUsername nickName:nil avatarURL:nil];
-
+//        [[LLUserProfile myUserProfile] initUserProfileWithUserName:[EMClient sharedClient].currentUsername nickName:nil avatarURL:nil];
+        [[LLUserProfile myUserProfile] initUserProfileWithUserName:[ApproxySDK getInstance].currentUserName nickName:nil avatarURL:nil];
+        
         self.mainViewController = [[LLMainViewController alloc] init];
         self.loginViewController = nil;
         self.window.rootViewController = self.mainViewController;
@@ -136,6 +139,11 @@
     [options setClusterGroup:APPROXY_CLUSTERGROUP];
     [options setIsAutoLogin:YES];
     
+    
+    //注册密码错误事件
+    [ApproxySDKNotificationCenter sendTo:self selector:@selector(onLoginPassError:) name:@"onLoginFail"];
+    //注册登录状态事件
+    [ApproxySDKNotificationCenter sendTo:self selector:@selector(onLoginSta:) name:@"onLoginSta"];
     ApproxySDK *sdk = [ApproxySDK getInstance];
     [sdk initSDK:options];
 
@@ -252,4 +260,24 @@
 //    [textField removeFromSuperview];
 }
 
+#pragma mark - Event -
+// 密码错误
+- (void) onLoginPassError:(id)o{
+    NSDictionary *data = [o valueForKey:@"userInfo"];
+    NSLog(@"onLoginPassError: %@",data[@"szUserName"]);
+    
+    //密码错误 跳转到登录页面
+//    [[LLUtils appDelegate] showRootControllerForLoginStatus:false];
+}
+
+- (void) onLoginSta:(id)o{
+    NSDictionary *data = [o valueForKey:@"userInfo"];
+    NSLog(@"onLoginSta: %@",data[@"szUserReason"]);
+    NSString *reason = data[@"szUserReason"];
+    if([reason containsString:@"未记住用户名"] || [reason containsString:@"未记住密码"]){
+        //跳转到登录页面
+        [[LLUtils appDelegate] showRootControllerForLoginStatus:false];
+        return ;
+    }
+}
 @end
