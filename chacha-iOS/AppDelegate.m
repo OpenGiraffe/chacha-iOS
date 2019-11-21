@@ -20,7 +20,6 @@
 #import "LLMessageThumbnailManager.h"
 #import "ApproxySDK.h"
 #import "ApproxySDKOptions.h"
-#import "ApproxySDKNotificationCenter.h"
 
 @interface AppDelegate ()
 
@@ -141,9 +140,9 @@
     
     
     //注册密码错误事件
-    [ApproxySDKNotificationCenter sendTo:self selector:@selector(onLoginPassError:) name:@"onLoginFail"];
+    [ApproxySDK nf_subscribe:self selector:@selector(onLoginPassError:) name:@"onLoginFail"];
     //注册登录状态事件
-    [ApproxySDKNotificationCenter sendTo:self selector:@selector(onLoginSta:) name:@"onLoginSta"];
+    [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSta"];
     ApproxySDK *sdk = [ApproxySDK getInstance];
     [sdk initSDK:options];
 
@@ -279,5 +278,8 @@
         [[LLUtils appDelegate] showRootControllerForLoginStatus:false];
         return ;
     }
+}
+- (void)dealloc{
+    [ApproxySDK nf_unsubscribe:self];
 }
 @end
