@@ -9,7 +9,7 @@
 #import "LLContactManager.h"
 #import "LLUtils.h"
 #import "EMSDK.h"
-
+#import "ApproxySDK.h"
 
 #define CONTACT_QUEUE_ID "CONTACT_QUEUE_ID"
 
@@ -109,18 +109,18 @@ CREATE_SHARED_MANAGER(LLContactManager)
 }
 
 - (void)asynGetContactsFromServer:(void (^)(NSArray<LLContactModel *> *))complete {
+    [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
+        NSLog(@"aaa asynGetContactsFromServer");
+    } failure:^(ApxErrorCode *aError) {
+    
+    }];
+    
     [[EMClient sharedClient].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
         NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
         for (NSString *buddy in buddyList) {
             LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
             [allContacts addObject:model];
         }
-        
-//        NSString *loginUsername = [[EMClient sharedClient] currentUsername];
-//        if (loginUsername && loginUsername.length > 0) {
-//            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:loginUsername];
-//            [allContacts addObject:model];
-//        }
         
         if (complete) {
             dispatch_async(dispatch_get_main_queue(), ^{

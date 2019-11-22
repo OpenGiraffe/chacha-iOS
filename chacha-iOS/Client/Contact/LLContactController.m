@@ -18,7 +18,7 @@
 #import "LLSearchViewController.h"
 #import "LLContactAddController.h"
 #import "LLContactApplyController.h"
-
+#import "ApproxySDK.h"
 #define CONTACT_CELL_ID @"contactCellID"
 
 @interface LLContactController () <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, LLSearchControllerDelegate>
@@ -223,6 +223,20 @@
             LLContactApplyController *vc = [[LLContactApplyController alloc] init];
             
             [self.navigationController pushViewController:vc animated:YES];
+        }else if(indexPath.row == 3){
+            //公众号
+            [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
+                NSLog(@"aaa asynGetContactsFromServer in 公众号");
+                
+                NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
+                for (NSString *buddy in buddyList) {
+                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
+                    [allContacts addObject:model];
+                }
+                
+            } failure:^(ApxErrorCode *aError) {
+                
+            }];
         }
     }else {
         LLContactModel *model = self.dataArray[indexPath.section-1][indexPath.row];

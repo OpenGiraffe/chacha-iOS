@@ -23,5 +23,6 @@
 - (void) onLoginPassError:(id)o;
 // 登录状态
 - (void) onLoginSta:(id)o;
+- (void) onLoginSucc:(id)o;
 @end
 

@@ -143,6 +143,8 @@
     [ApproxySDK nf_subscribe:self selector:@selector(onLoginPassError:) name:@"onLoginFail"];
     //注册登录状态事件
     [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSta"];
+    //注册登录成功事件
+    [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSucc"];
     ApproxySDK *sdk = [ApproxySDK getInstance];
     [sdk initSDK:options];
 
@@ -274,10 +276,18 @@
     NSLog(@"onLoginSta: %@",data[@"szUserReason"]);
     NSString *reason = data[@"szUserReason"];
     if([reason containsString:@"未记住用户名"] || [reason containsString:@"未记住密码"]){
-        //跳转到登录页面
-        [[LLUtils appDelegate] showRootControllerForLoginStatus:false];
+        //用这个代码能保证执行的是UI线程
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //跳转到登录页面
+            [[LLUtils appDelegate] showRootControllerForLoginStatus:false];
+        });
         return ;
     }
+}
+- (void) onLoginSucc:(id)o{
+    NSDictionary *data = [o valueForKey:@"userInfo"];
+    NSLog(@"onLoginSucc: %@",data[@"szUserName"]);
+    
 }
 - (void)dealloc{
     [ApproxySDK nf_unsubscribe:self];
