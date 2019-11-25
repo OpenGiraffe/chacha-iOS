@@ -157,7 +157,7 @@
     return _chatViewController;
 }
 
-- (void)chatWithContact:(NSString *)userName {
+- (void)chatWithContact:(NSString *)openID {
     for (UIViewController *vc in self.viewControllers) {
         if ([vc isKindOfClass:[LLChatViewController class]]) {
             return;
@@ -165,7 +165,7 @@
     }
     
     LLConversationModel *conversationModel = [[LLChatManager sharedManager]
-                        getConversationWithConversationChatter:userName
+                        getConversationWithConversationChatter:openID
                                         conversationType:kLLConversationTypeChat];
     
     [[LLMessageCacheManager sharedManager] prepareCacheWhenConversationBegin:conversationModel];

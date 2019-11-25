@@ -13,11 +13,13 @@
 
 @property (nonatomic, readonly, copy) NSString *userName;
 @property (nonatomic, copy) NSString *pinyinOfUserName;
+@property (nonatomic, readonly, copy) NSString *openID;
 
 @property (copy, nonatomic) NSString *nickname;
 @property (copy, nonatomic) NSString *avatarURLPath;
 @property (copy, nonatomic) UIImage *avatarImage;
 
 - (instancetype)initWithBuddy:(NSString *)buddy;
+- (instancetype)initWithBuddy:(NSString *)buddy openID:(NSString *)openID;
 
 @end

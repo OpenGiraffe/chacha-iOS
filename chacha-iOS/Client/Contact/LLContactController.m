@@ -229,8 +229,10 @@
                 NSLog(@"aaa asynGetContactsFromServer in 公众号");
                 
                 NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-                for (NSString *buddy in buddyList) {
-                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
+                for (NSDictionary *buddy in buddyList) {
+                    NSString *userName = buddy[@"slaveName"];
+                    NSString *openID = buddy[@"slaveOpenID"];
+                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
                     [allContacts addObject:model];
                 }
                 
@@ -240,8 +242,8 @@
         }
     }else {
         LLContactModel *model = self.dataArray[indexPath.section-1][indexPath.row];
-        
-        [[LLUtils appDelegate].mainViewController chatWithContact:model.userName];
+        //[[LLUtils appDelegate].mainViewController chatWithContact:model.userName];
+        [[LLUtils appDelegate].mainViewController chatWithContact:model.openID];
        
     }
 

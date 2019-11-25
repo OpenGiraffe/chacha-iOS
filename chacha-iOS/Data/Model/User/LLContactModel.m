@@ -15,6 +15,20 @@
     self = [super init];
     if (self) {
         _userName = buddy;
+        _openID = buddy;
+        _pinyinOfUserName = [LLUtils pinyinOfString:_userName];
+        _nickname = @"";
+        _avatarImage = [UIImage imageNamed:@"icon_avatar"];
+    }
+    
+    return self;
+}
+
+- (instancetype)initWithBuddy:(NSString *)buddy openID:(NSString *)openID {
+    self = [super init];
+    if (self) {
+        _userName = buddy;
+        _openID = openID;
         _pinyinOfUserName = [LLUtils pinyinOfString:_userName];
         _nickname = @"";
         _avatarImage = [UIImage imageNamed:@"icon_avatar"];

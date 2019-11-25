@@ -110,15 +110,11 @@ CREATE_SHARED_MANAGER(LLContactManager)
 
 - (void)asynGetContactsFromServer:(void (^)(NSArray<LLContactModel *> *))complete {
     [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
-        NSLog(@"aaa asynGetContactsFromServer");
-    } failure:^(ApxErrorCode *aError) {
-    
-    }];
-    
-    [[EMClient sharedClient].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
         NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-        for (NSString *buddy in buddyList) {
-            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
+        for (NSDictionary *buddy in buddyList) {
+            NSString *userName = buddy[@"slaveName"];
+            NSString *openID = buddy[@"slaveOpenID"];
+            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
             [allContacts addObject:model];
         }
         
@@ -128,9 +124,26 @@ CREATE_SHARED_MANAGER(LLContactManager)
             });
         }
         
-    } failure:^(EMError *aError) {
-        
+    } failure:^(ApxErrorCode *aError) {
+    
     }];
+    
+//    [[EMClient sharedClient].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
+//        NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
+//        for (NSString *buddy in buddyList) {
+//            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
+//            [allContacts addObject:model];
+//        }
+//
+//        if (complete) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                complete(allContacts);
+//            });
+//        }
+//
+//    } failure:^(EMError *aError) {
+//
+//    }];
 }
 
 - (LLSDKError *)addContact:(NSString *)buddyName {
