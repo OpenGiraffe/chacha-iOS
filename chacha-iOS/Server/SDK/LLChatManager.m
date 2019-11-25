@@ -19,6 +19,9 @@
 #import "LLMessageCacheManager.h"
 #import "LLConversationModelManager.h"
 
+#import "ApproxySDKOptions.h"
+#import "ApproxySDK.h"
+
 #define NEW_MESSAGE_QUEUE_LABEL "NEW_MESSAGE_QUEUE"
 
 static NSDate *lastPlaySoundDate;
@@ -321,7 +324,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 - (LLConversationModel *)getConversationWithConversationChatter:
     (NSString *)conversationChatter conversationType:(LLConversationType)conversationType {
-    EMConversation *_conversation = [[EMClient sharedClient].chatManager getConversation:conversationChatter type:(EMConversationType)conversationType createIfNotExist:YES];
+//    EMConversation *_conversation = [[EMClient sharedClient].chatManager getConversation:conversationChatter type:(EMConversationType)conversationType createIfNotExist:YES];
+    ApproxySDKConversation *_conversation = [[ApproxySDK getInstance].chatManager getConversation:conversationChatter type:(ApxConversationType)conversationType createIfNotExist:YES];
     LLConversationModel *model = [LLConversationModel conversationModelFromPool:_conversation];
     
     return model;
