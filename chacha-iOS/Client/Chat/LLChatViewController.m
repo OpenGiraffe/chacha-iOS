@@ -412,7 +412,7 @@ MFMailComposeViewControllerDelegate
 }
 
 - (void)refreshChatControllerForReuse {
-    self.navigationItem.title = self.conversationModel.nickName;
+    self.navigationItem.title = @"aaa";//self.conversationModel.nickName;
     
     [self registerApplicationNotification];
     [self registerChatManagerNotification];
@@ -443,6 +443,7 @@ MFMailComposeViewControllerDelegate
 
     [self scrollToBottom:NO];
    
+    NSLog(@"self.conversationModel.nickName = %@",self.conversationModel.nickName);
 }
 
 
@@ -2223,7 +2224,8 @@ MFMailComposeViewControllerDelegate
 #pragma mark - Debug
 
 - (void)debug1:(id)sender {
-
+ 
+    NSLog(@"点击了时光机。。");
 }
 
 - (void)debug2:(id)sender {
