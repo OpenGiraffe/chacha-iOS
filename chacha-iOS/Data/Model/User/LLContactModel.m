@@ -30,7 +30,7 @@
         _userName = buddy;
         _openID = openID;
         _pinyinOfUserName = [LLUtils pinyinOfString:_userName];
-        _nickname = @"";
+        _nickname = buddy;
         _avatarImage = [UIImage imageNamed:@"icon_avatar"];
     }
     

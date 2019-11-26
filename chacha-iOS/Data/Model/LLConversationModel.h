@@ -7,6 +7,7 @@
 #import "EMConversation.h"
 #import "EMMessage.h"
 #import "LLMessageModel.h"
+#import "ApproxySDKOptions.h"
 
 @import UIKit;
 
@@ -42,10 +43,10 @@ typedef NS_ENUM(NSInteger, LLMessageListUpdateType) {
 //该Conversation已经获取到的消息数组，按照时间从过去到现在排序，最近的消息在数组最后面
 @property (atomic) NSMutableArray<LLMessageModel *> *allMessageModels;
 
-+ (LLConversationModel *)conversationModelFromPool:(EMConversation *)conversation;
++ (LLConversationModel *)conversationModelFromPool:(ApproxySDKConversation *)conversation;
 
 #pragma mark - Server.SDK专用，Client代码不直接访问 -
-@property (nonatomic) EMConversation *sdk_conversation;
+@property (nonatomic) ApproxySDKConversation *sdk_conversation;
 
 - (NSString *)latestMessage;
 

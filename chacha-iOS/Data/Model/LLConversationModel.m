@@ -11,6 +11,7 @@
 #import "EMTextMessageBody.h"
 #import "LLChatManager.h"
 #import "LLConversationModelManager.h"
+#import "ApproxySDKOptions.h"
 
 @interface LLConversationModel ()
 {
@@ -25,7 +26,7 @@
 
 @synthesize draft = _draft;
 
-- (instancetype)initWithConversation:(EMConversation *)conversation {
+- (instancetype)initWithConversation:(ApproxySDKConversation *)conversation {
     self = [super init];
     if (self) {
         _sdk_conversation = conversation;
@@ -33,12 +34,13 @@
     
         _unreadMessageNumber = -1;
         _allMessageModels = [[NSMutableArray alloc] init];
+        _nickName = conversation.ext[@"name"];
     }
 
     return self;
 }
 
-+ (LLConversationModel *)conversationModelFromPool:(EMConversation *)conversation {
++ (LLConversationModel *)conversationModelFromPool:(ApproxySDKConversation *)conversation {
     LLConversationModel *conversationModel = [[LLConversationModelManager sharedManager] conversationModelForConversationId:conversation.conversationId];
     if (!conversationModel) {
         conversationModel = [[LLConversationModel alloc] initWithConversation:conversation];
@@ -50,7 +52,7 @@
     return conversationModel;
 }
 
-- (void)updateConversationModel:(EMConversation *)conversation {
+- (void)updateConversationModel:(ApproxySDKConversation *)conversation {
     NSAssert([_sdk_conversation.conversationId isEqualToString:conversation.conversationId], @"更新会话数据时，conversationId发生改变");
     
     _sdk_conversation = conversation;

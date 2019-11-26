@@ -117,14 +117,16 @@ MFMailComposeViewControllerDelegate
     self.title = self.conversationModel.nickName;
     self.view.backgroundColor = VIEW_BACKGROUND_COLOR;
     
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Debug1" style:UIBarButtonItemStylePlain target:self action:@selector(debug1:)];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"时光机" style:UIBarButtonItemStylePlain target:self action:@selector(debug1:)];
     
-    UIBarButtonItem *item2 = [[UIBarButtonItem alloc] initWithTitle:@"Debug2" style:UIBarButtonItemStylePlain target:self action:@selector(debug2:)];
-    rightBarButtonItems = @[item, item2];
+//    UIBarButtonItem *item2 = [[UIBarButtonItem alloc] initWithTitle:@"Debug2" style:UIBarButtonItemStylePlain target:self action:@selector(debug2:)];
+//    rightBarButtonItems = @[item, item2];
+    rightBarButtonItems = @[item];
     self.navigationItem.rightBarButtonItems = rightBarButtonItems;
     
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = backItem;
+    
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.backgroundColor = TABLEVIEW_BACKGROUND_COLOR;
