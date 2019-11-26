@@ -75,7 +75,7 @@
 }
 
 - (NSString *)nickName {
-    return self.conversationId;
+    return _nickName;//mark 20191126 定位此问题4小时
 }
 
 - (NSInteger)unreadMessageNumber {
