@@ -171,7 +171,6 @@
     [[LLMessageCacheManager sharedManager] prepareCacheWhenConversationBegin:conversationModel];
     
     self.chatViewController.conversationModel = conversationModel;
-    NSLog(@"nickName0:%@",[conversationModel nickName]);
     [self.chatViewController fetchMessageList];
     [self.chatViewController refreshChatControllerForReuse];
     

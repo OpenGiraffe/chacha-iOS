@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EMMessage.h"
+//#import "EMMessage.h"
 #import "LLSDKError.h"
 #import "LLSDKType.h"
 #import <MapKit/MapKit.h>
+#import "ApproxySDKOptions.h"
 
 typedef NS_ENUM(NSInteger, LLMessageModelUpdateReason) {
     kLLMessageModelUpdateReasonUploadComplete, //消息上传成功
@@ -119,13 +120,13 @@ typedef NS_ENUM(NSInteger, LLMessageModelUpdateReason) {
 @property (nonatomic) LLSDKError *error;
 
 //该方法供外部代码调用
-+ (LLMessageModel *)messageModelFromPool:(EMMessage *)message;
++ (LLMessageModel *)messageModelFromPool:(ApproxySDKMessage *)message;
 
 - (instancetype)initWithType:(LLMessageBodyType)type;
 
-- (void)updateMessage:(EMMessage *)aMessage updateReason:(LLMessageModelUpdateReason)updateReason;
+- (void)updateMessage:(ApproxySDKMessage *)aMessage updateReason:(LLMessageModelUpdateReason)updateReason;
 
-+ (NSString *)messageTypeTitle:(EMMessage *)message;
++ (NSString *)messageTypeTitle:(ApproxySDKMessage *)message;
 
 - (long long)fileAttachmentSize;
 
@@ -168,11 +169,11 @@ typedef NS_ENUM(NSInteger, LLMessageModelUpdateReason) {
 - (void)clearNeedsUpdateForReuse;
 
 #pragma mark - 以下方法 Client代码不直接访问 -
-@property (nonatomic) EMMessage * sdk_message;
+@property (nonatomic) ApproxySDKMessage * sdk_message;
 
 @property (nonatomic) BOOL isDownloadingAttachment;
 
-- (instancetype)initWithMessage:(EMMessage *)message;
+- (instancetype)initWithMessage:(ApproxySDKMessage *)message;
 
 - (void)internal_setMessageStatus:(LLMessageStatus)messageStatus;
 

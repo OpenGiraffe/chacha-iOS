@@ -9,6 +9,8 @@
 #import "LLMessageUploader.h"
 #import "LLChatManager.h"
 #import "LLUtils.h"
+#import "ApproxySDKOptions.h"
+#import "ApproxySDK.h"
 
 
 @interface LLMessageUploader ()
@@ -96,7 +98,7 @@
         [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
     };
     
-    void (^completeBlock)(EMMessage *message, EMError *_error) = ^(EMMessage *message, EMError *_error) {
+    void (^completeBlock)(ApproxySDKMessage *message, ApxErrorCode *_error) = ^(ApproxySDKMessage *message, ApxErrorCode *_error) {
         NSLog(@"Message Upload Complete %@", messageModel.messageId);
 
         dispatch_semaphore_signal(weakSelf.semaphore);
@@ -114,15 +116,19 @@
     };
 
     if (needResend) {
-        [[EMClient sharedClient].chatManager
-         asyncResendMessage:messageModel.sdk_message
-         progress: needProgress ? progressBlock : nil
-         completion:completeBlock];
+//        [[EMClient sharedClient].chatManager
+//         asyncResendMessage:messageModel.sdk_message
+//         progress: needProgress ? progressBlock : nil
+//         completion:completeBlock];
+        [[ApproxySDK getInstance].chatManager asyncResendMessage:messageModel.sdk_message progress: needProgress ? progressBlock : nil completion:completeBlock];
+        
     }else {
-        [[EMClient sharedClient].chatManager
-         asyncSendMessage:messageModel.sdk_message
-         progress: needProgress ? progressBlock : nil
-         completion:completeBlock];
+//        [[EMClient sharedClient].chatManager
+//         asyncSendMessage:messageModel.sdk_message
+//         progress: needProgress ? progressBlock : nil
+//         completion:completeBlock];
+
+        [[ApproxySDK getInstance].chatManager asyncSendMessage:messageModel.sdk_message progress: needProgress ? progressBlock : nil completion:completeBlock];
     }
     [messageModel internal_setMessageStatus:kLLMessageStatusDelivering];
     [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];

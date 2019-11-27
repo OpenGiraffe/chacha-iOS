@@ -573,14 +573,16 @@ CREATE_SHARED_MANAGER(LLChatManager)
                    messageType:(LLChatType)messageType
                     messageExt:(NSDictionary *)messageExt
                     completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
-    EMTextMessageBody *body = [[EMTextMessageBody alloc] initWithText:text];
-    NSString *from = [[EMClient sharedClient] currentUsername];
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
-    message.chatType = (EMChatType)messageType;
+//    EMTextMessageBody *body = [[EMTextMessageBody alloc] initWithText:text];
+//    NSString *from = [[EMClient sharedClient] currentUsername];
+//    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
+//    message.chatType = (EMChatType)messageType;
     
-    ImText *im = [[ImText alloc]initWithSenderAgent:[[ApproxySDK getInstance] getMySelfUid] recvierAgent:toUser];
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImText *im = [[ImText alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
     im.text = text;
-    [[ApproxySDK getInstance]sendImText:im];
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     [self sendMessage:model needInsertToDB:YES];

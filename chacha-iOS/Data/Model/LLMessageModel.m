@@ -7,8 +7,8 @@
 //
 
 #import "LLMessageModel.h"
-#import "EMTextMessageBody.h"
-#import "EMMessage.h"
+//#import "EMTextMessageBody.h"
+//#import "EMMessage.h"
 #import "LLUserProfile.h"
 #import "LLUtils.h"
 #import "LLEmotionModelManager.h"
@@ -111,7 +111,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     return self;
 }
 
-- (void)commonInit:(EMMessage *)message {
+- (void)commonInit:(ApproxySDKMessage *)message {
     _sdk_message = message;
     _messageBodyType = (LLMessageBodyType)_sdk_message.body.type;
     _messageId = [message.messageId copy];
@@ -138,7 +138,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     [self processModelForCell];
 }
 
-- (instancetype)initWithMessage:(EMMessage *)message {
+- (instancetype)initWithMessage:(ApproxySDKMessage *)message {
     self = [super init];
     if (self) {
         [self commonInit:message];
@@ -147,14 +147,14 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     return self;
 }
 
-+ (LLMessageModel *)messageModelFromPool:(EMMessage *)message {
++ (LLMessageModel *)messageModelFromPool:(ApproxySDKMessage *)message {
     LLMessageModel *messageModel = [[LLMessageModel alloc] initWithMessage:message];
     [[LLMessageModelManager sharedManager] addMessageModelToConversaion:messageModel];
     
     return messageModel;
 }
 
-- (void)updateMessage:(EMMessage *)aMessage updateReason:(LLMessageModelUpdateReason)updateReason {
+- (void)updateMessage:(ApproxySDKMessage *)aMessage updateReason:(LLMessageModelUpdateReason)updateReason {
     BOOL isMessageIdChanged = ![aMessage.messageId isEqualToString:_messageId];
     
     if (aMessage == _sdk_message) {
@@ -470,7 +470,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
 }
 
 - (BOOL)isVideoPlayable {
-    return (_sdk_message.body.type == EMMessageBodyTypeVideo) && (self.fromMe || self.messageDownloadStatus == kLLMessageDownloadStatusSuccessed);
+    return (_sdk_message.body.type == ApxMsgType_Video) && (self.fromMe || self.messageDownloadStatus == kLLMessageDownloadStatusSuccessed);
 }
 
 - (BOOL)isFullImageAvailable {

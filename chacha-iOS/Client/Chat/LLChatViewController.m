@@ -412,8 +412,6 @@ MFMailComposeViewControllerDelegate
 }
 
 - (void)refreshChatControllerForReuse {
-    NSString *nickName = [NSString stringWithFormat:@"%@", self.conversationModel.nickName];
-    NSLog(@"nickName = %@",nickName);
     self.navigationItem.title = self.conversationModel.nickName;
     
     [self registerApplicationNotification];
@@ -445,8 +443,6 @@ MFMailComposeViewControllerDelegate
 
     [self scrollToBottom:NO];
    
-    NSLog(@"self.conversationModel.nickName = %@",self.conversationModel.nickName);
-    NSLog(@"nickName2 = %@",nickName);
 }
 
 
