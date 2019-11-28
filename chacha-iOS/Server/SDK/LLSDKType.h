@@ -13,6 +13,7 @@
 #import "EMMessageBody.h"
 #import "EMConversation.h"
 #import "EMFileMessageBody.h"
+#import "ApproxySDKOptions.h"
 
 static NSString *LLConnectionStateDidChangedNotification = @"LLConnectionStateDidChangedNotification";
 
@@ -22,12 +23,12 @@ typedef NS_ENUM(NSInteger, LLConnectionState) {
 };
 
 typedef NS_ENUM(NSInteger, LLMessageBodyType) {
-    kLLMessageBodyTypeText = EMMessageBodyTypeText,
-    kLLMessageBodyTypeImage = EMMessageBodyTypeImage,
-    kLLMessageBodyTypeVideo = EMMessageBodyTypeVideo,
-    kLLMessageBodyTypeVoice = EMMessageBodyTypeVoice,
-    kLLMessageBodyTypeEMLocation = EMMessageBodyTypeLocation,
-    kLLMessageBodyTypeFile = EMMessageBodyTypeFile,
+    kLLMessageBodyTypeText = ApxMsgType_Text,
+    kLLMessageBodyTypeImage = ApxMsgType_Img,
+    kLLMessageBodyTypeVideo = ApxMsgType_Video,
+    kLLMessageBodyTypeVoice = ApxMsgType_Audio,
+    kLLMessageBodyTypeEMLocation = ApxMsgType_Loc,
+    kLLMessageBodyTypeFile = ApxMsgType_File,
     kLLMessageBodyTypeDateTime,
     kLLMessageBodyTypeGif,
     kLLMessageBodyTypeLocation,
@@ -45,29 +46,29 @@ typedef NS_ENUM(NSInteger, LLMessageDownloadStatus) {
 };
 
 typedef NS_ENUM(NSInteger, LLMessageStatus) {
-    kLLMessageStatusPending  = EMMessageStatusPending,
-    kLLMessageStatusDelivering = EMMessageStatusDelivering,
-    kLLMessageStatusSuccessed = EMMessageStatusSuccessed,
-    kLLMessageStatusFailed = EMMessageStatusFailed,
+    kLLMessageStatusPending  = ApxMessageStatusPending,
+    kLLMessageStatusDelivering = ApxMessageStatusDelivering,
+    kLLMessageStatusSuccessed = ApxMessageStatusSuccessed,
+    kLLMessageStatusFailed = ApxMessageStatusFailed,
     kLLMessageStatusWaiting = 10086,
     kLLMessageStatusNone
 };
 
 typedef NS_ENUM(NSInteger, LLChatType) {
-    kLLChatTypeChat   = EMChatTypeChat,   /*! \~chinese 单聊消息 \~english Chat */
-    kLLChatTypeGroupChat = EMChatTypeGroupChat,
-    kLLChatTypeChatRoom = EMChatTypeChatRoom
+    kLLChatTypeChat   = ApxChatTypeChat,   /*! \~chinese 单聊消息 \~english Chat */
+    kLLChatTypeGroupChat = ApxChatTypeGroupChat,
+    kLLChatTypeChatRoom = ApxChatTypeChatRoom
 };
 
 typedef NS_ENUM(NSInteger, LLConversationType) {
-    kLLConversationTypeChat = EMConversationTypeChat,
-    kLLConversationTypeGroupChat = EMConversationTypeGroupChat,
-    kLLConversationTypeChatRoom = EMConversationTypeChatRoom
+    kLLConversationTypeChat = ApxConversationTypeChat,
+    kLLConversationTypeGroupChat = ApxConversationTypeGroupChat,
+    kLLConversationTypeChatRoom = ApxConversationTypeChatRoom
 };
 
 typedef NS_ENUM(NSInteger, LLMessageDirection) {
-    kLLMessageDirectionSend = EMMessageDirectionSend,
-    kLLMessageDirectionReceive = EMMessageDirectionReceive
+    kLLMessageDirectionSend = ApxMessageDirectionSend,
+    kLLMessageDirectionReceive = ApxMessageDirectionReceive
 };
 
 static inline LLChatType chatTypeForConversationType(LLConversationType conversationType) {

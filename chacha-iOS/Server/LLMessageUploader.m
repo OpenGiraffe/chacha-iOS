@@ -99,10 +99,12 @@
     };
     
     void (^completeBlock)(ApproxySDKMessage *message, ApxErrorCode *_error) = ^(ApproxySDKMessage *message, ApxErrorCode *_error) {
-        NSLog(@"Message Upload Complete %@", messageModel.messageId);
+        NSLog(@"Message Upload Complete messageId=[%@]", messageModel.messageId);
 
         dispatch_semaphore_signal(weakSelf.semaphore);
-        if (!_error) {
+        if (_error.errorCode == ApxErrorCode.Mes_upOK.errorCode
+            || _error.errorCode == ApxErrorCode.Mes_dstUserOffline.errorCode
+            || _error.errorCode == ApxErrorCode.Mes_pushOK.errorCode) {
             [messageModel updateMessage:message updateReason:kLLMessageModelUpdateReasonUploadComplete];
             messageModel.fileUploadProgress = 100;
         }
@@ -111,7 +113,8 @@
         messageModel.error = error;
         [messageModel setNeedsUpdateUploadStatus];
         
-        [messageModel internal_setMessageStatus:kLLMessageStatusNone];
+//        [messageModel internal_setMessageStatus:kLLMessageStatusNone];
+        [messageModel internal_setMessageStatus:kLLMessageStatusSuccessed];
         [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
     };
 

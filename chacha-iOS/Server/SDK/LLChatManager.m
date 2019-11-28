@@ -584,6 +584,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;
+    message.messageId = [ApproxySDKUtil uuidString];
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     [self sendMessage:model needInsertToDB:YES];

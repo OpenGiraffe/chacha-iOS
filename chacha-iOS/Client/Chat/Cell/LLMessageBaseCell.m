@@ -240,7 +240,6 @@ BOOL LLMessageCell_isEditing = NO;
         default:
             break;
     }
-   
     [_messageModel clearNeedsUpdateUploadStatus];
     
 }

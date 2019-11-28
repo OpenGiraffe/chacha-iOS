@@ -536,8 +536,9 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
                 self.cellHeight = [LLMessageGifCell heightForModel:self];
                 
             }else {
-                EMTextMessageBody *textBody = (EMTextMessageBody *)(self.sdk_message.body);
-                self.text = textBody.text;
+                //EMTextMessageBody *textBody = (EMTextMessageBody *)(self.sdk_message.body);
+                ImText *im = (ImText *)(self.sdk_message.body.im);
+                self.text = im.text;
                 self.attributedText = [LLSimpleTextLabel createAttributedStringWithEmotionString:self.text font:[LLMessageTextCell font] lineSpacing:0];
                 
                 self.cellHeight = [LLMessageTextCell heightForModel:self];

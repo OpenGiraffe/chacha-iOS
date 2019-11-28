@@ -7,11 +7,12 @@
 //
 
 #import "LLSDKError.h"
+#import "ApproxySDKOptions.h"
 
 @implementation LLSDKError
 
-+ (instancetype)errorWithEMError:(EMError *)error {
-    LLSDKError *_error = [[LLSDKError alloc] initWithDescription:error.errorDescription code:(LLSDKErrorCode)error.code];
++ (instancetype)errorWithEMError:(ApxErrorCode *)error {
+    LLSDKError *_error = [[LLSDKError alloc] initWithDescription:error.errorMsg code:(LLSDKErrorCode)error.errorCode];
     return _error;
 }
 

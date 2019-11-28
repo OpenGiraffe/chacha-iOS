@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "EMError.h"
 #import "LLSDKErrorCode.h"
+#import "ApproxySDKOptions.h"
 
 /*!
  *  \~chinese 
@@ -70,6 +71,6 @@
 + (instancetype)errorWithDescription:(NSString *)aDescription
                                 code:(LLSDKErrorCode)aCode;
 
-+ (instancetype)errorWithEMError:(EMError *)error;
++ (instancetype)errorWithEMError:(ApxErrorCode *)error;
 
 @end

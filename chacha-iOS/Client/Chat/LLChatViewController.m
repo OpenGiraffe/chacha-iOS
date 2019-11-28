@@ -751,7 +751,6 @@ MFMailComposeViewControllerDelegate
 //添加cell20191127
 - (void)addModelToDataSourceAndScrollToBottom:(LLMessageModel *)messageModel animated:(BOOL)animated {
     [self.conversationModel.allMessageModels addObject:messageModel];
-    //messageModel.timestamp = [[NSDate date] timeIntervalSince1970];
     if (messageModel.timestamp - [self.dataSource lastObject].timestamp > CHAT_CELL_TIME_INTERVEL) {
         LLMessageModel *dateModel = [[LLMessageModel alloc] initWithType:kLLMessageBodyTypeDateTime];
         dateModel.timestamp = messageModel.timestamp;
