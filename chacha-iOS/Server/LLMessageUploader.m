@@ -102,20 +102,25 @@
         NSLog(@"Message Upload Complete messageId=[%@]", messageModel.messageId);
 
         dispatch_semaphore_signal(weakSelf.semaphore);
+        
+        LLSDKError *error = _error ? [LLSDKError errorWithErrorCode:_error] : nil;
+        messageModel.error = error;
+        [messageModel setNeedsUpdateUploadStatus];
+        
+        //消息上行成功
         if (_error.errorCode == ApxErrorCode.Mes_upOK.errorCode
             || _error.errorCode == ApxErrorCode.Mes_dstUserOffline.errorCode
             || _error.errorCode == ApxErrorCode.Mes_pushOK.errorCode) {
             [messageModel updateMessage:message updateReason:kLLMessageModelUpdateReasonUploadComplete];
             messageModel.fileUploadProgress = 100;
+            [messageModel internal_setMessageStatus:kLLMessageStatusSuccessed];
+            [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
+        }else{
+            //消息上行失败
+            [messageModel internal_setMessageStatus:kLLMessageStatusFailed];
+            [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
         }
         
-        LLSDKError *error = _error ? [LLSDKError errorWithEMError:_error] : nil;
-        messageModel.error = error;
-        [messageModel setNeedsUpdateUploadStatus];
-        
-//        [messageModel internal_setMessageStatus:kLLMessageStatusNone];
-        [messageModel internal_setMessageStatus:kLLMessageStatusSuccessed];
-        [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
     };
 
     if (needResend) {
@@ -133,9 +138,10 @@
 
         [[ApproxySDK getInstance].chatManager asyncSendMessage:messageModel.sdk_message progress: needProgress ? progressBlock : nil completion:completeBlock];
     }
+    
+    //将状态设置为《传送中》
     [messageModel internal_setMessageStatus:kLLMessageStatusDelivering];
     [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
- 
 }
 
 

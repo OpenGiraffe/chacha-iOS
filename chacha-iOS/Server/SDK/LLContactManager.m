@@ -149,7 +149,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
 - (LLSDKError *)addContact:(NSString *)buddyName {
     EMError *error = [[EMClient sharedClient].contactManager addContact:buddyName message:@"赌神赌圣赌侠赌王赌霸"];
     
-    return error ? [LLSDKError errorWithEMError:error] : nil;
+    return error ? [LLSDKError errorWithErrorCode:error] : nil;
 }
 
 #pragma mark - 好友关系变化回调 -
@@ -249,7 +249,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
             }
             
             if (completeCallback) {
-                completeCallback(error ? [LLSDKError errorWithEMError:error] : nil);
+                completeCallback(error ? [LLSDKError errorWithErrorCode:error] : nil);
             }
         });
     });

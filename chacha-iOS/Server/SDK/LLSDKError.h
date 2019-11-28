@@ -71,6 +71,6 @@
 + (instancetype)errorWithDescription:(NSString *)aDescription
                                 code:(LLSDKErrorCode)aCode;
 
-+ (instancetype)errorWithEMError:(ApxErrorCode *)error;
++ (instancetype)errorWithErrorCode:(ApxErrorCode *)error;
 
 @end

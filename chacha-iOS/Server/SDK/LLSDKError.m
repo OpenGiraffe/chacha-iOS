@@ -11,7 +11,7 @@
 
 @implementation LLSDKError
 
-+ (instancetype)errorWithEMError:(ApxErrorCode *)error {
++ (instancetype)errorWithErrorCode:(ApxErrorCode *)error {
     LLSDKError *_error = [[LLSDKError alloc] initWithDescription:error.errorMsg code:(LLSDKErrorCode)error.errorCode];
     return _error;
 }

@@ -144,7 +144,7 @@
                  messageModel.fileDownloadProgress = 100;
              }
              
-             LLSDKError *error = _error ? [LLSDKError errorWithEMError:_error] : nil;
+             LLSDKError *error = _error ? [LLSDKError errorWithErrorCode:_error] : nil;
              messageModel.error = error;
              [messageModel setNeedsUpdateDownloadStatus];
              [messageModel internal_setMessageDownloadStatus:kLLMessageDownloadStatusNone];

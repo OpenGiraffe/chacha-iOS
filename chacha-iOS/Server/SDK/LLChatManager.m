@@ -399,7 +399,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
   
     }
     
-    LLSDKError *error = aError ? [LLSDKError errorWithEMError:aError] : nil;
+    LLSDKError *error = aError ? [LLSDKError errorWithErrorCode:aError] : nil;
     model.error = error;
     switch (model.messageBodyType) {
         case kLLMessageBodyTypeImage:
@@ -473,7 +473,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
      asyncDownloadMessageThumbnail:model.sdk_message
                           progress:nil
                         completion:^(EMMessage *message, EMError *aError) {
-        LLSDKError *error = aError ? [LLSDKError errorWithEMError:aError] : nil;
+        LLSDKError *error = aError ? [LLSDKError errorWithErrorCode:aError] : nil;
         if (!aError) {
             [model updateMessage:message updateReason:kLLMessageModelUpdateReasonThumbnailDownloadComplete];
         }
