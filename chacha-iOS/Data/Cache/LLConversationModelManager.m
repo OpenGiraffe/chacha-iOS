@@ -75,12 +75,12 @@ CREATE_SHARED_MANAGER(LLConversationModelManager)
     return conversationList;
 }
 
-- (NSArray<LLConversationModel *> *)updateConversationListAfterLoad:(NSArray<EMConversation *> *)aConversations {
+- (NSArray<LLConversationModel *> *)updateConversationListAfterLoad:(NSArray<ApproxySDKConversation *> *)aConversations {
     NSMutableArray<LLConversationModel *> *conversationListModels = [NSMutableArray arrayWithCapacity:aConversations.count];
     
-    [aConversations enumerateObjectsUsingBlock:^(EMConversation * _Nonnull conversation, NSUInteger idx, BOOL * _Nonnull stop) {
+    [aConversations enumerateObjectsUsingBlock:^(ApproxySDKConversation * _Nonnull conversation, NSUInteger idx, BOOL * _Nonnull stop) {
         //FIXME: 会话的最新消息为空，这种情况会出现吗？
-        if(conversation.latestMessage == nil){
+        if(conversation == nil || conversation.latestMessage == nil){
             [[EMClient sharedClient].chatManager deleteConversation:conversation.conversationId deleteMessages:YES];
         }else {
             LLConversationModel *conversationModel = [LLConversationModel conversationModelFromPool:conversation];

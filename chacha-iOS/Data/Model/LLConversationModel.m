@@ -56,6 +56,8 @@
     NSAssert([_sdk_conversation.conversationId isEqualToString:conversation.conversationId], @"更新会话数据时，conversationId发生改变");
     
     _sdk_conversation = conversation;
+    //更新数据信息
+    _nickName = _sdk_conversation.ext[@"name"];
     
 }
 

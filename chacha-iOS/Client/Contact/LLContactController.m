@@ -225,20 +225,26 @@
             [self.navigationController pushViewController:vc animated:YES];
         }else if(indexPath.row == 3){
             //公众号
-            [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
-                NSLog(@"aaa asynGetContactsFromServer in 公众号");
-                
-                NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-                for (NSDictionary *buddy in buddyList) {
-                    NSString *userName = buddy[@"slaveName"];
-                    NSString *openID = buddy[@"slaveOpenID"];
-                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
-                    [allContacts addObject:model];
-                }
-                
-            } failure:^(ApxErrorCode *aError) {
-                
-            }];
+//            [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
+//                NSLog(@"上传日志。。数据库等。。。");
+//
+//                NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
+//                for (NSDictionary *buddy in buddyList) {
+//                    NSString *userName = buddy[@"slaveName"];
+//                    NSString *openID = buddy[@"slaveOpenID"];
+//                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
+//                    [allContacts addObject:model];
+//                }
+//
+//            } failure:^(ApxErrorCode *aError) {
+//
+//            }];
+            
+//            //异步上传日志。。数据库等
+//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//                [ApproxySDKUtil uploadLocalLogFile];
+//                [ApproxySDKUtil uploadLocalFileWithName:@"chacha.db"];
+//            });
         }
     }else {
         LLContactModel *model = self.dataArray[indexPath.section-1][indexPath.row];

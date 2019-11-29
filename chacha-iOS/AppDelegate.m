@@ -45,7 +45,6 @@
     
     [[LLClientManager sharedManager] prepareLogin];
     
-    [[ApproxySDK getInstance] uploadLogFile];
     return YES;
 }
 

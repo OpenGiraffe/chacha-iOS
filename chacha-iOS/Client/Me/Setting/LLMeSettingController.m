@@ -32,7 +32,7 @@
     self.dataSource = @[
                         @[@"账号与安全"],
                         @[@"新消息通知", @"隐私", @"通用"],
-                        @[@"帮助与反馈", @"关于微信"],
+                        @[@"上传日志|数据", @"帮助与反馈", @"关于微信" , @"清空数据"],
                         @[@"退出登录"]
                         ];
     
@@ -127,6 +127,15 @@
             LLGeneralSettingController *vc = [[LLGeneralSettingController alloc] initWithNibName:nil bundle:nil];
             [self.navigationController pushViewController:vc animated:YES];
         }
+    } else if(indexPath.section == 2){
+        //上传日志|数据
+        if (indexPath.row == 0) {
+            [self uploadData];
+        }else if(indexPath.row == 2){//
+            
+        }else if(indexPath.row == 3){//清空数据
+            [self cleanData];
+        }
     }
 }
 
@@ -135,6 +144,33 @@
     [[LLClientManager sharedManager] logout];
 }
 
+- (void) uploadData{
+    //异步上传日志。。数据库等
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [ApproxySDKUtil uploadLocalLogFile:nil failBlock:nil];
+        
+        [ApproxySDKUtil uploadLocalFileWithName:@"chacha.db" successBlock:^(id object, NSURLResponse *response) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [LLUtils showTextHUD:@"已上传完成"];
+            });
+        } failBlock:^(NSError *error) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                NSLog(@"uploadLocalFileWithName: %@",error);
+                [LLUtils showTextHUD:@"上传失败"];
+            });
+        }];
+    });
+}
+
+- (void) cleanData {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [ApproxySDKUtil cleanMessage];
+        [ApproxySDKUtil cleanConvesation];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [LLUtils showTextHUD:@"清空完成"];
+        });
+    });
+}
 
 
 

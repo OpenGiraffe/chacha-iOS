@@ -62,7 +62,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 #pragma mark - 处理会话列表
 
-- (void)processConversationList:(NSArray<EMConversation *> *)conversationList {
+- (void)processConversationList:(NSArray<ApproxySDKConversation *> *)conversationList {
     NSArray<LLConversationModel *> *conversationListModels = [[LLConversationModelManager sharedManager] updateConversationListAfterLoad:conversationList];
     
     WEAK_SELF;
@@ -78,9 +78,12 @@ CREATE_SHARED_MANAGER(LLChatManager)
     
     WEAK_SELF;
     dispatch_async(_messageQueue, ^{
-        NSArray<EMConversation *> *array = [[EMClient sharedClient].chatManager loadAllConversationsFromDB];
-        [weakSelf processConversationList:array];
+//        NSArray<EMConversation *> *array = [[EMClient sharedClient].chatManager loadAllConversationsFromDB];
+//        [weakSelf processConversationList:array];
 
+        NSArray<ApproxySDKConversation *> *array = [[ApproxySDK getInstance].chatManager loadAllConversationsFromDB];
+        [weakSelf processConversationList:array];
+        
     });
 }
 
@@ -89,7 +92,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
     
     WEAK_SELF;
     dispatch_async(_messageQueue, ^{
-        NSArray<EMConversation *> *array = [[EMClient sharedClient].chatManager getAllConversations];
+//        NSArray<EMConversation *> *array = [[EMClient sharedClient].chatManager getAllConversations];
+        NSArray<ApproxySDKConversation *> *array = [[ApproxySDK getInstance].chatManager getAllConversations];
         [weakSelf processConversationList:array];
 
     });

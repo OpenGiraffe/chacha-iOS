@@ -24,7 +24,7 @@
 
 - (NSArray<LLConversationModel *> *)updateConversationListAfterReceiveNewMessages:(NSArray *)aMessages;
 
-- (NSArray<LLConversationModel *> *)updateConversationListAfterLoad:(NSArray<EMConversation *> *)aConversations;
+- (NSArray<LLConversationModel *> *)updateConversationListAfterLoad:(NSArray<ApproxySDKConversation *> *)aConversations;
 
 - (void)reloadConversationModelToTop:(LLConversationModel *)conversationModel;
 
