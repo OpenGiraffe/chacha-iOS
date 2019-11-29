@@ -483,39 +483,42 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
 
 #pragma mark - 数据预处理
 
-+ (NSString *)messageTypeTitle:(EMMessage *)message {
++ (NSString *)messageTypeTitle:(ApproxySDKMessage *)message {
     NSString *typeTitle;
     
     switch (message.body.type) {
-        case EMMessageBodyTypeText:{
+        case ApxMsgType_Text:{
             if ([message.ext[MESSAGE_EXT_TYPE_KEY] isEqualToString:MESSAGE_EXT_GIF_KEY]) {
                 typeTitle = @"动画表情";
             }else {
-                EMTextMessageBody *body = (EMTextMessageBody *)message.body;
-                typeTitle = body.text;
+                ImText *im = (ImText *)message.body.im;
+                if([im isKindOfClass:[NSDictionary class]]){
+                    im = [ApproxySDKUtil dictionaryToObject:(NSDictionary *)im class:[ImText class]];
+                }
+                typeTitle = im.text;
             }
             break;
         }
-        case EMMessageBodyTypeImage:
+        case ApxMsgType_Img:
             typeTitle = @"[图片]";
             break;
-        case EMMessageBodyTypeVideo:
+        case ApxMsgType_Video:
             typeTitle = @"[视频]";
             break;
-        case EMMessageBodyTypeLocation:
+        case ApxMsgType_Loc:
             typeTitle = @"[位置]";
             break;
-         case EMMessageBodyTypeVoice:
+         case ApxMsgType_Audio:
             typeTitle = @"[语音]";
             break;
-        case EMMessageBodyTypeFile:
+        case ApxMsgType_File:
             if ([message.ext[MESSAGE_EXT_TYPE_KEY] isEqualToString:MESSAGE_EXT_LOCATION_KEY]) {
                 typeTitle = @"位置";
             }else {
                 typeTitle = @"文件";
             }
             break;
-        case EMMessageBodyTypeCmd:
+        case ApxMsgType_Event:
             typeTitle = @"[CMD]";
             break;
             

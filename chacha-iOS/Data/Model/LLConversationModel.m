@@ -85,7 +85,7 @@
 }
 
 - (NSString *)latestMessage {
-    EMMessage *latestMessage = self.sdk_conversation.latestMessage;
+    ApproxySDKMessage *latestMessage = self.sdk_conversation.latestMessage;
     return [LLMessageModel messageTypeTitle:latestMessage];
 }
 
