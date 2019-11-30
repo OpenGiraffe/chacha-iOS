@@ -270,21 +270,21 @@ CREATE_SHARED_MANAGER(LLChatManager)
         
         if (messageList.count > 0){
             NSMutableArray<LLMessageModel *> *newMessageModels = [NSMutableArray arrayWithCapacity:messageList.count];
-            [messageList enumerateObjectsUsingBlock:^(EMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+            [messageList enumerateObjectsUsingBlock:^(ApproxySDKMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
                 BOOL shouldIgnore = NO;
                 //FIXME:现在还有必要做这个判断吗？
-                switch (message.body.type) {
-                    case EMMessageBodyTypeImage:{
-                        EMImageMessageBody *imageBody = (EMImageMessageBody *)message.body;
-                        if (imageBody.size.width == 0 || imageBody.size.height == 0){
-                            shouldIgnore = YES;
-                        }
-                        break;
-                    }
-                        
-                    default:
-                        break;
-                }
+//                switch (message.body.type) {
+//                    case ApxMsgType_Img:{
+//                        EMImageMessageBody *imageBody = (EMImageMessageBody *)message.body;
+//                        if (imageBody.size.width == 0 || imageBody.size.height == 0){
+//                            shouldIgnore = YES;
+//                        }
+//                        break;
+//                    }
+//                        
+//                    default:
+//                        break;
+//                }
                 
                 if (!shouldIgnore) {
                     LLMessageModel *model = [[LLMessageModel alloc] initWithMessage:message];
