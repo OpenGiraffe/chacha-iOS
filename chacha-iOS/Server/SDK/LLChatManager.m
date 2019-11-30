@@ -258,7 +258,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
         
         //从数据库中加载消息
         NSInteger num = limit - newMessageModels.count;
-        NSArray *messageList = [conversationModel.sdk_conversation loadMoreMessagesFromId:fromId limit:(int)num direction:EMMessageSearchDirectionUp];
+        NSArray *messageList = [conversationModel.sdk_conversation loadMoreMessagesFromId:fromId limit:(int)num direction:MessageSearchDirectionUp];
         
         NSLog(@"从数据库中获取到%ld条消息", (unsigned long)messageList.count);
         LLMessageListUpdateType updateType = kLLMessageListUpdateTypeLoadMore;
@@ -588,7 +588,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;
-    message.messageId = [ApproxySDKUtil uuidString];
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     [self sendMessage:model needInsertToDB:YES];

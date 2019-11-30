@@ -122,7 +122,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     
     _from = [message.from copy];
     _to = [message.to copy];
-    _fromMe = _sdk_message.direction == EMMessageDirectionSend;
+    _fromMe = _sdk_message.direction == ApxMessageDirectionSend;
     
     _updateType = kLLMessageCellUpdateTypeNewForReuse;
     
@@ -520,6 +520,9 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             break;
         case ApxMsgType_Event:
             typeTitle = @"[CMD]";
+            break;
+        default:
+            typeTitle = @"[文字]";
             break;
             
     }

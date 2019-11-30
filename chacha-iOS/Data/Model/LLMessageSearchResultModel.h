@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EMMessage.h"
+#import "ApproxySDKOptions.h"
 
 @interface LLMessageSearchResultModel : NSObject
 
@@ -16,8 +16,8 @@
 @property (nonatomic) NSTimeInterval timestamp;
 
 //SDK专用，Client代码不直接访问该变量
-@property (nonatomic) EMMessage * sdk_message;
+@property (nonatomic) ApproxySDKMessage * sdk_message;
 
-- (instancetype)initWithMessage:(EMMessage *)message;
+- (instancetype)initWithMessage:(ApproxySDKMessage *)message;
 
 @end

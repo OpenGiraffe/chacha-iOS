@@ -12,7 +12,7 @@
 
 @implementation LLMessageSearchResultModel
 
-- (instancetype)initWithMessage:(EMMessage *)message {
+- (instancetype)initWithMessage:(ApproxySDKMessage *)message {
     self = [super init];
     if (self) {
         _sdk_message = message;
