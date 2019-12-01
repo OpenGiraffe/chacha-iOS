@@ -621,7 +621,7 @@ MFMailComposeViewControllerDelegate
     UITableViewCell *_cell;
 
     switch (messageModel.messageBodyType) {
-        case kLLMessageBodyTypeText:
+        case kLLMessageBodyTypeText: 
         case kLLMessageBodyTypeVideo:
         case kLLMessageBodyTypeVoice:
         case kLLMessageBodyTypeImage:

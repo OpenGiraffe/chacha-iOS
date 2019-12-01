@@ -281,7 +281,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 //                        }
 //                        break;
 //                    }
-//                        
+//
 //                    default:
 //                        break;
 //                }

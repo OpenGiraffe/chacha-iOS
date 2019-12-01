@@ -128,6 +128,9 @@ CREATE_SHARED_MANAGER(LLMessageCellManager)
     //有空余名额
     if (_allMessageCells.count < MAX_CACHE_CELLS) {
         _cell = [self createMessageCellForMessageModel:messageModel withReuseIdentifier:nil];
+        //NSLog(@"frame: x:%d, y:%d",_cell.)
+//        LLMessageTextCell *t_cell = (LLMessageTextCell *)(_cell);
+        
         _allMessageCells[messageModel.messageId] = _cell;
         [self addMessageCellToCellData:_cell cellData:data];
         
