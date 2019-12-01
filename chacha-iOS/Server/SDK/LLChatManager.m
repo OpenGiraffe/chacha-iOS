@@ -260,10 +260,12 @@ CREATE_SHARED_MANAGER(LLChatManager)
         NSInteger num = limit - newMessageModels.count;
         NSArray *messageList = [conversationModel.sdk_conversation loadMoreMessagesFromId:fromId limit:(int)num direction:MessageSearchDirectionUp];
         
-        NSLog(@"从数据库中获取到%ld条消息", (unsigned long)messageList.count);
+        NSLog(@"从数据库中获取到%ld条消息, fromId: %@", (unsigned long)messageList.count,fromId);
         LLMessageListUpdateType updateType = kLLMessageListUpdateTypeLoadMore;
         //从数据库中全部获取了历史消息
         if (messageList.count < num) {
+            NSLog(@"已经加载了全部历史消息");
+            //此处2行代码将会导致消息界面变形 具体什么原因未清楚 -- jiangwx 20191201 暂时的解决方案是注释此2行代码 改为在ChatViewControl.m中注释。
             updateType = kLLMessageListUpdateTypeLoadMoreComplete;
             [[LLMessageModelManager sharedManager] markEarliestMessageLoadedForConversation:conversationModel.conversationId];
         }

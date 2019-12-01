@@ -490,21 +490,22 @@ MFMailComposeViewControllerDelegate
         }
     }else {
         [self.tableView reloadData];
-        
+
+        //注释此段代码 将使加载变形问题解决 20191201 与ChatManager.m 中注释相同效果
         NSInteger index = [self.dataSource indexOfObject:pullCellModel];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
         [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionNone animated:NO];
-        
+
         LLMessageBaseCell *newCell = [self.tableView cellForRowAtIndexPath:indexPath];
-        
+
         CGFloat _offsetY = self.tableView.contentOffset.y;
         CGFloat _cellYInView = [newCell convertPoint:CGPointZero toView:self.view].y;
         CGFloat newoffsetY = _offsetY + (_cellYInView - pullCellPointY);
         if (newoffsetY < 0)
             newoffsetY = 0;
-        
+
         [self.tableView setContentOffset:CGPointMake(0, newoffsetY) animated:NO];
-        
+
         UIActivityIndicatorView *indicator = self.refreshView.subviews[0];
         [indicator stopAnimating];
         
