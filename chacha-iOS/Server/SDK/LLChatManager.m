@@ -150,7 +150,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 }
 
 
-#pragma mark - 有新消息 -
+#pragma mark - 有新消息 接收新消息 -
 
 - (void)didReceiveMessages:(NSArray *)aMessages {
     NSLog(@"收到%ld条新消息", (unsigned long)aMessages.count);

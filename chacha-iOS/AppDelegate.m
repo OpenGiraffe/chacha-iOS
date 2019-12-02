@@ -144,7 +144,10 @@
     [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSta"];
     //注册登录成功事件
     [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSucc"];
+    //注册消息接收回调
+    [ApproxySDK nf_subscribe:self selector:@selector(onReceiveMessages:) name:@"onReceiveMessages"];
     ApproxySDK *sdk = [ApproxySDK getInstance];
+    
     [sdk initSDK:options];
 
 }
@@ -288,6 +291,12 @@
     NSLog(@"onLoginSucc: %@",data[@"szUserName"]);
     
 }
+
+- (void) onReceiveMessages:(id)o {
+    NSDictionary *data = [o valueForKey:@"userInfo"];
+    NSLog(@"onReceiveMessages: %@", data);
+}
+
 - (void)dealloc{
     [ApproxySDK nf_unsubscribe:self];
 }

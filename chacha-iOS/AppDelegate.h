@@ -24,5 +24,6 @@
 // 登录状态
 - (void) onLoginSta:(id)o;
 - (void) onLoginSucc:(id)o;
+- (void) onReceiveMessages:(id)o;
 @end
 
