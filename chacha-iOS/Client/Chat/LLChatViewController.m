@@ -128,7 +128,13 @@ MFMailComposeViewControllerDelegate
     self.navigationItem.backBarButtonItem = backItem;
     
     
-    self.automaticallyAdjustsScrollViewInsets = NO;
+//    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.extendedLayoutIncludesOpaqueBars = YES;
+    if (@available(iOS 11.0, *)){
+        self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else {
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
     self.tableView.backgroundColor = TABLEVIEW_BACKGROUND_COLOR;
     self.tableView.contentInset = UIEdgeInsetsZero;
     self.tableView.delegate = self;
@@ -464,11 +470,15 @@ MFMailComposeViewControllerDelegate
     }
     
     if (aConversationModel.updateType == kLLMessageListUpdateTypeLoadMore) {
-        if (!self.tableView.tableHeaderView) {
+        if (!self.tableView.tableHeaderView || [self.tableView.tableHeaderView isHidden]) {
             self.tableView.tableHeaderView = self.refreshView;
         }
+        if([self.tableView.tableHeaderView isHidden]){
+             [self.tableView.tableHeaderView setHidden:NO];
+        }
     }else if (aConversationModel.updateType == kLLMessageListUpdateTypeLoadMoreComplete) {
-        self.tableView.tableHeaderView = nil;
+//        self.tableView.tableHeaderView = nil;
+        [self.tableView.tableHeaderView setHidden:YES];
     }
 
     self.conversationModel = aConversationModel;
@@ -510,6 +520,7 @@ MFMailComposeViewControllerDelegate
         [indicator stopAnimating];
         
         [self performSelectorOnMainThread:@selector(pullToRefreshFinished) withObject:nil waitUntilDone:NO];
+        
     }
 
 }
