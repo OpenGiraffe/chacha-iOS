@@ -128,7 +128,6 @@ MFMailComposeViewControllerDelegate
     self.navigationItem.backBarButtonItem = backItem;
     
     
-//    self.automaticallyAdjustsScrollViewInsets = NO;
     self.extendedLayoutIncludesOpaqueBars = YES;
     if (@available(iOS 11.0, *)){
         self.tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;

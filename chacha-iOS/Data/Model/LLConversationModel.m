@@ -90,7 +90,7 @@
 }
 
 - (LLMessageStatus)latestMessageStatus {
-    EMMessage *latestMessage = self.sdk_conversation.latestMessage;
+    ApproxySDKMessage *latestMessage = self.sdk_conversation.latestMessage;
     return (LLMessageStatus)latestMessage.status;
 }
 
