@@ -428,7 +428,7 @@ MFMailComposeViewControllerDelegate
             self.tableView.tableHeaderView = self.refreshView;
         }
     }else if (self.conversationModel.updateType == kLLMessageListUpdateTypeLoadMoreComplete) {
-        self.tableView.tableHeaderView = nil;
+//        self.tableView.tableHeaderView = nil;
     }
     
     self.chatInputView.draft = self.conversationModel.draft;

@@ -47,9 +47,9 @@ CREATE_SHARED_MANAGER(LLConversationModelManager)
 - (NSArray<LLConversationModel *> *)updateConversationListAfterReceiveNewMessages:(NSArray *)aMessages {
      NSMutableSet<NSString *> *conversationIdSet = [NSMutableSet set];
     
-    [aMessages enumerateObjectsUsingBlock:^(EMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+    [aMessages enumerateObjectsUsingBlock:^(ApproxySDKMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
         //TODO:目前只支持单聊
-        if (message.chatType != EMChatTypeChat)
+        if (message.chatType != ApxChatTypeChat)
             return;
         [conversationIdSet addObject:message.conversationId];
         

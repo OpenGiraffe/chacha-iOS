@@ -189,8 +189,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
         LLConversationModel *curConversationModel = [LLConversationModelManager sharedManager].currentActiveConversationModel;
     
         NSMutableArray<LLMessageModel *> *newMessageModels = [NSMutableArray array];
-        [aMessages enumerateObjectsUsingBlock:^(EMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (message.chatType != EMChatTypeChat)
+        [aMessages enumerateObjectsUsingBlock:^(ApproxySDKMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (message.chatType != ApxChatTypeChat)
                 return;
             
             LLMessageModel *model = [LLMessageModel messageModelFromPool:message];

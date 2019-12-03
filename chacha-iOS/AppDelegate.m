@@ -293,8 +293,13 @@
 }
 
 - (void) onReceiveMessages:(id)o {
-    NSDictionary *data = [o valueForKey:@"userInfo"];
-    NSLog(@"onReceiveMessages: %@", data);
+    ApproxySDKMessage *message = [o valueForKey:@"userInfo"];
+    NSLog(@"onReceiveMessages: %@", message);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSArray *array = [[[NSArray alloc] init]arrayByAddingObject:message];
+        [[LLChatManager sharedManager] didReceiveMessages:array];
+    });
+    
 }
 
 - (void)dealloc{
