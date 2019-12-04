@@ -62,6 +62,13 @@ CREATE_SHARED_MANAGER(LLConversationModelManager)
         if (!conversationModel) {
             conversationModel = [[LLChatManager sharedManager] getConversationWithConversationChatter:conversationId conversationType:kLLConversationTypeChat];
         }
+        
+        [aMessages enumerateObjectsUsingBlock:^(ApproxySDKMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+            if([message.conversationId isEqualToString:conversationId]){
+                conversationModel.sdk_conversation.latestMessage = message;
+            }
+        }];
+        
         [newConversationList addObject:conversationModel];
     }
     if (newConversationList.count > 1)

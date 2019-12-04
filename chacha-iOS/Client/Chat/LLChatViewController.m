@@ -108,7 +108,6 @@ MFMailComposeViewControllerDelegate
     BOOL firstViewDidAppear;
 }
 
-
 #pragma mark - UI/LifeCycle 相关 -
 
 - (void)viewDidLoad {

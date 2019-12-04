@@ -106,7 +106,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 }
 
 - (BOOL)deleteConversation:(LLConversationModel *)conversationModel {
-    BOOL result = [[EMClient sharedClient].chatManager deleteConversation:conversationModel.sdk_conversation.conversationId deleteMessages:YES];
+    BOOL result = [[ApproxySDK getInstance].chatManager deleteConversation:conversationModel.sdk_conversation.conversationId deleteMessages:YES];
     if (result) {
         [[LLMessageCacheManager sharedManager] deleteConversation:conversationModel.conversationId];
         [[LLConversationModelManager sharedManager] removeConversationModel:conversationModel];
@@ -157,8 +157,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     
     //显示新消息通知
 #if !TARGET_IPHONE_SIMULATOR
-    NSTimeInterval timeInterval = [[NSDate date]
-                                   timeIntervalSinceDate:lastPlaySoundDate];
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:lastPlaySoundDate];
     if (timeInterval > DEFAULT_PLAYSOUND_INTERVAL) {
         lastPlaySoundDate = [NSDate date];
        

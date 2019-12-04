@@ -493,7 +493,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             }else {
                 ImText *im = (ImText *)message.body.im;
                 if([im isKindOfClass:[NSDictionary class]]){
-                    im = [ApproxySDKUtil dictionaryToObject:(NSDictionary *)im class:[ImText class]];
+                    im = [ApproxySDKUtil dictionaryToObject:(NSDictionary *)im modelClass:[ImText class]];
                 }
                 typeTitle = im.text;
             }
