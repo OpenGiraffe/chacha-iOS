@@ -422,11 +422,13 @@ MFMailComposeViewControllerDelegate
     [self registerChatManagerNotification];
     
     if (self.conversationModel.updateType == kLLMessageListUpdateTypeLoadMore) {
-        if (!self.tableView.tableHeaderView) {
+        if (!self.tableView.tableHeaderView || [self.tableView.tableHeaderView isHidden]) {
             self.tableView.tableHeaderView = self.refreshView;
+            [self.tableView.tableHeaderView setHidden:YES];
         }
     }else if (self.conversationModel.updateType == kLLMessageListUpdateTypeLoadMoreComplete) {
 //        self.tableView.tableHeaderView = nil;
+         [self.tableView.tableHeaderView setHidden:NO];
     }
     
     self.chatInputView.draft = self.conversationModel.draft;
@@ -470,9 +472,7 @@ MFMailComposeViewControllerDelegate
     if (aConversationModel.updateType == kLLMessageListUpdateTypeLoadMore) {
         if (!self.tableView.tableHeaderView || [self.tableView.tableHeaderView isHidden]) {
             self.tableView.tableHeaderView = self.refreshView;
-        }
-        if([self.tableView.tableHeaderView isHidden]){
-             [self.tableView.tableHeaderView setHidden:NO];
+            [self.tableView.tableHeaderView setHidden:NO];
         }
     }else if (aConversationModel.updateType == kLLMessageListUpdateTypeLoadMoreComplete) {
 //        self.tableView.tableHeaderView = nil;
@@ -758,7 +758,7 @@ MFMailComposeViewControllerDelegate
     return nil;
 }
 
-//添加cell20191127
+//添加cell到消息列表中 20191127
 - (void)addModelToDataSourceAndScrollToBottom:(LLMessageModel *)messageModel animated:(BOOL)animated {
     [self.conversationModel.allMessageModels addObject:messageModel];
     if (messageModel.timestamp - [self.dataSource lastObject].timestamp > CHAT_CELL_TIME_INTERVEL) {

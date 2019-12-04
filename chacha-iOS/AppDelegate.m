@@ -31,6 +31,16 @@
     
     [[LLEmotionModelManager sharedManager] prepareEmotionModel];
     
+#ifdef __IPHONE_11_0
+    if (@available(ios 11.0,*))
+    {
+        UIScrollView.appearance.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        UITableView.appearance.estimatedRowHeight = 0;
+        UITableView.appearance.estimatedSectionFooterHeight = 0;
+        UITableView.appearance.estimatedSectionHeaderHeight = 0;
+    }
+#endif
+
     [self configureAPIKey];//配置高德地图
     [self initializeSDK];
     [self initUIAppearance];
