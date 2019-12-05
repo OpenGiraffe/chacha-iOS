@@ -124,18 +124,9 @@
     };
 
     if (needResend) {
-//        [[EMClient sharedClient].chatManager
-//         asyncResendMessage:messageModel.sdk_message
-//         progress: needProgress ? progressBlock : nil
-//         completion:completeBlock];
         [[ApproxySDK getInstance].chatManager asyncResendMessage:messageModel.sdk_message progress: needProgress ? progressBlock : nil completion:completeBlock];
         
     }else {
-//        [[EMClient sharedClient].chatManager
-//         asyncSendMessage:messageModel.sdk_message
-//         progress: needProgress ? progressBlock : nil
-//         completion:completeBlock];
-
         [[ApproxySDK getInstance].chatManager asyncSendMessage:messageModel.sdk_message progress: needProgress ? progressBlock : nil completion:completeBlock];
     }
     

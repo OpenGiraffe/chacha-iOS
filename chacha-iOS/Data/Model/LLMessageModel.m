@@ -30,6 +30,7 @@
 #import "LLMessageVoiceCell.h"
 #import "LLMessageVideoCell.h"
 #import "LLMessageRecordingCell.h"
+#import "ApproxySDKOptions.h"
 
 //缩略图正在下载时照片尺寸
 #define DOWNLOAD_IMAGE_WIDTH 175
@@ -234,18 +235,19 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
         BOOL needSaveToTemp = NO;
         switch (self.messageBodyType) {
             case kLLMessageBodyTypeImage:{
-                EMImageMessageBody *imgMessageBody = (EMImageMessageBody *)self.sdk_message.body;
-                
-                self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:imgMessageBody.size];
-                if (_fromMe || imgMessageBody.downloadStatus == EMDownloadStatusSuccessed) {
-                    UIImage *fullImage = [UIImage imageWithContentsOfFile:imgMessageBody.localPath];
+//                EMImageMessageBody *imgMessageBody = (EMImageMessageBody *)self.sdk_message.body;
+                ImImage *im = (ImImage *)self.sdk_message.body.im;
+                CGSize size = CGSizeMake([im.width floatValue], [im.height floatValue]);
+                self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:size];
+                if (_fromMe || im.downloadStatus == ApxDownloadStatusSuccessed) {
+                    UIImage *fullImage = [UIImage imageWithContentsOfFile:im.localMediaPath];
                     _thumbnailImageSize = [LLMessageImageCell thumbnailSize:fullImage.size];
                     thumbnailImage = [fullImage resizeImageToSize:self.thumbnailImageSize opaque:YES scale:0];
                     
                     needSaveToCache = YES;
                     needSaveToDisk = YES;
-                }else if (imgMessageBody.thumbnailDownloadStatus == EMDownloadStatusSuccessed) {
-                    UIImage *image = [UIImage imageWithContentsOfFile:imgMessageBody.thumbnailLocalPath];
+                }else if (im.thumbnailDownloadStatus == ApxDownloadStatusSuccessed) {
+                    UIImage *image = [UIImage imageWithContentsOfFile:im.localMediaThumbnailPath];
                     _thumbnailImageSize = [LLMessageImageCell thumbnailSize:image.size];
                     thumbnailImage = [image resizeImageToSize:self.thumbnailImageSize opaque:YES scale:0];
                     
@@ -556,10 +558,10 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             self.cellHeight = [LLMessageDateCell heightForModel:self];
             break;
         case kLLMessageBodyTypeImage:{
-            EMImageMessageBody *imgMessageBody = (EMImageMessageBody *)self.sdk_message.body;
-
-            self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:imgMessageBody.size];
-            self.fileLocalPath = imgMessageBody.localPath;
+            ImImage *im = (ImImage *)(self.sdk_message.body.im);
+            CGSize size = CGSizeMake([im.width floatValue],[im.height floatValue]);
+            self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:size];
+            self.fileLocalPath = im.localMediaPath;
             self.cellHeight = [LLMessageImageCell heightForModel:self];
             break;
         }

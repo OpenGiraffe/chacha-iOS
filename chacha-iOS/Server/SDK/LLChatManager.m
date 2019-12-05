@@ -578,10 +578,6 @@ CREATE_SHARED_MANAGER(LLChatManager)
                    messageType:(LLChatType)messageType
                     messageExt:(NSDictionary *)messageExt
                     completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
-//    EMTextMessageBody *body = [[EMTextMessageBody alloc] initWithText:text];
-//    NSString *from = [[EMClient sharedClient] currentUsername];
-//    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
-//    message.chatType = (EMChatType)messageType;
     
     NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
     ImText *im = [[ImText alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
@@ -628,12 +624,33 @@ CREATE_SHARED_MANAGER(LLChatManager)
                                     progress:(void (^)(LLMessageModel *model, int progress))progress
                                   completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
     
-    EMImageMessageBody *body = [[EMImageMessageBody alloc] initWithData:imageData displayName:@"image.png"];
-    body.size = imageSize;
+//    EMImageMessageBody *body = [[EMImageMessageBody alloc] initWithData:imageData displayName:@"image.png"];
+//    body.size = imageSize;
+//
+//    NSString *from = [[EMClient sharedClient] currentUsername];
+//    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
+//    message.chatType = (EMChatType)messageType;
+//
+//    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+//    [self sendMessage:model needInsertToDB:YES];
     
-    NSString *from = [[EMClient sharedClient] currentUsername];
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
-    message.chatType = (EMChatType)messageType;
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImImage *im = [[ImImage alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.width = [NSNumber numberWithFloat:imageSize.width];
+    im.height = [NSNumber numberWithFloat:imageSize.height];
+
+    //保存文件到沙盒 生成沙盒可以访问的localPath
+    FilePkg *pkg = [ApproxySDKUtil saveAsFile:imageData fileType:ApxMsgType_Img orgFileName:@"image.png" compress:YES];
+    im.mediaID = pkg.localPkgID;
+    im.mediaLen = pkg.fileLength;
+    im.localMediaPath = pkg.localFilePath;
+    
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     [self sendMessage:model needInsertToDB:YES];
