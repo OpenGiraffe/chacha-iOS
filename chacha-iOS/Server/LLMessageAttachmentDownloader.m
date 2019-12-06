@@ -9,6 +9,8 @@
 #import "LLMessageAttachmentDownloader.h"
 #import "LLChatManager.h"
 #import "LLUtils.h"
+#import "ApproxySDK.h"
+#import "ApproxySDKOptions.h"
 
 //最多允许多少线程同时下载，默认为一条
 #define MAX_CONCURRENT_NUM 1
@@ -121,7 +123,7 @@
         }
         
         WEAK_SELF;
-        [[EMClient sharedClient].chatManager
+        [[ApproxySDK getInstance].chatManager
          asyncDownloadMessageAttachments:messageModel.sdk_message
          progress:!needProgress ? nil : ^(int _progress) {
              messageModel.fileDownloadProgress = _progress;
@@ -129,8 +131,8 @@
              [[LLChatManager sharedManager] postMessageDownloadStatusChangedNotification:messageModel];
          }
          
-         completion:^(EMMessage *message, EMError *_error) {
-             NSLog(@"%@下载%@", message.body.type == EMMessageBodyTypeVideo ? @"视频" :@"图片", _error? @"出错":@"成功");
+         completion:^(ApproxySDKMessage *message, ApxErrorCode *_error) {
+             NSLog(@"%@下载%@", message.body.type == ApxMsgType_Video ? @"视频" :@"图片", _error? @"出错":@"成功");
              dispatch_semaphore_signal(weakSelf.semaphore);
              
              @synchronized (weakSelf) {

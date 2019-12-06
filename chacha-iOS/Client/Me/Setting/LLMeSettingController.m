@@ -147,9 +147,9 @@
 - (void) uploadData{
     //异步上传日志。。数据库等
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [ApproxySDKUtil uploadLocalLogFile:nil failBlock:nil];
+        [ApproxySDKNetwork uploadLocalLogFile:nil failBlock:nil];
         
-        [ApproxySDKUtil uploadLocalFileWithName:@"chacha.db" successBlock:^(id object, NSURLResponse *response) {
+        [ApproxySDKNetwork uploadLocalFileWithName:@"chacha.db" successBlock:^(id object, NSURLResponse *response) {
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [LLUtils showTextHUD:@"已上传完成"];
             });

@@ -186,8 +186,8 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             switch (self.messageBodyType) {
                 case kLLMessageBodyTypeImage:
                 case kLLMessageBodyTypeVideo: {
-                    EMFileMessageBody *messageBody = (EMFileMessageBody *)self.sdk_message.body;
-                    if (messageBody.downloadStatus == EMDownloadStatusSuccessed) {
+                    Im *im = self.sdk_message.body.im;
+                    if (im.downloadStatus == ApxDownloadStatusSuccessed) {
                         self.thumbnailImage = nil;
                         self.updateType |= kLLMessageCellUpdateTypeThumbnailChanged;
                     }
@@ -213,9 +213,9 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
 //FIXME: 环信有时候会出现DownloadStatus==Success,但文件获取为空的情况
 - (UIImage *)fullImage {
     if (self.messageBodyType == kLLMessageBodyTypeImage) {
-        EMImageMessageBody *imgMessageBody = (EMImageMessageBody *)self.sdk_message.body;
-        if (_fromMe || imgMessageBody.downloadStatus == EMDownloadStatusSuccessed) {
-            UIImage *fullImage = [UIImage imageWithContentsOfFile:imgMessageBody.localPath];
+        ImImage *im = (ImImage *)self.sdk_message.body.im;
+        if (_fromMe || im.downloadStatus == ApxDownloadStatusSuccessed) {
+            UIImage *fullImage = [UIImage imageWithContentsOfFile:im.localMediaPath];
             return fullImage;
         }
     }
@@ -240,8 +240,9 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
                 CGSize size = CGSizeMake([im.width floatValue], [im.height floatValue]);
                 self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:size];
                 if (_fromMe || im.downloadStatus == ApxDownloadStatusSuccessed) {
-                    UIImage *fullImage = [UIImage imageWithContentsOfFile:im.localMediaPath];
+                    UIImage *fullImage = [UIImage imageWithContentsOfFile:[ApproxySDKUtil fixLocalPath:im.localMediaPath]];
                     _thumbnailImageSize = [LLMessageImageCell thumbnailSize:fullImage.size];
+                    //生成缩略图
                     thumbnailImage = [fullImage resizeImageToSize:self.thumbnailImageSize opaque:YES scale:0];
                     
                     needSaveToCache = YES;
@@ -372,9 +373,9 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     if (_fromMe)
         return kLLMessageDownloadStatusSuccessed;
     
-    EMFileMessageBody *body = (EMFileMessageBody *)(_sdk_message.body);
-    if (body) {
-        return (LLMessageDownloadStatus)(body.downloadStatus);
+    Im *im = (Im *)(_sdk_message.body.im);
+    if (im) {
+        return (LLMessageDownloadStatus)(im.downloadStatus);
     }else {
         return kLLMessageDownloadStatusNone;
     }
@@ -386,14 +387,13 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     if (_fromMe)
         return kLLMessageDownloadStatusSuccessed;
     
+    Im *im = (_sdk_message.body.im);
     switch (self.messageBodyType) {
         case kLLMessageBodyTypeImage: {
-            EMImageMessageBody *body = (EMImageMessageBody *)(_sdk_message.body);
-            return (LLMessageDownloadStatus)body.thumbnailDownloadStatus;
+            return (LLMessageDownloadStatus)im.thumbnailDownloadStatus;
         }
         case kLLMessageBodyTypeVideo: {
-            EMVideoMessageBody *body = (EMVideoMessageBody *)(_sdk_message.body);
-            return (LLMessageDownloadStatus)body.thumbnailDownloadStatus;
+            return (LLMessageDownloadStatus)im.thumbnailDownloadStatus;
         }
         default:
             return kLLMessageDownloadStatusNone;
@@ -538,13 +538,12 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     switch (self.messageBodyType) {
         case kLLMessageBodyTypeText: {
             if ([self.ext[MESSAGE_EXT_TYPE_KEY] isEqualToString:MESSAGE_EXT_GIF_KEY]) {
-                EMTextMessageBody *textBody = (EMTextMessageBody *)(self.sdk_message.body);
-                self.text = [NSString stringWithFormat:@"[%@]", textBody.text];
+                ImText *im = (ImText *)(self.sdk_message.body.im);
+                self.text = [NSString stringWithFormat:@"[%@]", im.text];
                 _messageBodyType = kLLMessageBodyTypeGif;
                 self.cellHeight = [LLMessageGifCell heightForModel:self];
                 
             }else {
-                //EMTextMessageBody *textBody = (EMTextMessageBody *)(self.sdk_message.body);
                 ImText *im = (ImText *)(self.sdk_message.body.im);
                 self.text = im.text;
                 self.attributedText = [LLSimpleTextLabel createAttributedStringWithEmotionString:self.text font:[LLMessageTextCell font] lineSpacing:0];
@@ -561,7 +560,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             ImImage *im = (ImImage *)(self.sdk_message.body.im);
             CGSize size = CGSizeMake([im.width floatValue],[im.height floatValue]);
             self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:size];
-            self.fileLocalPath = im.localMediaPath;
+            self.fileLocalPath = [ApproxySDKUtil fixLocalPath:im.localMediaPath];//全路径
             self.cellHeight = [LLMessageImageCell heightForModel:self];
             break;
         }

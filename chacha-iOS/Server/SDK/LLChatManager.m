@@ -454,30 +454,19 @@ CREATE_SHARED_MANAGER(LLChatManager)
     if (model.isFetchingThumbnail)
         return;
     
-    EMDownloadStatus thumbnailDownloadStatus = EMDownloadStatusSuccessed;;
-    switch (model.messageBodyType) {
-        case kLLMessageBodyTypeImage: {
-            EMImageMessageBody *body = (EMImageMessageBody *)model.sdk_message.body;
-            thumbnailDownloadStatus = body.thumbnailDownloadStatus;
-            break;
-        }
-        case kLLMessageBodyTypeVideo: {
-            EMVideoMessageBody *body = (EMVideoMessageBody *)model.sdk_message.body;
-            thumbnailDownloadStatus = body.thumbnailDownloadStatus;
-            break;
-        }
-        default:
-            break;
-    }
-    if (thumbnailDownloadStatus == EMDownloadStatusSuccessed ||
-        thumbnailDownloadStatus == EMDownloadStatusDownloading)
+    Im *im = model.sdk_message.body.im;
+    im.thumbnailWidth = [NSNumber numberWithFloat:model.thumbnailImageSize.width];
+    im.thumbnailHeight = [NSNumber numberWithFloat:model.thumbnailImageSize.height];
+    ApxDownloadStatus thumbnailDownloadStatus = im.thumbnailDownloadStatus;;
+    if (thumbnailDownloadStatus == ApxDownloadStatusSuccessed ||
+        thumbnailDownloadStatus == ApxDownloadStatusDownloading)
         return;
 
     [model internal_setIsFetchingThumbnail:YES];
-    [[EMClient sharedClient].chatManager
+    [[ApproxySDK getInstance].chatManager
      asyncDownloadMessageThumbnail:model.sdk_message
                           progress:nil
-                        completion:^(EMMessage *message, EMError *aError) {
+                        completion:^(ApproxySDKMessage *message, ApxErrorCode *aError) {
         LLSDKError *error = aError ? [LLSDKError errorWithErrorCode:aError] : nil;
         if (!aError) {
             [model updateMessage:message updateReason:kLLMessageModelUpdateReasonThumbnailDownloadComplete];
@@ -501,15 +490,13 @@ CREATE_SHARED_MANAGER(LLChatManager)
     if (model.isFetchingAttachment)
         return;
     
-    EMMessageBody *body = model.sdk_message.body;
-    if (![body isKindOfClass:[EMFileMessageBody class]]) {
-        return;
-    }
+    Im *im = model.sdk_message.body.im;
+//    if (![im isKindOfClass:[ImMedia class]]) {
+//        return;
+//    }
     
-    EMFileMessageBody *fileMessageBody = (EMFileMessageBody *)body;
-    
-    if (fileMessageBody.downloadStatus == EMDownloadStatusPending ||
-      fileMessageBody.downloadStatus == EMDownloadStatusFailed) {
+    if (im.downloadStatus == ApxDownloadStatusPending ||
+      im.downloadStatus == ApxDownloadStatusFailed) {
         [model internal_setIsFetchingAttachment:YES];
         //FIXME:SDK不支持断点下载，所以此处设置为0
         model.fileDownloadProgress = 0;
@@ -624,17 +611,6 @@ CREATE_SHARED_MANAGER(LLChatManager)
                                     progress:(void (^)(LLMessageModel *model, int progress))progress
                                   completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
     
-//    EMImageMessageBody *body = [[EMImageMessageBody alloc] initWithData:imageData displayName:@"image.png"];
-//    body.size = imageSize;
-//
-//    NSString *from = [[EMClient sharedClient] currentUsername];
-//    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
-//    message.chatType = (EMChatType)messageType;
-//
-//    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-//    [self sendMessage:model needInsertToDB:YES];
-    
-    
     NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
     ImImage *im = [[ImImage alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
     im.width = [NSNumber numberWithFloat:imageSize.width];
@@ -644,7 +620,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     FilePkg *pkg = [ApproxySDKUtil saveAsFile:imageData fileType:ApxMsgType_Img orgFileName:@"image.png" compress:YES];
     im.mediaID = pkg.localPkgID;
     im.mediaLen = pkg.fileLength;
-    im.localMediaPath = pkg.localFilePath;
+    im.localMediaPath = pkg.relaFilePath;
     
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     
@@ -653,6 +629,14 @@ CREATE_SHARED_MANAGER(LLChatManager)
     message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    
+//    //将缩略图的宽高赋值给im
+//    im.thumbnailWidth = [NSNumber numberWithFloat:model.thumbnailImageSize.width];
+//    im.thumbnailHeight = [NSNumber numberWithFloat:model.thumbnailImageSize.height];
+//    //保存缩略图
+//    FilePkg *thumbnailPkg = [ApproxySDKUtil saveAsFile:UIImagePNGRepresentation(model.thumbnailImage) fileType:ApxMsgType_Img orgFileName:@"image.png" compress:YES];
+//
+//    im.localMediaThumbnailPath = thumbnailPkg.localFilePath;
     [self sendMessage:model needInsertToDB:YES];
     
     return model;

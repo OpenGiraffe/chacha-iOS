@@ -118,6 +118,7 @@
         }else{
             //消息上行失败
             [messageModel internal_setMessageStatus:kLLMessageStatusFailed];
+            
             [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
         }
         
