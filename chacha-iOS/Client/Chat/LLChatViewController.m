@@ -1749,7 +1749,9 @@ MFMailComposeViewControllerDelegate
                                   messageType:chatType];
     NSLog(@"生成位置Model %@", locationModel.messageId);
     
-    [self addModelToDataSourceAndScrollToBottom:locationModel animated:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self addModelToDataSourceAndScrollToBottom:locationModel animated:NO];
+    });
     
     return locationModel;
 }

@@ -27,22 +27,21 @@ typedef NS_ENUM(NSInteger, LLMessageBodyType) {
     kLLMessageBodyTypeImage = ApxMsgType_Img,
     kLLMessageBodyTypeVideo = ApxMsgType_Video,
     kLLMessageBodyTypeVoice = ApxMsgType_Audio,
-    kLLMessageBodyTypeEMLocation = ApxMsgType_Loc,
+    kLLMessageBodyTypeLocation = ApxMsgType_Loc,
     kLLMessageBodyTypeFile = ApxMsgType_File,
     kLLMessageBodyTypeDateTime,
     kLLMessageBodyTypeGif,
-    kLLMessageBodyTypeLocation,
     kLLMessageBodyTypeRecording, //表示正在录音的Cell
     
 };
 
 typedef NS_ENUM(NSInteger, LLMessageDownloadStatus) {
-    kLLMessageDownloadStatusDownloading = EMDownloadStatusDownloading,
-    kLLMessageDownloadStatusSuccessed = EMDownloadStatusSuccessed,
-    kLLMessageDownloadStatusFailed = EMDownloadStatusFailed,
-    kLLMessageDownloadStatusPending = EMDownloadStatusPending,
+    kLLMessageDownloadStatusDownloading = ApxDownloadStatusDownloading,
+    kLLMessageDownloadStatusSuccessed = ApxDownloadStatusSuccessed,
+    kLLMessageDownloadStatusFailed = ApxDownloadStatusFailed,
+    kLLMessageDownloadStatusPending = ApxDownloadStatusPending,
     kLLMessageDownloadStatusWaiting = 10086,
-    kLLMessageDownloadStatusNone
+    kLLMessageDownloadStatusNone = 10088
 };
 
 typedef NS_ENUM(NSInteger, LLMessageStatus) {
@@ -51,7 +50,7 @@ typedef NS_ENUM(NSInteger, LLMessageStatus) {
     kLLMessageStatusSuccessed = ApxMessageStatusSuccessed,
     kLLMessageStatusFailed = ApxMessageStatusFailed,
     kLLMessageStatusWaiting = 10086,
-    kLLMessageStatusNone
+    kLLMessageStatusNone = 10088
 };
 
 typedef NS_ENUM(NSInteger, LLChatType) {

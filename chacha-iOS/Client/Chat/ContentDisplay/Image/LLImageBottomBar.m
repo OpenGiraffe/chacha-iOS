@@ -38,7 +38,7 @@
                                     
                                 case kLLImageBottomBarStyleMore:
                                     self.moreButton.alpha = 1;
-                                    self.downloadButton.alpha = 1;
+                                    self.downloadButton.alpha = 0;
                                     break;
                                     
                                 case kLLImageBottomBarStyleDownloading:

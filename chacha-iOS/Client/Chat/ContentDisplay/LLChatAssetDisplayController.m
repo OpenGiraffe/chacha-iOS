@@ -640,6 +640,7 @@ typedef NS_ENUM(NSInteger, LLAssetBottomBarStyle) {
                 [self.imageBottomBar setBottomBarStyle:kLLImageBottomBarStyleMore animated:YES];
                 [timer invalidate];
                 timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_INTERVAL target:self selector:@selector(hideImageBottomBar:) userInfo:nil repeats:NO];
+                [self.imageBottomBar setDownloadFullImageSize:[LLUtils sizeStringWithStyle:nil size:[_curShowMessageModel fileAttachmentSize]]];
             }
                 break;
             default:

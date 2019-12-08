@@ -118,7 +118,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 #pragma mark - 处理消息
 
-- (void)preprocessMessageModel:(LLMessageModel *)messageModel priority:(LLMessageDownloadPriority)priority {
+- (void) preprocessMessageModel:(LLMessageModel *)messageModel priority:(LLMessageDownloadPriority)priority {
     
     if (messageModel.isFromMe) {
         LLMessageStatus messageStatus = messageModel.messageStatus;
@@ -126,6 +126,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
         if (messageStatus == kLLMessageStatusPending) {
             [self sendMessage:messageModel needInsertToDB:NO];
         }
+        
     }else {
         //下载缩略图
         [self asyncDownloadMessageThumbnail:messageModel completion:nil];
@@ -337,51 +338,30 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 #pragma mark - 消息状态改变
 
-- (void)didMessageStatusChanged:(EMMessage *)aMessage
-                          error:(EMError *)aError {
+- (void)didMessageStatusChanged:(ApproxySDKMessage *)aMessage
+                          error:(ApxErrorCode *)aError {
     NSLog(@"消息状态改变 %d", aMessage.status);
 }
 
 //缩略图下载成功后调用该方法，图片、视频附件下载完毕后不调用该方法
 //语言消息下载完毕后同样调用该方法
 //FIXME: 是否可以认为只要是SDK自动下载的都会回调该方法，用户主动下载的不回调该方法？？
-- (void)didMessageAttachmentsStatusChanged:(EMMessage *)aMessage
-                                     error:(EMError *)aError {
+- (void)didMessageAttachmentsStatusChanged:(ApproxySDKMessage *)aMessage
+                                     error:(ApxErrorCode *)aError {
     NSLog(@"消息附件状态改变 ");
-    if (aMessage.direction == EMMessageDirectionSend)
+    if (aMessage.direction == ApxMessageDirectionSend)
         return;
     
     BOOL needPostNotification = NO;
-    switch (aMessage.body.type) {
-        case EMMessageBodyTypeVideo: {
-            EMImageMessageBody *body = (EMImageMessageBody *)aMessage.body;
-            if (body.thumbnailDownloadStatus == EMDownloadStatusSuccessed) {
-                needPostNotification = YES;
-            }
-            break;
-        }
-        case EMMessageBodyTypeImage: {
-            EMVideoMessageBody *body = (EMVideoMessageBody *)aMessage.body;
-            if (body.thumbnailDownloadStatus == EMDownloadStatusSuccessed) {
-                needPostNotification = YES;
-            }
-            break;
-        }
-        case EMMessageBodyTypeVoice: {
-            EMVoiceMessageBody *body = (EMVoiceMessageBody *)aMessage.body;
-            if (body.downloadStatus == EMDownloadStatusSuccessed) {
-                needPostNotification = YES;
-            }
-            break;
-        }
-           
-        default:
-            break;
+    Im *im = aMessage.body.im;
+    if(im.thumbnailDownloadStatus == ApxDownloadStatusSuccessed){
+        needPostNotification = YES;
     }
+    
     if (!needPostNotification)
         return;
 
-    LLMessageModel *model = [[LLMessageModelManager sharedManager] messageModelForEMMessage:aMessage];
+    LLMessageModel *model = [[LLMessageModelManager sharedManager] messageModelForMessage:aMessage];
     if (!model) {
         NSLog(@"FIXME：发生未知错误");
         return;
@@ -588,11 +568,13 @@ CREATE_SHARED_MANAGER(LLChatManager)
                          emotionModel:(LLEmotionModel *)emotionModel
                          completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
     
-    EMTextMessageBody *body = [[EMTextMessageBody alloc] initWithText:text];
-    NSString *from = [[EMClient sharedClient] currentUsername];
-    NSMutableDictionary *messageExt = [self encodeGifMessageExtForEmotionModel:emotionModel];
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
-    message.chatType = (EMChatType)messageType;
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImText *im = [[ImText alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.text = text;
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:nil];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     [self sendMessage:model needInsertToDB:YES];
@@ -630,13 +612,6 @@ CREATE_SHARED_MANAGER(LLChatManager)
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     
-//    //将缩略图的宽高赋值给im
-//    im.thumbnailWidth = [NSNumber numberWithFloat:model.thumbnailImageSize.width];
-//    im.thumbnailHeight = [NSNumber numberWithFloat:model.thumbnailImageSize.height];
-//    //保存缩略图
-//    FilePkg *thumbnailPkg = [ApproxySDKUtil saveAsFile:UIImagePNGRepresentation(model.thumbnailImage) fileType:ApxMsgType_Img orgFileName:@"image.png" compress:YES];
-//
-//    im.localMediaThumbnailPath = thumbnailPkg.localFilePath;
     [self sendMessage:model needInsertToDB:YES];
     
     return model;
@@ -681,15 +656,42 @@ CREATE_SHARED_MANAGER(LLChatManager)
                                         messageType:(LLChatType)messageType
                                          completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion
 {
+//    NSData *data = UIImageJPEGRepresentation(snapshot, 1);
+//    EMFileMessageBody *body = [[EMFileMessageBody alloc] initWithData:data displayName:nil];
+//    NSString *from = [[EMClient sharedClient] currentUsername];
+//    NSDictionary *messageExt = [self encodeLocationMessageExt:latitude longitude:longitude address:address name:name zoomLevel:zoomLevel defaultSnapshot:!snapshot];
+//
+//    EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
+//    message.chatType = (EMChatType)messageType;
+//
+//    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+//    [self sendMessage:model needInsertToDB:YES];
+    
     NSData *data = UIImageJPEGRepresentation(snapshot, 1);
-    EMFileMessageBody *body = [[EMFileMessageBody alloc] initWithData:data displayName:nil];
-    NSString *from = [[EMClient sharedClient] currentUsername];
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImLocation *im = [[ImLocation alloc]initWithSenderAgent:senderAgent recvierAgent:to];
+    im.thumbnailWidth = [NSNumber numberWithFloat:snapshot.size.width];
+    im.thumbnailHeight = [NSNumber numberWithFloat:snapshot.size.height];
+    im.locX = [NSNumber numberWithDouble:latitude];
+    im.locY = [NSNumber numberWithDouble:longitude];
+    im.label = address;
+    
     NSDictionary *messageExt = [self encodeLocationMessageExt:latitude longitude:longitude address:address name:name zoomLevel:zoomLevel defaultSnapshot:!snapshot];
     
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
-    message.chatType = (EMChatType)messageType;
+    //保存文件到沙盒 生成沙盒可以访问的localPath
+    FilePkg *pkg = [ApproxySDKUtil saveAsFile:data fileType:ApxMsgType_Img orgFileName:@"image.png" compress:YES];
+    im.mediaID = pkg.localPkgID;
+    im.mediaLen = pkg.fileLength;
+    im.localMediaPath = pkg.relaFilePath;
+    
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:to from:senderAgent to:to body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    
     [self sendMessage:model needInsertToDB:YES];
     
     return model;
@@ -704,20 +706,40 @@ CREATE_SHARED_MANAGER(LLChatManager)
                                                    to:(NSString *)to
                                           messageType:(LLChatType)messageType
 {
+    
+    CGSize size;
     NSData *data;
     if (snapshot) {
         data = UIImageJPEGRepresentation(snapshot, 1);
+        size = snapshot.size;
     }
     
-    EMFileMessageBody *body = [[EMFileMessageBody alloc] initWithData:data displayName:nil];
-    NSString *from = [[EMClient sharedClient] currentUsername];
-    NSDictionary *messageExt = [self encodeLocationMessageExt:latitude longitude:longitude address:address name:name zoomLevel:zoomLevel defaultSnapshot:NO];
+//    EMFileMessageBody *body = [[EMFileMessageBody alloc] initWithData:data displayName:nil];
+//    NSString *from = [[EMClient sharedClient] currentUsername];
+//    NSDictionary *messageExt = [self encodeLocationMessageExt:latitude longitude:longitude address:address name:name zoomLevel:zoomLevel defaultSnapshot:NO];
+//
+//    EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
+//    message.chatType = (EMChatType)messageType;
+//
+//    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
-    message.chatType = (EMChatType)messageType;
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImLocation *im = [[ImLocation alloc]initWithSenderAgent:senderAgent recvierAgent:to];
+    im.thumbnailWidth = [NSNumber numberWithFloat:size.width];
+    im.thumbnailHeight = [NSNumber numberWithFloat:size.height];
+    im.locX = [NSNumber numberWithDouble:latitude];
+    im.locY = [NSNumber numberWithDouble:longitude];
+    im.label = address;
+    im.zoomLevel = [NSNumber numberWithFloat:zoomLevel];
+    
+    NSDictionary *messageExt = [self encodeLocationMessageExt:latitude longitude:longitude address:address name:name zoomLevel:zoomLevel defaultSnapshot:!snapshot];
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:to from:senderAgent to:to body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    
     return model;
 }
 
@@ -725,7 +747,6 @@ CREATE_SHARED_MANAGER(LLChatManager)
 - (void)updateAndSendLocationForMessageModel:(LLMessageModel *)messageModel
                                     withSnapshot:(UIImage *)snapshot {
     NSData *data = UIImageJPEGRepresentation(snapshot, 1);
-    EMFileMessageBody *body = [[EMFileMessageBody alloc] initWithData:data displayName:nil];
     
     if (snapshot) {
         NSMutableDictionary *messageExt = [messageModel.sdk_message.ext mutableCopy];
@@ -735,10 +756,14 @@ CREATE_SHARED_MANAGER(LLChatManager)
     }else {
         messageModel.defaultSnapshot = YES;
     }
-
-    messageModel.sdk_message.body = body;
+    
+    ImLocation *im = (ImLocation *)messageModel.sdk_message.body.im;
+    FilePkg *pkg = [ApproxySDKUtil saveAsFile:data fileType:ApxMsgType_Loc orgFileName:@"snapshot.png" compress:YES];
+    im.mediaID = pkg.localPkgID;
+    im.mediaLen = pkg.fileLength;
+    im.localMediaPath = pkg.relaFilePath;
    
-    BOOL result = [[EMClient sharedClient].chatManager updateMessage:messageModel.sdk_message];
+    BOOL result = [[ApproxySDK getInstance].chatManager updateMessage:messageModel.sdk_message];
 
     NSLog(@"更新LocationMessage缩略图 %@", result? @"成功": @"失败");
 
@@ -771,7 +796,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
               dict[@"name"] = name;
               dict[@"address"] = address;
               model.sdk_message.ext = dict;
-              BOOL result = [[EMClient sharedClient].chatManager updateMessage:model.sdk_message];
+              BOOL result = [[ApproxySDK getInstance].chatManager updateMessage:model.sdk_message];
               NSLog(@"更新LocationMessage %@", result? @"成功": @"失败");
               
               [model updateMessage:model.sdk_message updateReason:kLLMessageModelUpdateReasonReGeocodeComplete];
@@ -796,17 +821,27 @@ CREATE_SHARED_MANAGER(LLChatManager)
                                   messageExt:(NSDictionary *)messageExt
                                   completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion
 {
-    EMVoiceMessageBody *body = [[EMVoiceMessageBody alloc] initWithLocalPath:localPath displayName:@"audio"];
-    body.duration = (int)duration;
-    NSString *from = [[EMClient sharedClient] currentUsername];
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
-    message.chatType = (EMChatType)messageType;
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImVoice *im = [[ImVoice alloc]initWithSenderAgent:senderAgent recvierAgent:to];
+    im.taketime = [NSNumber numberWithInteger:duration];
+    
+    NSLog(@"语音文件：%@",localPath);
+    //保存文件到沙盒 生成沙盒可以访问的localPath
+    NSString *orgFileName = [localPath lastPathComponent];
+    FilePkg *pkg = [ApproxySDKUtil saveAsFile:[NSData dataWithContentsOfFile:localPath] fileType:ApxMsgType_Audio orgFileName:orgFileName compress:YES];
+    im.mediaID = pkg.localPkgID;
+    im.mediaLen = pkg.fileLength;
+    im.localMediaPath = pkg.relaFilePath;
+    
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:to from:senderAgent to:to body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    model.needAnimateVoiceCell = YES;
     
     [self sendMessage:model needInsertToDB:YES];
-    
     return model;
 }
 
@@ -817,7 +852,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     model.isMediaPlaying = !model.isMediaPlaying;
     if (!model.isMediaPlayed) {
         model.isMediaPlayed = YES;
-        EMMessage *chatMessage = model.sdk_message;
+        ApproxySDKMessage *chatMessage = model.sdk_message;
         NSMutableDictionary *dict;
         if (chatMessage.ext)
             dict = [chatMessage.ext mutableCopy];
@@ -826,7 +861,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
         
         dict[@"isPlayed"] = @(YES);
         chatMessage.ext = dict;
-        [[EMClient sharedClient].chatManager updateMessage:chatMessage];
+        [[ApproxySDK getInstance].chatManager updateMessage:chatMessage];
         
     }
     
@@ -841,19 +876,32 @@ CREATE_SHARED_MANAGER(LLChatManager)
                                          progress:(void (^)(LLMessageModel *model, int progress))progress
                                        completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion
 {
-    EMVideoMessageBody *body = [[EMVideoMessageBody alloc] initWithLocalPath:localPath displayName:@"video.mp4"];
-    NSString *from = [[EMClient sharedClient] currentUsername];
-
-    body.thumbnailSize = [LLUtils getVideoSize:localPath];
-    body.duration = round([LLUtils getVideoLength:localPath]);
-    body.fileLength = [LLUtils getFileSize:localPath];
     
-    EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:nil];
-    message.chatType = (EMChatType)messageType;
+    NSLog(@"视频文件：%@",localPath);
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImVideo *im = [[ImVideo alloc]initWithSenderAgent:senderAgent recvierAgent:to];
+    CGSize thumbailSize = [LLUtils getVideoSize:localPath];
+    im.thumbnailWidth = [NSNumber numberWithDouble:thumbailSize.width];
+    im.thumbnailHeight = [NSNumber numberWithDouble:thumbailSize.height];
+    im.taketime = [NSNumber numberWithDouble:round([LLUtils getVideoLength:localPath])];//获取视频时长
+    
+    NSString *orgFileName = [localPath lastPathComponent];
+    //保存文件到沙盒 生成沙盒可以访问的localPath
+    FilePkg *pkg = [ApproxySDKUtil saveAsFile:[NSData dataWithContentsOfFile:localPath] fileType:ApxMsgType_Video orgFileName:orgFileName compress:YES];
+    im.mediaID = pkg.localPkgID;
+    im.mediaLen = pkg.fileLength;
+    im.localMediaPath = pkg.relaFilePath;
+    
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:to from:senderAgent to:to body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    [self sendMessage:model needInsertToDB:YES];
     
+    [self sendMessage:model needInsertToDB:YES];
     return model;
 }
 
@@ -863,9 +911,9 @@ CREATE_SHARED_MANAGER(LLChatManager)
         return;
     
     //INFO: 环信SDK时间戳单位是毫秒，所以此处乘以1000
-    messageModel.sdk_message.timestamp = timestamp * 1000;
+    messageModel.sdk_message.timestamp = timestamp;
     messageModel.timestamp = timestamp;
-    BOOL result = [[EMClient sharedClient].chatManager updateMessage:messageModel.sdk_message];
+    BOOL result = [[ApproxySDK getInstance].chatManager updateMessage:messageModel.sdk_message];
     NSLog(@"更新Message时间戳 %@", result? @"成功": @"失败");
     
 }
@@ -975,16 +1023,16 @@ CREATE_SHARED_MANAGER(LLChatManager)
 #pragma mark - 消息查找 -
 
 - (NSArray<NSArray<LLMessageSearchResultModel *> *> *)searchChatHistoryWithKeyword:(NSString *)keyword {
-    NSArray<EMConversation *> *allConversations = [[EMClient sharedClient].chatManager getAllConversations];
+    NSArray<ApproxySDKConversation *> *allConversations = [[ApproxySDK getInstance].chatManager getAllConversations];
     NSMutableArray<NSArray *> *result = [NSMutableArray array];
     
-    for (EMConversation *conversation in allConversations) {
-        NSArray<EMMessage *> *messageList = [conversation loadMoreMessagesContain:keyword before:-1 limit:-1 from:nil direction:EMMessageSearchDirectionUp];
+    for (ApproxySDKConversation *conversation in allConversations) {
+        NSArray<ApproxySDKMessage *> *messageList = [conversation loadMoreMessagesContain:keyword before:-1 limit:-1 from:nil direction:MessageSearchDirectionUp];
 
         if (messageList.count > 0) {
             NSMutableArray<LLMessageSearchResultModel *> *messageModels = [NSMutableArray arrayWithCapacity:messageList.count];
  
-            [messageList enumerateObjectsUsingBlock:^(EMMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
+            [messageList enumerateObjectsUsingBlock:^(ApproxySDKMessage * _Nonnull message, NSUInteger idx, BOOL * _Nonnull stop) {
                 LLMessageSearchResultModel *model = [[LLMessageSearchResultModel alloc] initWithMessage:message];
                 [messageModels addObject:model];
             }];

@@ -116,6 +116,7 @@
             [messageModel internal_setMessageStatus:kLLMessageStatusSuccessed];
             [[LLChatManager sharedManager] postMessageUploadStatusChangedNotification:messageModel];
         }else{
+            NSLog(@"消息上行失败：errorCode:%d, errorMsg:%@",_error.errorCode,_error.errorMsg);
             //消息上行失败
             [messageModel internal_setMessageStatus:kLLMessageStatusFailed];
             

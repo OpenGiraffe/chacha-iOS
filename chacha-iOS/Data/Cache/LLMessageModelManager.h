@@ -31,7 +31,7 @@
 
 - (void)deleteMessageModelsInArray:(NSArray<LLMessageModel *> *)messageModels;
 
-- (LLMessageModel *)messageModelForEMMessage:(EMMessage *)message;
+- (LLMessageModel *)messageModelForMessage:(ApproxySDKMessage *)message;
 
 - (void)deleteConversation:(NSString *)conversationId;
 

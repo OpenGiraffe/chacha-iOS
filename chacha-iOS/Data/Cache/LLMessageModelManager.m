@@ -139,7 +139,7 @@ CREATE_SHARED_MANAGER(LLMessageModelManager)
 }
 
 
-- (LLMessageModel *)messageModelForEMMessage:(EMMessage *)message {
+- (LLMessageModel *)messageModelForMessage:(ApproxySDKMessage *)message {
     LL_MessagePool_Data *data = [self messagePoolDataForConversationId:message.conversationId];
     for (LLMessageModel *model in data.allMessageModels) {
         if ([model.messageId isEqualToString:message.messageId]) {

@@ -132,7 +132,7 @@
          }
          
          completion:^(ApproxySDKMessage *message, ApxErrorCode *_error) {
-             NSLog(@"%@下载%@", message.body.type == ApxMsgType_Video ? @"视频" :@"图片", _error? @"出错":@"成功");
+             NSLog(@"%@下载%@", message.body.type == ApxMsgType_Video ? @"视频" :(message.body.type == ApxMsgType_Audio) ?@"语音":@"图片", _error? @"出错":@"成功");
              dispatch_semaphore_signal(weakSelf.semaphore);
              
              @synchronized (weakSelf) {

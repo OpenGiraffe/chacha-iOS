@@ -185,12 +185,15 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             self.updateType |= kLLMessageCellUpdateTypeDownloadStatusChanged;
             switch (self.messageBodyType) {
                 case kLLMessageBodyTypeImage:
+                case kLLMessageBodyTypeVoice:
+                case kLLMessageBodyTypeFile:
                 case kLLMessageBodyTypeVideo: {
                     Im *im = self.sdk_message.body.im;
                     if (im.downloadStatus == ApxDownloadStatusSuccessed) {
                         self.thumbnailImage = nil;
                         self.updateType |= kLLMessageCellUpdateTypeThumbnailChanged;
                     }
+                    self.fileLocalPath = [ApproxySDKUtil fixLocalPath:im.localMediaPath];
                     break;
                 }
                 default:
@@ -215,7 +218,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
     if (self.messageBodyType == kLLMessageBodyTypeImage) {
         ImImage *im = (ImImage *)self.sdk_message.body.im;
         if (_fromMe || im.downloadStatus == ApxDownloadStatusSuccessed) {
-            UIImage *fullImage = [UIImage imageWithContentsOfFile:im.localMediaPath];
+            UIImage *fullImage = [UIImage imageWithContentsOfFile:[ApproxySDKUtil fixLocalPath:im.localMediaPath]];
             return fullImage;
         }
     }
@@ -235,7 +238,6 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
         BOOL needSaveToTemp = NO;
         switch (self.messageBodyType) {
             case kLLMessageBodyTypeImage:{
-//                EMImageMessageBody *imgMessageBody = (EMImageMessageBody *)self.sdk_message.body;
                 ImImage *im = (ImImage *)self.sdk_message.body.im;
                 CGSize size = CGSizeMake([im.width floatValue], [im.height floatValue]);
                 self.thumbnailImageSize = [LLMessageImageCell thumbnailSize:size];
@@ -248,7 +250,8 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
                     needSaveToCache = YES;
                     needSaveToDisk = YES;
                 }else if (im.thumbnailDownloadStatus == ApxDownloadStatusSuccessed) {
-                    UIImage *image = [UIImage imageWithContentsOfFile:im.localMediaThumbnailPath];
+                    NSLog(@"缩略图文件存在？%@",[ApproxySDKUtil isFileExist:[ApproxySDKUtil fixLocalPath:im.localMediaThumbnailPath] fullPath:YES]?@"YES":@"NO");
+                    UIImage *image = [UIImage imageWithContentsOfFile:[ApproxySDKUtil fixLocalPath:im.localMediaThumbnailPath]];
                     _thumbnailImageSize = [LLMessageImageCell thumbnailSize:image.size];
                     thumbnailImage = [image resizeImageToSize:self.thumbnailImageSize opaque:YES scale:0];
                     
@@ -266,16 +269,15 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
                 break;
             }
             case kLLMessageBodyTypeVideo:{
-                EMVideoMessageBody *videoMessageBody = (EMVideoMessageBody *)self.sdk_message.body;
-
-                if (_fromMe || videoMessageBody.downloadStatus == EMDownloadStatusSuccessed ) {
-                    UIImage *image = [LLUtils getVideoThumbnailImage:videoMessageBody.localPath];
+                ImVideo *im = (ImVideo *)self.sdk_message.body.im;
+                if (_fromMe || im.downloadStatus == ApxDownloadStatusSuccessed ) {
+                    UIImage *image = [LLUtils getVideoThumbnailImage:[ApproxySDKUtil fixLocalPath:im.localMediaPath]];
                     thumbnailImage = [image resizeImageToSize:self.thumbnailImageSize];
                     
                     needSaveToCache = YES;
                     needSaveToDisk = YES;
-                }else if (videoMessageBody.thumbnailDownloadStatus == EMDownloadStatusSuccessed) {
-                    UIImage *image = [[UIImage alloc] initWithContentsOfFile:videoMessageBody.thumbnailLocalPath];
+                }else if (im.thumbnailDownloadStatus == ApxDownloadStatusSuccessed) {
+                    UIImage *image = [[UIImage alloc] initWithContentsOfFile:[ApproxySDKUtil fixLocalPath:im.localMediaThumbnailPath]];
                     thumbnailImage = [image resizeImageToSize:self.thumbnailImageSize];
                     
                     needSaveToTemp = YES;
@@ -286,10 +288,9 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             case kLLMessageBodyTypeLocation: {
                 if (self.defaultSnapshot)
                     return nil;
-                
-                EMFileMessageBody *body = (EMFileMessageBody *)self.sdk_message.body;
-                if (_fromMe || body.downloadStatus == EMDownloadStatusSuccessed) {
-                    NSData *data = [NSData dataWithContentsOfFile:body.localPath];
+                ImLocation *im = (ImLocation *)self.sdk_message.body.im;
+                if (_fromMe || im.downloadStatus == ApxDownloadStatusSuccessed) {
+                    NSData *data = [NSData dataWithContentsOfFile:[ApproxySDKUtil fixLocalPath:im.localMediaPath]];
                     thumbnailImage = [UIImage imageWithData:data scale:_snapshotScale];
                     
                     needSaveToCache = YES;
@@ -459,16 +460,7 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
 #pragma mark - 辅助 -
 
 - (long long)fileAttachmentSize {
-    switch (_messageBodyType) {
-        case kLLMessageBodyTypeImage:
-        case kLLMessageBodyTypeVideo:
-        case kLLMessageBodyTypeFile:
-            return ((EMFileMessageBody *)(_sdk_message.body)).fileLength;
-
-        default:
-            return 0;
-    }
-
+    return [_sdk_message.body.im.mediaLen longLongValue];
 }
 
 - (BOOL)isVideoPlayable {
@@ -476,11 +468,11 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
 }
 
 - (BOOL)isFullImageAvailable {
-    return (_sdk_message.body.type == EMMessageBodyTypeImage) && (self.fromMe || self.messageDownloadStatus == kLLMessageDownloadStatusSuccessed);
+    return (_sdk_message.body.type == ApxMsgType_Img) && (self.fromMe || self.messageDownloadStatus == kLLMessageDownloadStatusSuccessed);
 }
 
 - (BOOL)isVoicePlayable {
-    return (_sdk_message.body.type == EMMessageBodyTypeVoice) && (self.fromMe || self.messageDownloadStatus == kLLMessageDownloadStatusSuccessed);
+    return (_sdk_message.body.type == ApxMsgType_Audio) && (self.fromMe || self.messageDownloadStatus == kLLMessageDownloadStatusSuccessed);
 }
 
 #pragma mark - 数据预处理
@@ -571,35 +563,35 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
             if ([messageExt[MESSAGE_EXT_TYPE_KEY] isEqualToString:MESSAGE_EXT_LOCATION_KEY]) {
                 _messageBodyType = kLLMessageBodyTypeLocation;
                 [[LLChatManager sharedManager] decodeMessageExtForLocationType:self];
-                EMFileMessageBody *body = (EMFileMessageBody *)self.sdk_message.body;
-                
-                self.fileLocalPath = body.localPath;
+                ImLocation *im = (ImLocation *)self.sdk_message.body.im;
+                self.fileLocalPath = [ApproxySDKUtil fixLocalPath:im.localMediaPath];
                 self.cellHeight = [LLMessageLocationCell heightForModel:self];
             }
             
             break;
         }
         case kLLMessageBodyTypeVoice: {
-            EMVoiceMessageBody *voiceBody = (EMVoiceMessageBody *)self.sdk_message.body;
-            self.mediaDuration = voiceBody.duration;
+            ImVoice *im = (ImVoice *)self.sdk_message.body.im;
+            self.mediaDuration = [im.taketime floatValue];
             self.isMediaPlayed = NO;
             self.isMediaPlaying = NO;
             if (_sdk_message.ext) {
                 self.isMediaPlayed = [_sdk_message.ext[@"isPlayed"] boolValue];
             }
             // 音频路径
-            self.fileLocalPath = voiceBody.localPath;
+            self.fileLocalPath = [ApproxySDKUtil fixLocalPath:im.localMediaPath];
             self.cellHeight = [LLMessageVoiceCell heightForModel:self];
             
             break;
         }
         case kLLMessageBodyTypeVideo: {
-            EMVideoMessageBody *videoBody = (EMVideoMessageBody *)self.sdk_message.body;
+            ImVideo *im = (ImVideo *)self.sdk_message.body.im;
             // 视频路径
-            self.fileLocalPath = videoBody.localPath;
-            self.thumbnailImageSize = [LLMessageVideoCell thumbnailSize:videoBody.thumbnailSize];
-            self.mediaDuration = videoBody.duration;
-            self.fileSize = videoBody.fileLength;
+            self.fileLocalPath = [ApproxySDKUtil fixLocalPath:im.localMediaPath];
+            CGSize size = CGSizeMake([im.thumbnailWidth floatValue],[im.thumbnailHeight floatValue]);
+            self.thumbnailImageSize = [LLMessageVideoCell thumbnailSize:size];
+            self.mediaDuration = [im.taketime floatValue];
+            self.fileSize = [im.mediaLen floatValue];
             self.cellHeight = [LLMessageVideoCell heightForModel:self];
             
             break;
