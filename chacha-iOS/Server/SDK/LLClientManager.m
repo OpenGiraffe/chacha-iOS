@@ -33,7 +33,8 @@ CREATE_SHARED_MANAGER(LLClientManager)
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [[EMClient sharedClient] addDelegate:self delegateQueue:nil];
+//        [[ApproxySDK getInstance] addDelegate:self delegateQueue:nil];
+        [[[ApproxySDK getInstance] getNotify] addDelegate:self delegateQueue:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(loginStateChange:)
@@ -55,7 +56,7 @@ CREATE_SHARED_MANAGER(LLClientManager)
     
     WEAK_SELF;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMError *error = [[EMClient sharedClient] registerWithUsername:username password:password];
+        ApxErrorCode *error = [[ApproxySDK getInstance] registerWithUsername:username szLoginPass:password];
         if (!error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 HUD.label.text = @"注册成功，正在登陆...";
@@ -73,8 +74,8 @@ CREATE_SHARED_MANAGER(LLClientManager)
 }
 
 
-- (void)didRegisterFailedWithError:(EMError *)error {
-    switch (error.code)
+- (void)didRegisterFailedWithError:(ApxErrorCode *)error {
+    switch (error.errorCode)
     {
         case EMErrorServerNotReachable:
             [LLUtils showMessageAlertWithTitle:nil message:@"连接服务器失败!"];
@@ -142,31 +143,6 @@ CREATE_SHARED_MANAGER(LLClientManager)
                     [LLUtils showMessageAlertWithTitle:nil message:err.errorMsg];
                 });
             }
-//        EMError *error = [[EMClient sharedClient] loginWithUsername:username password:password];
-//
-//        if (!error) {
-//            [[LLUserProfile myUserProfile] initUserProfileWithUserName:username nickName:username avatarURL:nil];
-//
-//            //SDK要求
-//            [[EMClient sharedClient] dataMigrationTo3];
-//            //获取消息推送通知
-//            [weakSelf loadPushOptionsFromServer];
-//            //获取联系人
-//            [[LLContactManager sharedManager] asynGetContactsFromServer:nil];
-//
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [LLUtils hideHUD:HUD animated:YES];
-//                [weakSelf loginWithResult:YES];
-//            });
-//
-//            [weakSelf saveLastLoginUsername:username];
-//
-//        }else {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [LLUtils hideHUD:HUD animated:YES];
-//                [weakSelf didLoginFailedWithError:error];
-//            });
-//        }
         
     });
 }
@@ -319,7 +295,7 @@ CREATE_SHARED_MANAGER(LLClientManager)
 
 #pragma mark - 其他 -
 
-- (void)didConnectionStateChanged:(EMConnectionState)aConnectionState {
+- (void)didConnectionStateChanged:(ApxConnectionState)aConnectionState {
     _connectionState = aConnectionState;
   
     [[NSNotificationCenter defaultCenter] postNotificationName:LLConnectionStateDidChangedNotification object:self userInfo:@{@"connectionState":@(aConnectionState)}];

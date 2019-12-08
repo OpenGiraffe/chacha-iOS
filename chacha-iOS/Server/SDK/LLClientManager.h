@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "EMClient.h"
 #import "LLViewController.h"
+#import "ApproxySDKOptions.h"
+#import "ApproxySDKNotify.h"
 
+@interface LLClientManager : NSObject <ApproxySDKClientDelegate>
 
-@interface LLClientManager : NSObject <EMClientDelegate>
-
-@property (nonatomic) EMConnectionState connectionState;
+@property (nonatomic) ApxConnectionState connectionState;
 
 + (instancetype)sharedManager;
 

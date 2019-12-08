@@ -52,7 +52,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
         
         _uploadVideoSemaphore = dispatch_semaphore_create(1);
         
-        [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
+//        [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
 
         lastPlaySoundDate = [NSDate date];
     }

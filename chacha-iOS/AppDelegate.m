@@ -299,7 +299,6 @@
 - (void) onLoginSucc:(id)o{
     NSDictionary *data = [o valueForKey:@"userInfo"];
     NSLog(@"onLoginSucc: %@",data[@"szUserName"]);
-    
 }
 
 - (void) onReceiveMessages:(id)o {
