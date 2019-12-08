@@ -104,6 +104,10 @@
     [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
+//- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+//    NSLog(@"下拉刷新通讯录");
+//    [self fetchData];
+//}
 #pragma mark - 好友 -
 
 - (void)contactChangedNotification:(NSNotification *)notification {
@@ -178,7 +182,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return 4;
+        return 2;
     }else {
         return self.dataArray[section-1].count;
     }
@@ -225,30 +229,9 @@
             [self.navigationController pushViewController:vc animated:YES];
         }else if(indexPath.row == 3){
             //公众号
-//            [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
-//                NSLog(@"上传日志。。数据库等。。。");
-//
-//                NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-//                for (NSDictionary *buddy in buddyList) {
-//                    NSString *userName = buddy[@"slaveName"];
-//                    NSString *openID = buddy[@"slaveOpenID"];
-//                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
-//                    [allContacts addObject:model];
-//                }
-//
-//            } failure:^(ApxErrorCode *aError) {
-//
-//            }];
-            
-//            //异步上传日志。。数据库等
-//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//                [ApproxySDKUtil uploadLocalLogFile];
-//                [ApproxySDKUtil uploadLocalFileWithName:@"chacha.db"];
-//            });
         }
     }else {
         LLContactModel *model = self.dataArray[indexPath.section-1][indexPath.row];
-        //[[LLUtils appDelegate].mainViewController chatWithContact:model.userName];
         [[LLUtils appDelegate].mainViewController chatWithContact:model.openID];
     }
 

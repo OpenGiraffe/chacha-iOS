@@ -92,8 +92,6 @@
     UIStoryboard *storyboard = [LLUtils mainStoryboard];
 
     if (successed) {
-//        [[LLUserProfile myUserProfile] initUserProfileWithUserName:[EMClient sharedClient].currentUsername nickName:nil avatarURL:nil];
-        [[LLUserProfile myUserProfile] initUserProfileWithUserName:[ApproxySDK getInstance].currentUserName nickName:nil avatarURL:nil];
         
         self.mainViewController = [[LLMainViewController alloc] init];
         self.loginViewController = nil;
@@ -153,7 +151,7 @@
     //注册登录状态事件
     [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSta"];
     //注册登录成功事件
-    [ApproxySDK nf_subscribe:self selector:@selector(onLoginSta:) name:@"onLoginSucc"];
+    [ApproxySDK nf_subscribe:self selector:@selector(onLoginSucc:) name:@"onLoginSucc"];
     //注册消息接收回调
     [ApproxySDK nf_subscribe:self selector:@selector(onReceiveMessages:) name:@"onReceiveMessages"];
     ApproxySDK *sdk = [ApproxySDK getInstance];
@@ -299,6 +297,18 @@
 - (void) onLoginSucc:(id)o{
     NSDictionary *data = [o valueForKey:@"userInfo"];
     NSLog(@"onLoginSucc: %@",data[@"szUserName"]);
+    
+    void (^completeBlock)(ContactUser *myInfo) = ^(ContactUser *myInfo){
+        if(myInfo){
+            [[LLUserProfile myUserProfile] initUserProfileWithUserName:myInfo.loginName nickName:myInfo.name?myInfo.name:nil avatarURL:nil];
+        }else{
+            [[LLUserProfile myUserProfile] initUserProfileWithUserName:[ApproxySDK getInstance].currentUserName nickName:nil avatarURL:nil];
+        }
+    };
+                                                   
+    //获取个人用户信息
+    [[ApproxySDK getInstance] getMyInfo:completeBlock];
+    
 }
 
 - (void) onReceiveMessages:(id)o {

@@ -109,24 +109,26 @@ CREATE_SHARED_MANAGER(LLContactManager)
 }
 
 - (void)asynGetContactsFromServer:(void (^)(NSArray<LLContactModel *> *))complete {
-    [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
-        NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-        for (NSDictionary *buddy in buddyList) {
-            NSString *userName = buddy[@"slaveName"];
-            NSString *openID = buddy[@"slaveOpenID"];
-            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
-            [allContacts addObject:model];
-        }
-        
-        if (complete) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                complete(allContacts);
-            });
-        }
-        
-    } failure:^(ApxErrorCode *aError) {
-    
-    }];
+    dispatch_async(_contact_queue, ^{
+        [[ApproxySDK getInstance].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
+            NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
+            for (NSDictionary *buddy in buddyList) {
+                NSString *userName = buddy[@"slaveName"];
+                NSString *openID = buddy[@"slaveOpenID"];
+                LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
+                [allContacts addObject:model];
+            }
+            
+            if (complete) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    complete(allContacts);
+                });
+            }
+            
+        } failure:^(ApxErrorCode *aError) {
+            
+        }];
+    });
     
 //    [[EMClient sharedClient].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
 //        NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
@@ -147,7 +149,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
 }
 
 - (LLSDKError *)addContact:(NSString *)buddyName {
-    EMError *error = [[EMClient sharedClient].contactManager addContact:buddyName message:@"赌神赌圣赌侠赌王赌霸"];
+    ApxErrorCode *error = [[ApproxySDK getInstance].contactManager addContact:buddyName message:@"赌神赌圣赌侠赌王赌霸"];
     
     return error ? [LLSDKError errorWithErrorCode:error] : nil;
 }
@@ -238,7 +240,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
     MBProgressHUD *HUD = [LLUtils showActivityIndicatiorHUDWithTitle:nil];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMError *error = [[EMClient sharedClient].contactManager acceptInvitationForUsername:entity.applicantUsername];
+        ApxErrorCode *error = [[ApproxySDK getInstance].contactManager acceptInvitationForUsername:entity.applicantUsername];
         dispatch_async(dispatch_get_main_queue(), ^{
             [LLUtils hideHUD:HUD animated:YES];
             if (!error) {

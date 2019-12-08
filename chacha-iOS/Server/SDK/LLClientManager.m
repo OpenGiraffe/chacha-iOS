@@ -299,6 +299,9 @@ CREATE_SHARED_MANAGER(LLClientManager)
     _connectionState = aConnectionState;
   
     [[NSNotificationCenter defaultCenter] postNotificationName:LLConnectionStateDidChangedNotification object:self userInfo:@{@"connectionState":@(aConnectionState)}];
+    if(aConnectionState == ApxConnectionConnected){
+        [[NSNotificationCenter defaultCenter] postNotificationName:LLContactChangedNotification object:[LLContactManager sharedManager]];
+    }
 }
 
 - (void)saveLastLoginUsername:(NSString *)username {
