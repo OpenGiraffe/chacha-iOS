@@ -208,12 +208,12 @@
     LLActionSheet *actionSheet = [[LLActionSheet alloc] initWithTitle:nil];
     LLActionSheetAction *action1 = [LLActionSheetAction actionWithTitle:@"发送给朋友"
                                                                 handler:^(LLActionSheetAction *action) {
-                                                                    
+                                                                    NSLog(@"发送给朋友...");
                                                                 }];
     
     LLActionSheetAction *action2 = [LLActionSheetAction actionWithTitle:@"收藏"
                                                                 handler:^(LLActionSheetAction *action) {
-                                                                    
+                                                                    NSLog(@"收藏..");
                                                                 }] ;
     
     [actionSheet addActions:@[action1, action2]];
