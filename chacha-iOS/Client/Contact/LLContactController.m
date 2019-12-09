@@ -227,6 +227,11 @@
             LLContactApplyController *vc = [[LLContactApplyController alloc] init];
             
             [self.navigationController pushViewController:vc animated:YES];
+            
+        }else if(indexPath.row == 1){
+            [LLUtils showConfirmAlertWithTitle:@"test" message:@"hello" yesTitle:@"yes title" yesAction:^{
+                NSLog(@"click ok");
+            }];
         }else if(indexPath.row == 3){
             //公众号
         }

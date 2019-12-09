@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		075169D1239E47DA00D3262B /* LLChatCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 075169D0239E47DA00D3262B /* LLChatCallView.xib */; };
+		075169D6239E54DB00D3262B /* LLChatCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 075169D5239E54DB00D3262B /* LLChatCallView.m */; };
 		076615072383FA41000A0C9A /* libapproxySDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076615062383FA41000A0C9A /* libapproxySDK.a */; };
 		5E4122E08811E0EBB5AA4DC2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E41296DC217873C62A365DE /* AppDelegate.m */; };
 		5E412F26264EAFAD9063F20C /* LLCollectionTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E412B5873C1BA92248C4493 /* LLCollectionTextCell.m */; };
@@ -233,6 +235,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		075169D0239E47DA00D3262B /* LLChatCallView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LLChatCallView.xib; sourceTree = "<group>"; };
+		075169D4239E54DB00D3262B /* LLChatCallView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLChatCallView.h; sourceTree = "<group>"; };
+		075169D5239E54DB00D3262B /* LLChatCallView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLChatCallView.m; sourceTree = "<group>"; };
 		076615062383FA41000A0C9A /* libapproxySDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapproxySDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E41224EF07118FC49275287 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "chacha-iOS/AppDelegate.h"; sourceTree = SOURCE_ROOT; };
 		5E412773A8BD0D9DB6CBD14F /* LLCollectionTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLCollectionTextCell.h; sourceTree = "<group>"; };
@@ -1400,6 +1405,9 @@
 				DD62DDBB1DA4A92700BAFA88 /* LLShareCollectionViewCell.h */,
 				DD62DDBC1DA4A92700BAFA88 /* LLShareCollectionViewCell.m */,
 				DD62DDBE1DA4AA2B00BAFA88 /* LLShareCollectionViewCell.xib */,
+				075169D0239E47DA00D3262B /* LLChatCallView.xib */,
+				075169D4239E54DB00D3262B /* LLChatCallView.h */,
+				075169D5239E54DB00D3262B /* LLChatCallView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1716,6 +1724,7 @@
 				DD4C47621D3B077900ED4EA9 /* Localizable.strings in Resources */,
 				DDED8F1D1DBB8F1400A858E1 /* FriendsSendsPicturesNumberIcon.png in Resources */,
 				DDCA7F391D9175C200EBE1FC /* LLVoiceIndicatorView.xib in Resources */,
+				075169D1239E47DA00D3262B /* LLChatCallView.xib in Resources */,
 				DD62DDB41DA4815F00BAFA88 /* LLChatMoreBottomBar.xib in Resources */,
 				DDED8F271DBB8F1400A858E1 /* FriendsSendsPicturesSelectYIcon.png in Resources */,
 				DDED8F281DBB8F1400A858E1 /* FriendsSendsPicturesSelectYIcon@2x.png in Resources */,
@@ -1926,6 +1935,7 @@
 				DDDB20B31DD1682500BA281F /* LLChatAssetDisplayController.m in Sources */,
 				DD159B3A1D8943640024AB69 /* LLMessageModel.m in Sources */,
 				DDED8F6D1DBCD96200A858E1 /* LLMessageModelManager.m in Sources */,
+				075169D6239E54DB00D3262B /* LLChatCallView.m in Sources */,
 				DD34A0611DD42A92006131E9 /* LLVideoDisplayView.m in Sources */,
 				DDCA7F501D91772100EBE1FC /* LLCollectionEmotionTip.m in Sources */,
 				DD94FC641DD9748A00616F6B /* LLClientManager.m in Sources */,

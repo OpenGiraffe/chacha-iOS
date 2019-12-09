@@ -43,6 +43,8 @@
 #import "LLTextActionDelegate.h"
 #import "LLUserProfile.h"
 #import "MFMailComposeViewController_LL.h"
+#import "LLChatCallView.h"
+
 @import MediaPlayer;
 
 #define BLACK_BAR_VIEW_TAG 1000
@@ -87,6 +89,8 @@ MFMailComposeViewControllerDelegate
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewBottomConstraint;
+
+@property (weak, nonatomic) IBOutlet LLChatCallView *chatCallView;
 
 
 @end
@@ -139,8 +143,10 @@ MFMailComposeViewControllerDelegate
     self.tableView.dataSource = self;
     self.tableView.scrollIndicatorInsets = self.tableView.contentInset;
     
+
     self.refreshView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 40);
     self.voiceTipView.frame = CGRectMake(0, 64, SCREEN_WIDTH, 45);
+    self.chatCallView.frame = CGRectMake(0,0, SCREEN_WIDTH, SCREEN_HEIGHT);
     
     tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapHandler:)];
     tapGesture.numberOfTapsRequired = 1;
@@ -151,10 +157,17 @@ MFMailComposeViewControllerDelegate
     self.dataSource = [NSMutableArray array];
     
     self.refreshView.backgroundColor = TABLEVIEW_BACKGROUND_COLOR;
+    self.chatCallView.backgroundColor = TABLEVIEW_BACKGROUND_COLOR;
+    
     isPulling = NO;
     isLoading = NO;
     
     [self.view layoutIfNeeded];
+    
+//    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+//    UILabel *lable = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
+//    [lable setBackgroundColor:[UIColor redColor]];
+//    [window addSubview:lable];
 }
 
 - (void)updateViewConstraints {
@@ -206,7 +219,7 @@ MFMailComposeViewControllerDelegate
     
     isChatControllerDidAppear = YES;
     _voiceTipView.hidden = NO;
-    
+
     self.navigationController.interactivePopGestureRecognizer.delaysTouchesBegan= NO;
     
     self.navigationController.navigationBar.subviews[0].alpha = 1;
@@ -1808,6 +1821,13 @@ MFMailComposeViewControllerDelegate
     }];
 }
 
+#pragma mark - 音频视频呼叫
+- (LLChatCallView *)chatCallView {
+    if(!_chatCallView) {
+        _chatCallView = [[NSBundle mainBundle] loadNibNamed:@"LLChatCallView" owner:self options:nil][0];
+    }
+    return _chatCallView;
+}
 #pragma mark - 录音
 
 - (LLVoiceIndicatorView *)voiceIndicatorView {
@@ -2238,6 +2258,14 @@ MFMailComposeViewControllerDelegate
 - (void)debug1:(id)sender {
  
     NSLog(@"点击了时光机。。");
+//    if(!_chatCallView) {
+//        _chatCallView = [[NSBundle mainBundle] loadNibNamed:@"LLChatCallView" owner:self options:nil][0];
+//    }
+//    
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    UILabel *lable = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
+    [lable setBackgroundColor:[UIColor redColor]];
+    [window addSubview:self.chatCallView];
 }
 
 - (void)debug2:(id)sender {
