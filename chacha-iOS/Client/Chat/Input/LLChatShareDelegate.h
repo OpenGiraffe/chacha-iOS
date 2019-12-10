@@ -14,10 +14,10 @@
 #define TAG_VideoCall 4
 #define TAG_Redpackage 5
 #define TAG_MoneyTransfer 6
-#define TAG_Location 6
-#define TAG_Favorites 7
-#define TAG_Card 8
-#define TAG_Wallet 9
+#define TAG_Location 7
+#define TAG_Favorites 8
+#define TAG_Card 9
+#define TAG_Wallet 10
 
 @protocol LLChatShareDelegate <NSObject>
 

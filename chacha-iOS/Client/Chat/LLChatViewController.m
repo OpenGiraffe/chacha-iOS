@@ -44,6 +44,7 @@
 #import "LLUserProfile.h"
 #import "MFMailComposeViewController_LL.h"
 #import "LLChatCallView.h"
+#import "LLRTCView.h"
 
 @import MediaPlayer;
 
@@ -648,6 +649,10 @@ MFMailComposeViewControllerDelegate
         case kLLMessageBodyTypeVideo:
         case kLLMessageBodyTypeVoice:
         case kLLMessageBodyTypeImage:
+        case kLLMessageBodyTypeCallin:
+        case kLLMessageBodyTypeAccept:
+        case kLLMessageBodyTypeReject:
+        case kLLMessageBodyTypeComplete:
         case kLLMessageBodyTypeLocation: {
             LLMessageBaseCell *cell = [[LLMessageCellManager sharedManager] messageCellForMessageModel:messageModel tableView:tableView];
             cell.delegate = self;
@@ -1074,6 +1079,9 @@ MFMailComposeViewControllerDelegate
             break;
         case TAG_Sight:
             [self presentSightController];
+            break;
+        case TAG_VideoCall:
+            [self presentVideoCallController];
             break;
         default:
             break;
@@ -2224,6 +2232,30 @@ MFMailComposeViewControllerDelegate
     }];
 }
 
+#pragma mark - VideoCall 视频通话
+- (void)presentVideoCallController {
+    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
+    NSString *nickName = self.conversationModel.nickName;
+    presentView.nickName = nickName?nickName:@"未识别";
+    presentView.connectText = @"通话时长";
+    presentView.netTipText = @"对方的网络状况不是很好";
+    
+    [presentView show];
+    //发起呼叫请求
+    
+    NSString *myName = [[LLUserProfile myUserProfile] nickName];
+    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    LLChatType chatType = chatTypeForConversationType(self.conversationModel.conversationType);
+    LLMessageModel *model = [[LLChatManager sharedManager]
+                             sendCallMessage:text
+                             to:self.conversationModel.conversationId
+                             messageType:chatType
+                             messageExt:nil
+                             completion:nil];
+    
+    [self addModelToDataSourceAndScrollToBottom:model animated:YES];
+}
+
 - (void)removeSightController {
     if (!_sightController)
         return;
@@ -2262,10 +2294,17 @@ MFMailComposeViewControllerDelegate
 //        _chatCallView = [[NSBundle mainBundle] loadNibNamed:@"LLChatCallView" owner:self options:nil][0];
 //    }
 //    
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    UILabel *lable = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
-    [lable setBackgroundColor:[UIColor redColor]];
-    [window addSubview:self.chatCallView];
+//    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+//    UILabel *lable = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
+//    [lable setBackgroundColor:[UIColor redColor]];
+//    [window addSubview:self.chatCallView];
+    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
+    presentView.nickName = @"小萝莉";
+    presentView.connectText = @"通话时长";
+    presentView.netTipText = @"对方的网络状况不是很好";
+    
+    [presentView show];
+    
 }
 
 - (void)debug2:(id)sender {

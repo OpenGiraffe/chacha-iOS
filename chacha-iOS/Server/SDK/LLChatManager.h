@@ -13,6 +13,8 @@
 #import "LLSDKType.h"
 #import "LLSDKError.h"
 #import "LLMessageSearchResultModel.h"
+#import "ApproxySDKOptions.h"
+#import "ApproxySDKNotify.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 
-@interface LLChatManager : NSObject <EMChatManagerDelegate>
+@interface LLChatManager : NSObject <ApproxySDKChatManagerDelegate>
 
 @property (nonatomic, weak) id<LLChatManagerMessageListDelegate> messageListDelegate;
 @property (nonatomic, weak) id<LLChatManagerConversationListDelegate> conversationListDelegate;
@@ -85,6 +87,26 @@ NS_ASSUME_NONNULL_BEGIN
              messageExt:(nullable NSDictionary *)messageExt
              completion:(void (^ __nullable)(LLMessageModel *model, LLSDKError *error))completion;
 
+- (LLMessageModel *)sendCallMessage:(NSString *)text
+                                 to:(NSString *)toUser
+                        messageType:(LLChatType)messageType
+                         messageExt:(nullable NSDictionary *)messageExt
+                         completion:(void (^ __nullable)(LLMessageModel *model, LLSDKError *error))completion;
+- (LLMessageModel *)sendAcceptMessage:(NSString *)text
+                                 to:(NSString *)toUser
+                        messageType:(LLChatType)messageType
+                         messageExt:(nullable NSDictionary *)messageExt
+                         completion:(void (^ __nullable)(LLMessageModel *model, LLSDKError *error))completion;
+- (LLMessageModel *)sendRejectMessage:(NSString *)text
+                                 to:(NSString *)toUser
+                        messageType:(LLChatType)messageType
+                         messageExt:(nullable NSDictionary *)messageExt
+                         completion:(void (^ __nullable)(LLMessageModel *model, LLSDKError *error))completion;
+- (LLMessageModel *)sendCompleteMessage:(NSString *)text
+                                 to:(NSString *)toUser
+                        messageType:(LLChatType)messageType
+                         messageExt:(nullable NSDictionary *)messageExt
+                         completion:(void (^ __nullable)(LLMessageModel *model, LLSDKError *error))completion;
 - (LLMessageModel *)sendGIFTextMessage:(NSString *)text
                                 to:(NSString *)toUser
                        messageType:(LLChatType)messageType

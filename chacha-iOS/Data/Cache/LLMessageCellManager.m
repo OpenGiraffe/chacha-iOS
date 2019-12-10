@@ -77,6 +77,14 @@ CREATE_SHARED_MANAGER(LLMessageCellManager)
             return model.fromMe ? @"messageTypeLocationMe" : @"messageTypeLocation";
         case kLLMessageBodyTypeVideo:
             return model.fromMe ? @"messageTypeVideoMe" : @"messageTypeVideo";
+        case kLLMessageBodyTypeCallin:
+            return model.fromMe ? @"messageTypeCallinMe" : @"messageTypeCallin";
+        case kLLMessageBodyTypeReject:
+            return model.fromMe ? @"messageTypeRejectMe" : @"messageTypeReject";
+        case kLLMessageBodyTypeAccept:
+            return model.fromMe ? @"messageTypeAcceptMe" : @"messageTypeAccept";
+        case kLLMessageBodyTypeComplete:
+            return model.fromMe ? @"messageTypeCompleteMe" : @"messageTypeComplete";
         default:
             break;
     }
@@ -100,6 +108,14 @@ CREATE_SHARED_MANAGER(LLMessageCellManager)
             return [LLMessageLocationCell class];
         case kLLMessageBodyTypeVideo:
             return [LLMessageVideoCell class];
+        case kLLMessageBodyTypeCallin:
+            return [LLMessageTextCell class];
+        case kLLMessageBodyTypeAccept:
+            return [LLMessageTextCell class];
+        case kLLMessageBodyTypeReject:
+            return [LLMessageTextCell class];
+        case kLLMessageBodyTypeComplete:
+            return [LLMessageTextCell class];
         default:
             return Nil;
     }

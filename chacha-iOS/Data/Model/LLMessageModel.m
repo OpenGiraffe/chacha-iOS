@@ -600,6 +600,38 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
         case kLLMessageBodyTypeGif:
             self.cellHeight = [LLMessageGifCell heightForModel:self];
             break;
+        case kLLMessageBodyTypeCallin: {
+             ImCallin *im = (ImCallin *)(self.sdk_message.body.im);
+             self.text = im.text;
+             self.attributedText = [LLSimpleTextLabel createAttributedStringWithEmotionString:self.text font:[LLMessageTextCell font] lineSpacing:0];
+            
+             self.cellHeight = [LLMessageTextCell heightForModel:self];
+            break;
+        }
+        case kLLMessageBodyTypeAccept: {
+            ImAccept *im = (ImAccept *)(self.sdk_message.body.im);
+            self.text = im.text;
+            self.attributedText = [LLSimpleTextLabel createAttributedStringWithEmotionString:self.text font:[LLMessageTextCell font] lineSpacing:0];
+            
+            self.cellHeight = [LLMessageTextCell heightForModel:self];
+            break;
+        }
+        case kLLMessageBodyTypeReject: {
+            ImReject *im = (ImReject *)(self.sdk_message.body.im);
+            self.text = im.text;
+            self.attributedText = [LLSimpleTextLabel createAttributedStringWithEmotionString:self.text font:[LLMessageTextCell font] lineSpacing:0];
+            
+            self.cellHeight = [LLMessageTextCell heightForModel:self];
+            break;
+        }
+        case kLLMessageBodyTypeComplete: {
+            ImComplete *im = (ImComplete *)(self.sdk_message.body.im);
+            self.text = im.text;
+            self.attributedText = [LLSimpleTextLabel createAttributedStringWithEmotionString:self.text font:[LLMessageTextCell font] lineSpacing:0];
+            
+            self.cellHeight = [LLMessageTextCell heightForModel:self];
+            break;
+        }
         default:
             break;
             

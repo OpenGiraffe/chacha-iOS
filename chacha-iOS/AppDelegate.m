@@ -300,7 +300,7 @@
     
     void (^completeBlock)(ContactUser *myInfo) = ^(ContactUser *myInfo){
         if(myInfo){
-            [[LLUserProfile myUserProfile] initUserProfileWithUserName:myInfo.loginName nickName:myInfo.name?myInfo.name:nil avatarURL:nil];
+            [[LLUserProfile myUserProfile] initUserProfileWithUserName:myInfo.loginName nickName:myInfo.name?myInfo.name:nil avatarURL:[ApproxySDKUtil isFileExist:myInfo.avatar fullPath:YES]?myInfo.avatar:nil];
         }else{
             [[LLUserProfile myUserProfile] initUserProfileWithUserName:[ApproxySDK getInstance].currentUserName nickName:nil avatarURL:nil];
         }

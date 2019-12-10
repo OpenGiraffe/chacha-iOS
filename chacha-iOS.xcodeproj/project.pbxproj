@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		075169D1239E47DA00D3262B /* LLChatCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 075169D0239E47DA00D3262B /* LLChatCallView.xib */; };
 		075169D6239E54DB00D3262B /* LLChatCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 075169D5239E54DB00D3262B /* LLChatCallView.m */; };
+		075DE9DC239F2FE4008C9902 /* LLRTCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 075DE9D9239F2FE3008C9902 /* LLRTCButton.m */; };
+		075DE9DD239F2FE4008C9902 /* LLRTCView.m in Sources */ = {isa = PBXBuildFile; fileRef = 075DE9DA239F2FE3008C9902 /* LLRTCView.m */; };
 		076615072383FA41000A0C9A /* libapproxySDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076615062383FA41000A0C9A /* libapproxySDK.a */; };
 		5E4122E08811E0EBB5AA4DC2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E41296DC217873C62A365DE /* AppDelegate.m */; };
 		5E412F26264EAFAD9063F20C /* LLCollectionTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E412B5873C1BA92248C4493 /* LLCollectionTextCell.m */; };
@@ -238,6 +240,10 @@
 		075169D0239E47DA00D3262B /* LLChatCallView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LLChatCallView.xib; sourceTree = "<group>"; };
 		075169D4239E54DB00D3262B /* LLChatCallView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLChatCallView.h; sourceTree = "<group>"; };
 		075169D5239E54DB00D3262B /* LLChatCallView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLChatCallView.m; sourceTree = "<group>"; };
+		075DE9D8239F2FE3008C9902 /* LLRTCButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLRTCButton.h; sourceTree = "<group>"; };
+		075DE9D9239F2FE3008C9902 /* LLRTCButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLRTCButton.m; sourceTree = "<group>"; };
+		075DE9DA239F2FE3008C9902 /* LLRTCView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLRTCView.m; sourceTree = "<group>"; };
+		075DE9DB239F2FE4008C9902 /* LLRTCView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLRTCView.h; sourceTree = "<group>"; };
 		076615062383FA41000A0C9A /* libapproxySDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapproxySDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E41224EF07118FC49275287 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "chacha-iOS/AppDelegate.h"; sourceTree = SOURCE_ROOT; };
 		5E412773A8BD0D9DB6CBD14F /* LLCollectionTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLCollectionTextCell.h; sourceTree = "<group>"; };
@@ -1392,6 +1398,10 @@
 		DDCA7F311D91758900EBE1FC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				075DE9D8239F2FE3008C9902 /* LLRTCButton.h */,
+				075DE9D9239F2FE3008C9902 /* LLRTCButton.m */,
+				075DE9DB239F2FE4008C9902 /* LLRTCView.h */,
+				075DE9DA239F2FE3008C9902 /* LLRTCView.m */,
 				DDCA7F351D9175C200EBE1FC /* LLVoiceIndicatorView.h */,
 				DDCA7F361D9175C200EBE1FC /* LLVoiceIndicatorView.m */,
 				DDCA7F371D9175C200EBE1FC /* LLVoiceIndicatorView.xib */,
@@ -1821,6 +1831,7 @@
 				DD52CFB41D757B50008BD591 /* amrFileCodec.mm in Sources */,
 				DD55A6B71DB1DA86005F2CFC /* LLContactAddController.m in Sources */,
 				DDED8E561DBB754900A858E1 /* LLLocationManager.m in Sources */,
+				075DE9DD239F2FE4008C9902 /* LLRTCView.m in Sources */,
 				DD94FC4C1DD9742A00616F6B /* UIColor+LLExt.m in Sources */,
 				DD4054891D81065D00523E17 /* LLContactController.m in Sources */,
 				DD143FA51D94BFA300706DEA /* LLArticleSearchController.m in Sources */,
@@ -1886,6 +1897,7 @@
 				DD62DDB71DA48A7300BAFA88 /* LLChatMoreBottomBar.m in Sources */,
 				DD94FC4E1DD9742A00616F6B /* UIImage+LLExt.m in Sources */,
 				DDCA7F521D91772100EBE1FC /* LLShareInputView.m in Sources */,
+				075DE9DC239F2FE4008C9902 /* LLRTCButton.m in Sources */,
 				DD55A6C11DB200FF005F2CFC /* LLContactWeChatIdSearchController.m in Sources */,
 				DD4054851D8105C500523E17 /* LLConversationListCell.m in Sources */,
 				DD2986741DD9FFAA0074E318 /* README.mdown in Sources */,

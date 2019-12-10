@@ -24,7 +24,7 @@
         @"sharemore_pic", @"照片", @(TAG_Photo),  \
         @"sharemore_video", @"拍摄", @(TAG_Camera), \
         @"sharemore_sight", @"小视频", @(TAG_Sight),\
-        @"sharemore_videovoip", @"视频聊天", @(TAG_VideoCall),\
+        @"sharemore_videovoip", @"视频通话", @(TAG_VideoCall),\
         @"sharemore_wallet", @"红包", @(TAG_Redpackage), \
         @"sharemorePay", @"转账", @(TAG_MoneyTransfer), \
         @"sharemore_location", @"位置", @(TAG_Location), \

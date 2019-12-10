@@ -29,6 +29,10 @@ typedef NS_ENUM(NSInteger, LLMessageBodyType) {
     kLLMessageBodyTypeVoice = ApxMsgType_Audio,
     kLLMessageBodyTypeLocation = ApxMsgType_Loc,
     kLLMessageBodyTypeFile = ApxMsgType_File,
+    kLLMessageBodyTypeCallin = ApxMsgType_CallinVA,
+    kLLMessageBodyTypeAccept = ApxMsgType_AcceptVA,
+    kLLMessageBodyTypeReject = ApxMsgType_RejectVA,
+    kLLMessageBodyTypeComplete = ApxMsgType_Complete,
     kLLMessageBodyTypeDateTime,
     kLLMessageBodyTypeGif,
     kLLMessageBodyTypeRecording, //表示正在录音的Cell

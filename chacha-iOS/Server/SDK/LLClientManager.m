@@ -14,6 +14,7 @@
 #import "LLPushOptions.h"
 #import "LLMessageCellManager.h"
 #import "LLMessageModelManager.h"
+#import "LLRTCView.h"
 
 #import "AppDelegate.h"
 #import "ApproxySDK.h"
@@ -309,7 +310,5 @@ CREATE_SHARED_MANAGER(LLClientManager)
     [ud setValue:username forKey:LAST_LOGIN_USERNAME_KEY];
     [ud synchronize];
 }
-
-
 
 @end

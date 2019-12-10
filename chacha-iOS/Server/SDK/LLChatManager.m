@@ -18,6 +18,7 @@
 #import "LLMessageThumbnailManager.h"
 #import "LLMessageCacheManager.h"
 #import "LLConversationModelManager.h"
+#import "LLRTCView.h"
 
 #import "ApproxySDKOptions.h"
 #import "ApproxySDK.h"
@@ -51,9 +52,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
         _uploadImageSemaphore = dispatch_semaphore_create(1);
         
         _uploadVideoSemaphore = dispatch_semaphore_create(1);
-        
-//        [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
 
+        [[[ApproxySDK getInstance] getNotify] addChatManagerDelegate:self delegateQueue:nil];
         lastPlaySoundDate = [NSDate date];
     }
     
@@ -150,6 +150,45 @@ CREATE_SHARED_MANAGER(LLChatManager)
    
 }
 
+# pragma mark - 音视频通话
+//视频通话相关
+- (void)didReceiveCall:(ApproxySDKMessage *)aMessage{
+    
+    Im *im = aMessage.body.im;
+    NSString *senderAgent = im.senderAgent;
+    [[ApproxySDK getInstance].contactManager asyncGetContactByID:senderAgent success:^(ContactUser *u) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
+            presentView.nickName = u.nickName;
+            presentView.connectText = @"通话时长";
+            presentView.netTipText = @"对方的网络状况良好";
+            [presentView show];
+        });
+    } failure:^(ApxErrorCode *aError) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
+            presentView.nickName = @"未识别";
+            presentView.connectText = @"通话时长";
+            presentView.netTipText = @"对方的网络状况不佳";
+            [presentView show];
+        });
+        
+    }];
+    
+    
+}
+
+- (void)didReceiveAccept:(ApproxySDKMessage *)aMessage{
+    
+}
+
+- (void)didReceiveReject:(ApproxySDKMessage *)aMessage{
+    
+}
+
+- (void)didReceiveComplete:(ApproxySDKMessage *)aMessage{
+    
+}
 
 #pragma mark - 有新消息 接收新消息 -
 
@@ -559,6 +598,91 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
     return model;
 }
+
+#pragma mark - 发送视频呼叫消息
+- (LLMessageModel *)sendCallMessage:(NSString *)text
+                                 to:(NSString *)toUser
+                        messageType:(LLChatType)messageType
+                         messageExt:(NSDictionary *)messageExt
+                         completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImCallin *im = [[ImCallin alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.text = text;
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
+    
+    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    [self sendMessage:model needInsertToDB:YES];//发送视频通话的时候不插入记录
+    
+    return model;
+}
+
+#pragma mark - 发送视频接受消息
+- (LLMessageModel *)sendAcceptMessage:(NSString *)text
+                                   to:(NSString *)toUser
+                          messageType:(LLChatType)messageType
+                           messageExt:(NSDictionary *)messageExt
+                           completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImAccept *im = [[ImAccept alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.text = text;
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
+    
+    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    [self sendMessage:model needInsertToDB:YES];
+    
+    return model;
+}
+
+#pragma mark - 发送视频拒绝消息
+- (LLMessageModel *)sendRejectMessage:(NSString *)text
+                                   to:(NSString *)toUser
+                          messageType:(LLChatType)messageType
+                           messageExt:(NSDictionary *)messageExt
+                           completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImReject *im = [[ImReject alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.text = text;
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
+    
+    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    [self sendMessage:model needInsertToDB:YES];//拒绝通话的时候插入记录
+    
+    return model;
+}
+
+#pragma mark - 发送视频通话完成消息
+- (LLMessageModel *)sendCompleteMessage:(NSString *)text
+                                   to:(NSString *)toUser
+                          messageType:(LLChatType)messageType
+                           messageExt:(NSDictionary *)messageExt
+                           completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImComplete *im = [[ImComplete alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.text = text;
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
+    
+    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    [self sendMessage:model needInsertToDB:YES];//拒绝通话的时候插入记录
+    
+    return model;
+}
+
 
 #pragma mark - 发送Gif消息
 
