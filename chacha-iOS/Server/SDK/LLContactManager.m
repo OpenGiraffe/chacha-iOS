@@ -50,12 +50,6 @@ CREATE_SHARED_MANAGER(LLContactManager)
         [allContacts addObject:model];
     }
     
-    //        NSString *loginUsername = [[EMClient sharedClient] currentUsername];
-    //        if (loginUsername && loginUsername.length > 0) {
-    //            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:loginUsername];
-    //            [allContacts addObject:model];
-    //        }
-    
     if (complete) {
         dispatch_async(dispatch_get_main_queue(), ^{
             complete(allContacts);
@@ -66,19 +60,24 @@ CREATE_SHARED_MANAGER(LLContactManager)
 
 - (void)asynGetContactsFromDB:(void (^ __nullable)(NSArray<LLContactModel *> *))complete {
     dispatch_async(_contact_queue, ^{
-        NSArray *buddyList = [[EMClient sharedClient].contactManager getContactsFromDB];
+        NSArray *buddyList = [[ApproxySDK getInstance].contactManager getContactsFromDB];
         
         NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-        for (NSString *buddy in buddyList) {
-            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
-            [allContacts addObject:model];
+        for (NSDictionary *buddy in buddyList) {
+            NSString *userName = buddy[@"slaveName"];
+            NSString *openID = buddy[@"slaveOpenID"];
+            NSString *avatar = buddy[@"slaveAvatar"];
+            
+            //判断头像文件是否存在，如果头像还没下载完成，则先显示默认头像，然后添加任务到后台下载头像，当头像下载完成之后再更新头像
+            NSString *avatarPath = [[ApproxySDKStore SDKStore] getStringById:avatar fromTable:@"avatar"];
+            if(avatarPath && ![ApproxySDKUtil isBlankString:avatarPath] && [ApproxySDKUtil isFileExist:avatarPath fullPath:NO]){
+                LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID avatar:[ApproxySDKUtil fixLocalPath:avatarPath]];
+                [allContacts addObject:model];
+            }else{
+                LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
+                [allContacts addObject:model];
+            }
         }
-        
-//        NSString *loginUsername = [[EMClient sharedClient] currentUsername];
-//        if (loginUsername && loginUsername.length > 0) {
-//            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:loginUsername];
-//            [allContacts addObject:model];
-//        }
         
         if (complete) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -91,19 +90,24 @@ CREATE_SHARED_MANAGER(LLContactManager)
 }
 
 - (NSArray<LLContactModel *> *)getContactsFromDB {
-    NSArray *buddyList = [[EMClient sharedClient].contactManager getContactsFromDB];
+    NSArray *buddyList = [[ApproxySDK getInstance].contactManager getContactsFromDB];
     
     NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-    for (NSString *buddy in buddyList) {
-        LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
-        [allContacts addObject:model];
+    for (NSDictionary *buddy in buddyList) {
+        NSString *userName = buddy[@"slaveName"];
+        NSString *openID = buddy[@"slaveOpenID"];
+        NSString *avatar = buddy[@"slaveAvatar"];
+        
+        //判断头像文件是否存在，如果头像还没下载完成，则先显示默认头像，然后添加任务到后台下载头像，当头像下载完成之后再更新头像
+        NSString *avatarPath = [[ApproxySDKStore SDKStore] getStringById:avatar fromTable:@"avatar"];
+        if(avatarPath && ![ApproxySDKUtil isBlankString:avatarPath] && [ApproxySDKUtil isFileExist:avatarPath fullPath:NO]){
+            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID avatar:[ApproxySDKUtil fixLocalPath:avatar]];
+            [allContacts addObject:model];
+        }else{
+            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
+            [allContacts addObject:model];
+        }
     }
-    
-    //        NSString *loginUsername = [[EMClient sharedClient] currentUsername];
-    //        if (loginUsername && loginUsername.length > 0) {
-    //            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:loginUsername];
-    //            [allContacts addObject:model];
-    //        }
     
     return allContacts;
 }
@@ -115,8 +119,23 @@ CREATE_SHARED_MANAGER(LLContactManager)
             for (NSDictionary *buddy in buddyList) {
                 NSString *userName = buddy[@"slaveName"];
                 NSString *openID = buddy[@"slaveOpenID"];
-                LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
-                [allContacts addObject:model];
+                NSString *avatar = buddy[@"slaveAvatar"];
+                
+                
+                //判断头像文件是否存在，如果头像还没下载完成，则先显示默认头像，然后添加任务到后台下载头像，当头像下载完成之后再更新头像
+                NSString *avatarPath = [[ApproxySDKStore SDKStore] getStringById:avatar fromTable:@"avatar"];
+                if(avatarPath && ![ApproxySDKUtil isBlankString:avatarPath] && [ApproxySDKUtil isFileExist:avatarPath fullPath:NO]){
+                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID avatar:[ApproxySDKUtil fixLocalPath:avatar]];
+                    [allContacts addObject:model];
+                    
+                }else{
+                    LLContactModel *model = [[LLContactModel alloc] initWithBuddy:userName openID:openID];
+                    [allContacts addObject:model];
+                    
+                    if(avatar){
+                        [[ApproxySDKNetwork getInstance] DownloadAndUpdateAvatarByOpenID:openID avatarPath:avatar];
+                    }
+                }
             }
             
             if (complete) {
@@ -129,23 +148,6 @@ CREATE_SHARED_MANAGER(LLContactManager)
             
         }];
     });
-    
-//    [[EMClient sharedClient].contactManager asyncGetContactsFromServer:^(NSArray *buddyList) {
-//        NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count];
-//        for (NSString *buddy in buddyList) {
-//            LLContactModel *model = [[LLContactModel alloc] initWithBuddy:buddy];
-//            [allContacts addObject:model];
-//        }
-//
-//        if (complete) {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                complete(allContacts);
-//            });
-//        }
-//
-//    } failure:^(EMError *aError) {
-//
-//    }];
 }
 
 - (LLSDKError *)addContact:(NSString *)buddyName {

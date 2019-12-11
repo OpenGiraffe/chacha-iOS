@@ -102,6 +102,11 @@
     
     self.navigationController.navigationBar.translucent = NO;
     [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
+    WEAK_SELF;
+    [[LLContactManager sharedManager] asynGetContactsFromDB:^(NSArray<LLContactModel *> *contacts) {
+        [weakSelf processData:contacts];
+    }];
 }
 
 //- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
