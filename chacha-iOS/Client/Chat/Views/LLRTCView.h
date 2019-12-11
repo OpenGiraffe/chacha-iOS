@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ApproxySDKNotify.h"
 
 /* 挂断的通知，object 中附带参数
  @{
@@ -42,6 +43,9 @@ UIKIT_EXTERN NSString *const kVideoCaptureNotification;
 @interface LLRTCView : UIView
 
 #pragma mark - properties
+
+/** 会话Im消息实体 **/
+@property (nonatomic, strong) ImCallin          *callin;
 /** 对方的昵称 */
 @property (copy, nonatomic) NSString            *nickName;
 /** 连接信息，如等待对方接听...、对方已拒绝、语音通话、视频通话 */
@@ -61,9 +65,8 @@ UIKIT_EXTERN NSString *const kVideoCaptureNotification;
 @property (strong, nonatomic, readonly)   UIImageView             *ownImageView;
 /** 对方的视频画面 */
 @property (strong, nonatomic, readonly)   UIImageView             *adverseImageView;
-
-
-
+/** 回调函数 **/
+@property id<ApproxySDKChatManagerDelegate> chatManagerDelegate;
 
 #pragma mark - method
 - (instancetype)initWithIsVideo:(BOOL)isVideo isCallee:(BOOL)isCallee;
@@ -71,5 +74,8 @@ UIKIT_EXTERN NSString *const kVideoCaptureNotification;
 - (void)show;
 
 - (void)dismiss;
+
+- (void)addChatManagerDelegate:(id<ApproxySDKChatManagerDelegate>)aDelegate
+                 delegateQueue:(dispatch_queue_t)aQueue;
 
 @end

@@ -148,7 +148,7 @@ CREATE_SHARED_MANAGER(LLEmotionModelManager)
                                               options:kNilOptions
                                                 error:&error];
     
-    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:text];
+    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:text!=nil?text:@""];
     while(YES) {
         NSRange range = [regularExpression rangeOfFirstMatchInString:attributeString.string options:kNilOptions range:NSMakeRange(0, attributeString.string.length)];
         if (range.location == NSNotFound)

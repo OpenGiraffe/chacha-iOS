@@ -95,7 +95,6 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 @end
 
 @implementation LLRTCView
-
 - (instancetype)initWithIsVideo:(BOOL)isVideo isCallee:(BOOL)isCallee
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
@@ -538,6 +537,9 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     
     NSDictionary *dict = @{@"isVideo":@(self.isVideo),@"isCaller":@(!self.callee),@"answered":@(self.answered)};
     [[NSNotificationCenter defaultCenter] postNotificationName:kHangUpNotification object:dict];
+    if(self.chatManagerDelegate){
+        [self.chatManagerDelegate didHandleRejectClick:dict];
+    }
 }
 
 - (void)packupClick
@@ -652,6 +654,16 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kAcceptNotification object:dict];
+    if(self.chatManagerDelegate){
+        NSMutableDictionary *d = [[NSMutableDictionary alloc] initWithDictionary:dict];
+        [d setObject:_callin.callId forKey:@"talkId"];
+        [d setObject:_callin.senderAgent forKey:@"senderAgent"];
+        [d setObject:_callin.dst_ip forKey:@"dst_ip"];
+        [d setObject:_callin.dst_port forKey:@"dst_port"];
+        [d setObject:_callin.uid forKey:@"uid"];
+        [d setObject:_callin.uid_ex forKey:@"uid_ex"];
+        [self.chatManagerDelegate didHandleAcceptClick:d];
+    }
 }
 
 // 视频通话时的语音接听按钮
@@ -1071,6 +1083,11 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
             [self connected];
         }
     }
+}
+
+- (void)addChatManagerDelegate:(id<ApproxySDKChatManagerDelegate>)aDelegate
+                 delegateQueue:(dispatch_queue_t)aQueue{
+    self.chatManagerDelegate = aDelegate;
 }
 
 @end

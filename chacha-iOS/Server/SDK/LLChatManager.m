@@ -154,19 +154,22 @@ CREATE_SHARED_MANAGER(LLChatManager)
 //视频通话相关
 - (void)didReceiveCall:(ApproxySDKMessage *)aMessage{
     
-    Im *im = aMessage.body.im;
+    ImCallin *im = (ImCallin *)aMessage.body.im;
     NSString *senderAgent = im.senderAgent;
     [[ApproxySDK getInstance].contactManager asyncGetContactByID:senderAgent success:^(ContactUser *u) {
         dispatch_async(dispatch_get_main_queue(), ^{
             LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
+            [presentView addChatManagerDelegate:self delegateQueue:nil];
             presentView.nickName = u.nickName;
             presentView.connectText = @"通话时长";
             presentView.netTipText = @"对方的网络状况良好";
+            presentView.callin = im;
             [presentView show];
         });
     } failure:^(ApxErrorCode *aError) {
         dispatch_async(dispatch_get_main_queue(), ^{
             LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
+            [presentView addChatManagerDelegate:self delegateQueue:nil];
             presentView.nickName = @"未识别";
             presentView.connectText = @"通话时长";
             presentView.netTipText = @"对方的网络状况不佳";
@@ -174,21 +177,77 @@ CREATE_SHARED_MANAGER(LLChatManager)
         });
         
     }];
-    
-    
 }
 
 - (void)didReceiveAccept:(ApproxySDKMessage *)aMessage{
+    NSLog(@"对方已经接受.. 开始通话..");
     
 }
 
 - (void)didReceiveReject:(ApproxySDKMessage *)aMessage{
-    
+    NSLog(@"对方已经拒绝.. 挂机..");
 }
 
 - (void)didReceiveComplete:(ApproxySDKMessage *)aMessage{
+    NSLog(@"通话结束..");
+}
+
+//点击接受按钮之后的回调
+- (void)didHandleAcceptClick:(NSDictionary *)aDict{
+    NSString *senderAgent = aDict[@"senderAgent"];
+    
+    NSString *myName = [[LLUserProfile myUserProfile] nickName];
+    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    [[LLChatManager sharedManager]
+                             sendAcceptMessage:text
+                             to:senderAgent
+                             messageType:kLLChatTypeChat
+                             messageExt:aDict
+     completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
+         //开始发送流数据...
+         [LLUtils showTextHUD:@"开始发送流数据..."];
+     }];
     
 }
+
+- (void)didHandleRejectClick:(NSDictionary *)aDict{
+    NSString *talkId = aDict[@"talkId"];
+    NSString *senderAgent = aDict[@"senderAgent"];
+    NSString *isVideo = aDict[@"isVideo"];
+    NSString *audioAccept = aDict[@"audioAccept"];
+    
+    NSString *myName = [[LLUserProfile myUserProfile] nickName];
+    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    [[LLChatManager sharedManager]
+     sendAcceptMessage:text
+     to:senderAgent
+     messageType:kLLChatTypeChat
+     messageExt:aDict
+     completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
+         //开始发送流数据...
+         [LLUtils showTextHUD:@"拒绝..."];
+     }];
+}
+
+- (void)didHandleCompleteClick:(NSDictionary *)aDict{
+    NSString *talkId = aDict[@"talkId"];
+    NSString *senderAgent = aDict[@"senderAgent"];
+    NSString *isVideo = aDict[@"isVideo"];
+    NSString *audioAccept = aDict[@"audioAccept"];
+    
+    NSString *myName = [[LLUserProfile myUserProfile] nickName];
+    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    [[LLChatManager sharedManager]
+     sendCompleteMessage:text
+     to:senderAgent
+     messageType:kLLChatTypeChat
+     messageExt:aDict
+     completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
+         //开始发送流数据...
+         [LLUtils showTextHUD:@"通话结束..."];
+     }];
+}
+
 
 #pragma mark - 有新消息 接收新消息 -
 
@@ -630,6 +689,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
     ImAccept *im = [[ImAccept alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
     im.text = text;
+    im.callId = messageExt[@"talkId"];
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;
