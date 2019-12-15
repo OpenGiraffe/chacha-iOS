@@ -10,6 +10,9 @@
 
 #import "LLRTCView.h"
 #import "LLRTCButton.h"
+#import "ApxRTC_RTMPService.h"
+#import "ApxRTC_ACPService.h"
+#import "FilterSelectModalView.h"
 
 
 NSString *const kHangUpNotification = @"kHangUpNotification";
@@ -36,7 +39,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 // 视频聊天时，小窗口的高
 #define kMicVideoH      (120 * kRTCRate)
 
-@interface LLRTCView ()
+@interface LLRTCView () <ApxRTC_ACPServiceDelegate>
 
 /** 是否是视频聊天 */
 @property (assign, nonatomic)   BOOL                    isVideo;
@@ -51,6 +54,9 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 @property (strong, nonatomic)   UIImageView             *bgImageView;
 /** 自己的视频画面 */
 @property (strong, nonatomic)   UIImageView             *ownImageView;
+/** 自己的视频预览界面 **/
+@property (weak, nonatomic)     UIView                  *preview;
+
 /** 对方的视频画面 */
 @property (strong, nonatomic)   UIImageView             *adverseImageView;
 /** 头像 */
@@ -94,7 +100,15 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 
 @end
 
-@implementation LLRTCView
+@implementation LLRTCView{
+    ApxRTC_ACPService *acpService;
+    UIButton *_statusBtn;
+    BOOL _isOpenFlash;
+    BOOL _isStarted;
+    BOOL _isFrontCamera;
+    FilterSelectModalView *_filterSelectView;
+    LFVideoConfig *_videoConfig;
+}
 - (instancetype)initWithIsVideo:(BOOL)isVideo isCallee:(BOOL)isCallee
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
@@ -464,12 +478,25 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [self clearAllSubViews];
         
         [self initUIForVideoCaller];
-        // 在这里添加 开启本地视频采集 的代码
+        // 在这里添加 开启本地视频采集 的代码 
         [[NSNotificationCenter defaultCenter] postNotificationName:kVideoCaptureNotification object:@{@"videoCapture":@(YES)}];
+        // 注册摄像头开启事件[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoCapture:) name:kVideoCaptureNotification object:nil];
+        _isFrontCamera=YES;
+        _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
+        acpService=[ApxRTC_ACPService sharedInstance];
+        [acpService setupWithVideoConfig:_videoConfig
+                              audioConfig:[LFAudioConfig defaultConfig]
+                                  preview:_preview];
+        acpService.delegate=self;
+        
         // 对方和本地都开了摄像头
         if (self.oppositeCamera) {
             self.ownImageView.frame = CGRectMake(kRTCWidth - kMicVideoW - 5 , kRTCHeight - kContainerH - kMicVideoH - 5, kMicVideoW, kMicVideoH);
-            [self addSubview:self.ownImageView];
+            // [self addSubview:self.ownImageView];
+            
+            self.preview.frame = CGRectMake(kRTCWidth - kMicVideoW - 5 , kRTCHeight - kContainerH - kMicVideoH - 5, kMicVideoW, kMicVideoH);
+            [self addSubview:self.preview];
+
             self.cameraBtn.enabled = YES;
             self.inviteBtn.enabled = YES;
             self.cameraBtn.selected = YES;

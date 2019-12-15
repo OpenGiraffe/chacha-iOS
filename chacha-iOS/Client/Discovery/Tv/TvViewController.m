@@ -7,9 +7,9 @@
 //
 
 #import "TvViewController.h"
-#import "LFRtmpService.h"
+#import "ApxRTC_RTMPService.h"
 #import "FilterSelectModalView.h"
-@interface TvViewController ()<LFRtmpServiceDelegate,FilterSelectModalViewDelegate>
+@interface TvViewController ()<ApxRTC_RTMPServiceDelegate,FilterSelectModalViewDelegate>
 
 @property (weak,nonatomic) IBOutlet UILabel *statusLabel;
 @property (weak,nonatomic) IBOutlet UIView  *preveiw;
@@ -20,7 +20,7 @@
 
 @implementation TvViewController
 {
-    LFRtmpService *rtmpService;
+    ApxRTC_RTMPService *rtmpService;
     UIButton *_statusBtn;
     BOOL _isOpenFlash;
     BOOL _isStarted;
@@ -32,7 +32,7 @@
     [super viewDidLoad];
     _isFrontCamera=YES;
     _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
-    rtmpService=[LFRtmpService sharedInstance];
+    rtmpService=[ApxRTC_RTMPService sharedInstance];
     [rtmpService setupWithVideoConfig:_videoConfig
                           audioConfig:[LFAudioConfig defaultConfig]
                               preview:_preveiw];

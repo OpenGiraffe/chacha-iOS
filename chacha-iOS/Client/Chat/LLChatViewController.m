@@ -2254,6 +2254,10 @@ MFMailComposeViewControllerDelegate
                              completion:nil];
     
     [self addModelToDataSourceAndScrollToBottom:model animated:YES];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        //开始视频、预览、推流等 测试
+        
+    });
 }
 
 - (void)removeSightController {
