@@ -11,7 +11,7 @@
 #define EASE_MOB_APP_KEY @"1172161124178919#llwechat"
 #define APPROXY_CLUSTERIP @"ipxdev.routeyo.net"
 #define APPROXY_CLUSTERPO 50033
-#define APPROXY_CLUSTERGROUP @"191.0.4.18:50033;192.168.3.115:50033;ipxdev.routeyo.net:50033"
+#define APPROXY_CLUSTERGROUP @"191.0.4.18:50033;192.168.3.115:50033;191.0.0.147:50033;ipxdev.routeyo.net:50033"
 #pragma mark - ID配置 -
 
 //Storyboard中ViewControllerID
