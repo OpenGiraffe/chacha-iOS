@@ -135,13 +135,11 @@
     }else if(indexPath.section == 1){
         if(indexPath.row == 1){
             NSLog(@"点击了RTMP直播。。");
-            TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil];
-            [push setupRTCServiceWithType:@"rtmp"];
+            TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil streamProtocol:@"rtmp"];
             [self.navigationController pushViewController:push animated:YES];
         }else if(indexPath.row == 2){
             NSLog(@"点击了ACP直播。。");
-            TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil];
-            [push setupRTCServiceWithType:@"acp"];
+            TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil streamProtocol:@"acp"];
             [self.navigationController pushViewController:push animated:YES];
         }
     }

@@ -29,10 +29,20 @@
     BOOL _isFrontCamera;
     FilterSelectModalView *_filterSelectView;
     LFVideoConfig *_videoConfig;
+    NSString *_streamProtocol;
 }
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil streamProtocol:(NSString *)streamProtocol{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        _streamProtocol = streamProtocol;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self setupRTCServiceWithType:_streamProtocol];
 }
 
 -(void) setupRTCServiceWithType:(NSString *)type{
@@ -146,7 +156,7 @@
  *
  *  @param status 状态描述符
  */
--(void)onRtmpStatusChange:(ApxStreamStatus)status message:(id)message{
+-(void)onStatusChange:(ApxStreamStatus)status message:(id)message{
     switch (status) {
         case ApxStreamStatusConnectionFail:
         {
