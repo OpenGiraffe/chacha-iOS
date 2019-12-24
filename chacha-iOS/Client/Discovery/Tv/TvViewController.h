@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface TvViewController : UIViewController
-
+//设置协议类型rtmp|acp
+-(void) setupRTCServiceWithType:(NSString *)type;
 
 @end
 

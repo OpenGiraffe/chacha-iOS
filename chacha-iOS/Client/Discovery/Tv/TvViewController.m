@@ -8,19 +8,21 @@
 
 #import "TvViewController.h"
 #import "ApxRTC_RTMPService.h"
+#import "ApxRTC_ACPService.h"
 #import "FilterSelectModalView.h"
-@interface TvViewController ()<ApxRTC_RTMPServiceDelegate,FilterSelectModalViewDelegate>
+@interface TvViewController ()<ApxRTC_ServiceDelegate,FilterSelectModalViewDelegate>
 
 @property (weak,nonatomic) IBOutlet UILabel *statusLabel;
 @property (weak,nonatomic) IBOutlet UIView  *preveiw;
 @property (weak,nonatomic) IBOutlet UIView  *controlView;
 @property (weak,nonatomic) IBOutlet UIButton *palyButton;
 @property (strong,nonatomic) IBOutlet UISlider *slider;
+
 @end
 
 @implementation TvViewController
 {
-    ApxRTC_RTMPService *rtmpService;
+    ApxRTC_ACPService *acpService;
     UIButton *_statusBtn;
     BOOL _isOpenFlash;
     BOOL _isStarted;
@@ -30,14 +32,26 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+}
+
+-(void) setupRTCServiceWithType:(NSString *)type{
     _isFrontCamera=YES;
     _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
-    rtmpService=[ApxRTC_RTMPService sharedInstance];
-    [rtmpService setupWithVideoConfig:_videoConfig
-                          audioConfig:[LFAudioConfig defaultConfig]
-                              preview:_preveiw];
-    rtmpService.delegate=self;
- 
+    
+    if([type isEqualToString:@"rtmp"]){
+        acpService=[ApxRTC_RTMPService sharedInstance];
+        [acpService setupWithVideoConfig:_videoConfig
+                              audioConfig:[LFAudioConfig defaultConfig]
+                                  preview:_preveiw];
+        acpService.delegate=self;
+    }else if([type isEqualToString:@"acp"]){
+        acpService=[ApxRTC_ACPService sharedInstance];
+        [acpService setupWithVideoConfig:_videoConfig
+                             audioConfig:[LFAudioConfig defaultConfig]
+                                 preview:_preveiw];
+        acpService.delegate=self;
+    }
     [self.view addSubview:_statusBtn];
     _filterSelectView=[[NSBundle mainBundle] loadNibNamed:@"FilterSelectModalView" owner:nil options:nil][0];
     _filterSelectView.delegate=self;
@@ -46,59 +60,58 @@
 -(void)addLogo{
     UIImageView *logoView=[[UIImageView alloc] initWithFrame:CGRectMake(0, 56, 80, 17)];
     logoView.image=[UIImage imageNamed:@"logo"];
-    [rtmpService setLogoView:logoView];
+    [acpService setLogoView:logoView];
 }
 -(IBAction)toggleCapture:(id)sender{
     if(!_isStarted){
         [self addLogo];
-        [_palyButton setImage:[UIImage imageNamed:@"capture_stop_button"]
-                     forState:(UIControlStateNormal)];
-        rtmpService.urlParser=[[LFRtmpUrlParser alloc] initWithUrl:@"rtmp://192.168.3.115/live/jing" port:1935];
-        [rtmpService start];
+        [_palyButton setImage:[UIImage imageNamed:@"capture_stop_button"] forState:(UIControlStateNormal)];
+        ((ApxRTC_RTMPService *)acpService).urlParser=[[LFRtmpUrlParser alloc] initWithUrl:@"rtmp://192.168.3.115/live/jing" port:1935];
+        [acpService start];
     }else{
         [_palyButton setImage:[UIImage imageNamed:@"capture_button"] forState:(UIControlStateNormal)];
         _statusLabel.text=@"未连接";
-        [rtmpService stop];
+        [acpService stop];
     }
     _isStarted=!_isStarted;
 }
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     if(!_isStarted){
-        if([rtmpService isLandscape]){
+        if([acpService isLandscape]){
             UIInterfaceOrientation orientation=[[UIApplication sharedApplication] statusBarOrientation];
             if(orientation==UIInterfaceOrientationPortrait||orientation==UIInterfaceOrientationPortraitUpsideDown){
                 _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
-                [rtmpService setVideoConfig:_videoConfig];
-                [rtmpService setOrientation:orientation];
+                [acpService setVideoConfig:_videoConfig];
+                [acpService setOrientation:orientation];
             }
             
         }else{
             UIInterfaceOrientation orientation=[[UIApplication sharedApplication] statusBarOrientation];
             if(orientation==UIInterfaceOrientationLandscapeLeft||orientation==UIInterfaceOrientationLandscapeRight){
                 _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:YES];
-                [rtmpService setVideoConfig:_videoConfig];
-                [rtmpService setOrientation:orientation];
+                [acpService setVideoConfig:_videoConfig];
+                [acpService setOrientation:orientation];
             }
         }
     }
 }
 
 -(IBAction)toggleFlash:(id)sender{
-    [rtmpService setIsOpenFlash:!rtmpService.isOpenFlash];
+    [acpService setIsOpenFlash:!acpService.isOpenFlash];
 }
 
 -(IBAction)toggleCamera:(id)sender{
     if(_isFrontCamera){
-        [rtmpService setDevicePosition:AVCaptureDevicePositionBack];
+        [acpService setDevicePosition:AVCaptureDevicePositionBack];
     }else{
-         [rtmpService setDevicePosition:AVCaptureDevicePositionFront];
+         [acpService setDevicePosition:AVCaptureDevicePositionFront];
     }
     _isFrontCamera=!_isFrontCamera;
 }
 
 -(IBAction)back:(id)sender{
-    [rtmpService quit];
+    [acpService quit];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -113,7 +126,7 @@
 }
 - (IBAction)scrub:(id)sender{
     __weak UISlider *slider=_slider;
-    [rtmpService setVideoZoomScale:[_slider value] andError:^{
+    [acpService setVideoZoomScale:[_slider value] andError:^{
         [slider setValue:1.0 animated:YES];
     }];
 }
@@ -124,7 +137,7 @@
 #pragma mark FilterSelectModalViewDelegate
 
 -(void)onDidTouchFilter:(int)filterType{
-    [rtmpService setFilterType:filterType];
+    [acpService setFilterType:filterType];
 }
 
 #pragma mark LFRtmpServiceDelegate
@@ -133,35 +146,35 @@
  *
  *  @param status 状态描述符
  */
--(void)onRtmpStatusChange:(LFRTMPStatus)status message:(id)message{
+-(void)onRtmpStatusChange:(ApxStreamStatus)status message:(id)message{
     switch (status) {
-        case LFRTMPStatusConnectionFail:
+        case ApxStreamStatusConnectionFail:
         {
             [_statusLabel setText:@"连接失败!重连中..."];
         }
             break;
-        case LFRTMPStatusPublishSending:
+        case ApxStreamStatusPublishSending:
         {
             [_statusLabel setText:@"流发布中"];
         }
             break;
-        case LFRTMPStatusPublishReady:
+        case ApxStreamStatusPublishReady:
         {
            [_statusLabel setText:@"流发布成功，开始推流"];
         }
             break;
-        case LFRTMPStatusPublishFail:
+        case ApxStreamStatusPublishFail:
         {
            [_statusLabel setText:@"流发布失败，restart"];
-           [rtmpService reStart];
+           [acpService reStart];
         }
             break;
-        case LFRTMPStatusPublishFailBadName:
+        case ApxStreamStatusPublishFailBadName:
         {
             [_statusLabel setText:@"错误的流名"];
             //这种情况可能是推流地址过期造成的，可获取新的推流地址，重新开始连接
             //rtmpService.urlParser=[[LFRtmpUrlParser alloc] initWithUrl:@"新推流地址" port:1935];
-            [rtmpService reStart];
+            [acpService reStart];
         }
             break;
         default:
@@ -182,4 +195,5 @@
     [super viewWillDisappear:animated];
     self.navigationController.navigationBar.hidden=NO;
 }
+
 @end

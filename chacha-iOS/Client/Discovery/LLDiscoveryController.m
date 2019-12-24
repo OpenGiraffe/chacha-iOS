@@ -34,7 +34,8 @@
     NSArray<LLTableViewCellData *> *section2 = @[
          [[LLTableViewCellData alloc] initWithTitle:@"扫一扫" iconName:@"ff_IconQRCode"],
 //         [[LLTableViewCellData alloc] initWithTitle:@"摇一摇" iconName:@"ff_IconShake"],
-         [[LLTableViewCellData alloc] initWithTitle:@"直播" iconName:@"ff_IconTv"]
+         [[LLTableViewCellData alloc] initWithTitle:@"直播" iconName:@"ff_IconTv"],
+         [[LLTableViewCellData alloc] initWithTitle:@"ACP" iconName:@"ff_IconTv"]
     ];
     
     NSArray<LLTableViewCellData *> *section3 = @[
@@ -133,9 +134,14 @@
        
     }else if(indexPath.section == 1){
         if(indexPath.row == 1){
-            NSLog(@"点击了直播。。");
-            
+            NSLog(@"点击了RTMP直播。。");
             TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil];
+            [push setupRTCServiceWithType:@"rtmp"];
+            [self.navigationController pushViewController:push animated:YES];
+        }else if(indexPath.row == 2){
+            NSLog(@"点击了ACP直播。。");
+            TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil];
+            [push setupRTCServiceWithType:@"acp"];
             [self.navigationController pushViewController:push animated:YES];
         }
     }

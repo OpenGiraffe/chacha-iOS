@@ -40,7 +40,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 // 视频聊天时，小窗口的高
 #define kMicVideoH      (120 * kRTCRate)
 
-@interface LLRTCView () <ApxRTC_ACPServiceDelegate>
+@interface LLRTCView () <ApxRTC_ServiceDelegate>
 
 /** 是否是视频聊天 */
 @property (assign, nonatomic)   BOOL                    isVideo;
@@ -1146,7 +1146,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     self.chatManagerDelegate = aDelegate;
 }
 
-- (void)onStatusChange:(ApxACPStatus)status message:(id)message{
+- (void)onStatusChange:(ApxStreamStatus)status message:(id)message{
     
 }
 
