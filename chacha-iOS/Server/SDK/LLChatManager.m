@@ -1016,13 +1016,14 @@ CREATE_SHARED_MANAGER(LLChatManager)
     im.mediaID = pkg.localPkgID;
     im.mediaLen = pkg.fileLength;
     im.localMediaPath = pkg.relaFilePath;
+    im.downloadStatus = kLLMessageDownloadStatusSuccessed;
+    im.thumbnailDownloadStatus = kLLMessageDownloadStatusSuccessed;
     
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:to from:senderAgent to:to body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;
     message.messageId = im.szMsgSrcID;
-    
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
     
     [self sendMessage:model needInsertToDB:YES];

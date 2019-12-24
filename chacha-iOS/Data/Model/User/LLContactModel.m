@@ -37,4 +37,22 @@
     return self;
 }
 
+- (instancetype)initWithBuddy:(NSString *)buddy openID:(NSString *)openID avatar:(NSString *)avatar {
+    self = [super init];
+    if (self) {
+        _userName = buddy;
+        _openID = openID;
+        _pinyinOfUserName = [LLUtils pinyinOfString:_userName];
+        _nickname = buddy;
+        if(avatar != nil && [ApproxySDKUtil isFileExist:avatar fullPath:YES]){
+            _avatarImage = [UIImage imageWithContentsOfFile:avatar];
+        }else{
+            _avatarImage = [UIImage imageNamed:@"icon_avatar"];
+        }
+    }
+    
+    return self;
+}
+
+
 @end

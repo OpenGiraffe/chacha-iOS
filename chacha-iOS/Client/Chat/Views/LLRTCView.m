@@ -10,6 +10,9 @@
 
 #import "LLRTCView.h"
 #import "LLRTCButton.h"
+#import "ApxRTC_RTMPService.h"
+#import "ApxRTC_ACPService.h"
+#import "FilterSelectModalView.h"
 
 
 NSString *const kHangUpNotification = @"kHangUpNotification";
@@ -17,6 +20,7 @@ NSString *const kHangUpNotification = @"kHangUpNotification";
 NSString *const kAcceptNotification = @"kAcceptNotification";
 
 NSString *const kSwitchCameraNotification = @"kSwitchCameraNotification";
+NSString *const kFlashLightNotification = @"kFlashLightNotification";
 
 NSString *const kMuteNotification = @"kMuteNotification";
 
@@ -36,7 +40,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 // 视频聊天时，小窗口的高
 #define kMicVideoH      (120 * kRTCRate)
 
-@interface LLRTCView ()
+@interface LLRTCView () <ApxRTC_ACPServiceDelegate>
 
 /** 是否是视频聊天 */
 @property (assign, nonatomic)   BOOL                    isVideo;
@@ -51,6 +55,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 @property (strong, nonatomic)   UIImageView             *bgImageView;
 /** 自己的视频画面 */
 @property (strong, nonatomic)   UIImageView             *ownImageView;
+
 /** 对方的视频画面 */
 @property (strong, nonatomic)   UIImageView             *adverseImageView;
 /** 头像 */
@@ -63,6 +68,8 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 @property (strong, nonatomic)   UILabel                 *netTipLabel;
 /** 前置、后置摄像头切换按钮 */
 @property (strong, nonatomic)   LLRTCButton               *swichBtn;
+/** 闪光灯开启、关闭按钮 */
+@property (strong, nonatomic)   LLRTCButton               *flashBtn;
 /** 底部按钮容器视图 */
 @property (strong, nonatomic)   UIView                  *btnContainerView;
 /** 静音按钮 */
@@ -94,7 +101,15 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 
 @end
 
-@implementation LLRTCView
+@implementation LLRTCView{
+    ApxRTC_ACPService *acpService;
+    UIButton *_statusBtn;
+    BOOL _isOpenFlash;
+    BOOL _isStarted;
+    BOOL _isFrontCamera;
+    FilterSelectModalView *_filterSelectView;
+    LFVideoConfig *_videoConfig;
+}
 - (instancetype)initWithIsVideo:(BOOL)isVideo isCallee:(BOOL)isCallee
 {
     self = [super initWithFrame:[UIScreen mainScreen].bounds];
@@ -119,7 +134,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     self.adverseImageView.backgroundColor = [UIColor lightGrayColor];
     self.ownImageView.backgroundColor = [UIColor grayColor];
     self.portraitImageView.backgroundColor = [UIColor clearColor];
-
+    
     if (self.isVideo && !self.callee) {
         // 视频通话时，呼叫方的UI初始化
         [self initUIForVideoCaller];
@@ -160,9 +175,12 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     [self addSubview:_ownImageView];
     
     CGFloat switchBtnW = 45 * kRTCRate;
+    CGFloat flashBtnW = 28 * kRTCRate;
     CGFloat topOffset = 30 * kRTCRate;
-    self.swichBtn.frame = CGRectMake(kRTCWidth - switchBtnW - 10, topOffset, switchBtnW, switchBtnW);
+    self.swichBtn.frame = CGRectMake(kRTCWidth - switchBtnW - 38, topOffset, switchBtnW, switchBtnW);
     [self addSubview:_swichBtn];
+    self.flashBtn.frame = CGRectMake(kRTCWidth - flashBtnW - 10, topOffset + 5, flashBtnW, flashBtnW);
+    [self addSubview:_flashBtn];
     
     self.nickNameLabel.frame = CGRectMake(20, topOffset, kRTCWidth - 20 * 3 - switchBtnW, 30);
     self.nickNameLabel.textColor = [UIColor whiteColor];
@@ -177,7 +195,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     [self addSubview:_connectLabel];
     
     self.btnContainerView.frame = CGRectMake(0, kRTCHeight - kContainerH, kRTCWidth, kContainerH);
-    self.btnContainerView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
+    self.btnContainerView.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
     [self addSubview:_btnContainerView];
     
     // 下面底部 6按钮视图
@@ -442,6 +460,23 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 - (void)switchClick
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:kSwitchCameraNotification object:nil];
+    if(_isFrontCamera){
+        [acpService setDevicePosition:AVCaptureDevicePositionBack];
+    }else{
+        [acpService setDevicePosition:AVCaptureDevicePositionFront];
+    }
+    _isFrontCamera=!_isFrontCamera;
+}
+
+- (void)flashClick
+{
+    [acpService setIsOpenFlash:!acpService.isOpenFlash];
+    if(!acpService.isOpenFlash){
+        [_flashBtn setImage:[UIImage imageNamed:@"btn_flash_open"] forState:UIControlStateNormal];
+    }else{
+        [_flashBtn setImage:[UIImage imageNamed:@"btn_flash_close"] forState:UIControlStateNormal];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kFlashLightNotification object:nil];
 }
 
 - (void)muteClick
@@ -464,12 +499,23 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [self clearAllSubViews];
         
         [self initUIForVideoCaller];
-        // 在这里添加 开启本地视频采集 的代码
+        // 在这里添加 开启本地视频采集 的代码 
         [[NSNotificationCenter defaultCenter] postNotificationName:kVideoCaptureNotification object:@{@"videoCapture":@(YES)}];
+        // 注册摄像头开启事件[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoCapture:) name:kVideoCaptureNotification object:nil];
+        
+        _isFrontCamera=YES;
+        _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
+        acpService=[ApxRTC_ACPService sharedInstance];
+        [acpService setupWithVideoConfig:_videoConfig
+                              audioConfig:[LFAudioConfig defaultConfig]
+                                  preview:self.ownImageView];
+        acpService.delegate=self;
+        
         // 对方和本地都开了摄像头
         if (self.oppositeCamera) {
             self.ownImageView.frame = CGRectMake(kRTCWidth - kMicVideoW - 5 , kRTCHeight - kContainerH - kMicVideoH - 5, kMicVideoW, kMicVideoH);
             [self addSubview:self.ownImageView];
+            
             self.cameraBtn.enabled = YES;
             self.inviteBtn.enabled = YES;
             self.cameraBtn.selected = YES;
@@ -864,6 +910,16 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     return _swichBtn;
 }
 
+- (LLRTCButton *)flashBtn
+{
+    if (!_flashBtn) {
+        _flashBtn = [[LLRTCButton alloc] initWithTitle:nil noHandleImageName:@"btn_flash_open"];
+        [_flashBtn addTarget:self action:@selector(flashClick) forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    return _flashBtn;
+}
+
 - (UILabel*)netTipLabel
 {
     if (!_netTipLabel) {
@@ -1088,6 +1144,10 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 - (void)addChatManagerDelegate:(id<ApproxySDKChatManagerDelegate>)aDelegate
                  delegateQueue:(dispatch_queue_t)aQueue{
     self.chatManagerDelegate = aDelegate;
+}
+
+- (void)onStatusChange:(ApxACPStatus)status message:(id)message{
+    
 }
 
 @end

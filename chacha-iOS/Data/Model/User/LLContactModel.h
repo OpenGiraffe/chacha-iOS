@@ -21,5 +21,5 @@
 
 - (instancetype)initWithBuddy:(NSString *)buddy;
 - (instancetype)initWithBuddy:(NSString *)buddy openID:(NSString *)openID;
-
+- (instancetype)initWithBuddy:(NSString *)buddy openID:(NSString *)openID avatar:(NSString *)avatar;
 @end

@@ -10,6 +10,7 @@
 #import "LLTableViewCellData.h"
 #import "LLTableViewCell.h"
 #import "LLUtils.h"
+#import "TvViewController.h"
 
 @interface LLDiscoveryController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -32,7 +33,8 @@
     
     NSArray<LLTableViewCellData *> *section2 = @[
          [[LLTableViewCellData alloc] initWithTitle:@"扫一扫" iconName:@"ff_IconQRCode"],
-         [[LLTableViewCellData alloc] initWithTitle:@"摇一摇" iconName:@"ff_IconShake"]
+//         [[LLTableViewCellData alloc] initWithTitle:@"摇一摇" iconName:@"ff_IconShake"],
+         [[LLTableViewCellData alloc] initWithTitle:@"直播" iconName:@"ff_IconTv"]
     ];
     
     NSArray<LLTableViewCellData *> *section3 = @[
@@ -126,6 +128,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    if (indexPath.section == 0) {
+       
+    }else if(indexPath.section == 1){
+        if(indexPath.row == 1){
+            NSLog(@"点击了直播。。");
+            
+            TvViewController *push=[[TvViewController alloc] initWithNibName:@"TvViewController" bundle:nil];
+            [self.navigationController pushViewController:push animated:YES];
+        }
+    }
 }
 
 @end

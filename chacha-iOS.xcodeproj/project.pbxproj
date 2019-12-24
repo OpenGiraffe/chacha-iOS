@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07186CE723A5C8F3001DBACA /* TvViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07186CE423A5C8F3001DBACA /* TvViewController.xib */; };
+		07186CE823A5C8F3001DBACA /* TvViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CE523A5C8F3001DBACA /* TvViewController.m */; };
+		07186CFB23A5CFB3001DBACA /* FilterSelectModalView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07186CF923A5CFB3001DBACA /* FilterSelectModalView.xib */; };
+		07186CFC23A5CFB3001DBACA /* FilterSelectModalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */; };
+		07186D0223A5CFEE001DBACA /* PlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07186CFD23A5CFEE001DBACA /* PlayViewController.xib */; };
+		07186D0323A5CFEE001DBACA /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFE23A5CFEE001DBACA /* PlayViewController.m */; };
+		07186D0423A5CFEE001DBACA /* ModalWindowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFF23A5CFEE001DBACA /* ModalWindowView.m */; };
 		075169D1239E47DA00D3262B /* LLChatCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 075169D0239E47DA00D3262B /* LLChatCallView.xib */; };
 		075169D6239E54DB00D3262B /* LLChatCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 075169D5239E54DB00D3262B /* LLChatCallView.m */; };
 		075DE9DC239F2FE4008C9902 /* LLRTCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 075DE9D9239F2FE3008C9902 /* LLRTCButton.m */; };
@@ -237,6 +244,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07186CE423A5C8F3001DBACA /* TvViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TvViewController.xib; sourceTree = "<group>"; };
+		07186CE523A5C8F3001DBACA /* TvViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TvViewController.m; sourceTree = "<group>"; };
+		07186CE623A5C8F3001DBACA /* TvViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TvViewController.h; sourceTree = "<group>"; };
+		07186CF823A5CFB3001DBACA /* FilterSelectModalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterSelectModalView.h; sourceTree = "<group>"; };
+		07186CF923A5CFB3001DBACA /* FilterSelectModalView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterSelectModalView.xib; sourceTree = "<group>"; };
+		07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterSelectModalView.m; sourceTree = "<group>"; };
+		07186CFD23A5CFEE001DBACA /* PlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayViewController.xib; sourceTree = "<group>"; };
+		07186CFE23A5CFEE001DBACA /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
+		07186CFF23A5CFEE001DBACA /* ModalWindowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModalWindowView.m; sourceTree = "<group>"; };
+		07186D0023A5CFEE001DBACA /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
+		07186D0123A5CFEE001DBACA /* ModalWindowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalWindowView.h; sourceTree = "<group>"; };
 		075169D0239E47DA00D3262B /* LLChatCallView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LLChatCallView.xib; sourceTree = "<group>"; };
 		075169D4239E54DB00D3262B /* LLChatCallView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLChatCallView.h; sourceTree = "<group>"; };
 		075169D5239E54DB00D3262B /* LLChatCallView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLChatCallView.m; sourceTree = "<group>"; };
@@ -737,6 +755,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		07186CE323A5C8F3001DBACA /* Tv */ = {
+			isa = PBXGroup;
+			children = (
+				07186D0123A5CFEE001DBACA /* ModalWindowView.h */,
+				07186CFF23A5CFEE001DBACA /* ModalWindowView.m */,
+				07186D0023A5CFEE001DBACA /* PlayViewController.h */,
+				07186CFE23A5CFEE001DBACA /* PlayViewController.m */,
+				07186CFD23A5CFEE001DBACA /* PlayViewController.xib */,
+				07186CF823A5CFB3001DBACA /* FilterSelectModalView.h */,
+				07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */,
+				07186CF923A5CFB3001DBACA /* FilterSelectModalView.xib */,
+				07186CE423A5C8F3001DBACA /* TvViewController.xib */,
+				07186CE523A5C8F3001DBACA /* TvViewController.m */,
+				07186CE623A5C8F3001DBACA /* TvViewController.h */,
+			);
+			path = Tv;
+			sourceTree = "<group>";
+		};
 		9FC650747D0CAB1A9763E65E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -897,6 +933,7 @@
 		DD40547F1D81056500523E17 /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
+				07186CE323A5C8F3001DBACA /* Tv */,
 				DD4054A01D81598C00523E17 /* LLDiscoveryController.h */,
 				DD4054A11D81598C00523E17 /* LLDiscoveryController.m */,
 			);
@@ -1738,9 +1775,11 @@
 				DD62DDB41DA4815F00BAFA88 /* LLChatMoreBottomBar.xib in Resources */,
 				DDED8F271DBB8F1400A858E1 /* FriendsSendsPicturesSelectYIcon.png in Resources */,
 				DDED8F281DBB8F1400A858E1 /* FriendsSendsPicturesSelectYIcon@2x.png in Resources */,
+				07186CE723A5C8F3001DBACA /* TvViewController.xib in Resources */,
 				DDDB20B21DD1682500BA281F /* LLImageDownloadFailView.xib in Resources */,
 				DDED8F201DBB8F1400A858E1 /* FriendsSendsPicturesQuitBigIcon@2x.png in Resources */,
 				DD0B87941D4B237700FD896D /* Emotions.plist in Resources */,
+				07186D0223A5CFEE001DBACA /* PlayViewController.xib in Resources */,
 				DDED8F2B1DBB8F1400A858E1 /* MMVideoPreviewPlayHL@2x.png in Resources */,
 				DDED8F251DBB8F1400A858E1 /* FriendsSendsPicturesSelectIcon.png in Resources */,
 				DDED8F211DBB8F1400A858E1 /* FriendsSendsPicturesSelectBigNIcon.png in Resources */,
@@ -1749,6 +1788,7 @@
 				DD8C48721D3A40BC003DF258 /* LaunchScreen.storyboard in Resources */,
 				DDED8F261DBB8F1400A858E1 /* FriendsSendsPicturesSelectIcon@2x.png in Resources */,
 				DD4054DA1D8401BD00523E17 /* LLConversationListCell.xib in Resources */,
+				07186CFB23A5CFB3001DBACA /* FilterSelectModalView.xib in Resources */,
 				DD55A6BB1DB1DDDD005F2CFC /* LLContactSearchViews.xib in Resources */,
 				DD4C475E1D3B043C00ED4EA9 /* InfoPlist.strings in Resources */,
 				DDED8F1B1DBB8F1400A858E1 /* CellGreySelected.png in Resources */,
@@ -1827,6 +1867,7 @@
 				DDED8E571DBB754900A858E1 /* LLLocationSearchResultController.m in Sources */,
 				DD159B381D8943640024AB69 /* LLEmotionModel.m in Sources */,
 				DDAD6C471DC9E0ED008530A1 /* LLImageSelectIndicator.m in Sources */,
+				07186CE823A5C8F3001DBACA /* TvViewController.m in Sources */,
 				DD159B3F1D8947D50024AB69 /* LLUtils+Audio.m in Sources */,
 				DD52CFB41D757B50008BD591 /* amrFileCodec.mm in Sources */,
 				DD55A6B71DB1DA86005F2CFC /* LLContactAddController.m in Sources */,
@@ -1868,6 +1909,7 @@
 				DDED8E591DBB754900A858E1 /* LLLocationTableViewCell.m in Sources */,
 				DD52CFB51D757B50008BD591 /* wav.mm in Sources */,
 				DDD994111DA72CFA008208D1 /* LLNavigationController.m in Sources */,
+				07186D0423A5CFEE001DBACA /* ModalWindowView.m in Sources */,
 				DDCA7F4E1D91772100EBE1FC /* LLChatInputView.m in Sources */,
 				DD94FC4D1DD9742A00616F6B /* UIImage+EMGIF.m in Sources */,
 				DDDB20B61DD1682500BA281F /* LLVideoDownloadStatusHUD.m in Sources */,
@@ -1878,6 +1920,7 @@
 				DDCA7F341D9175B300EBE1FC /* LLChatVoiceTipView.m in Sources */,
 				DD34A0531DD369C2006131E9 /* LLContactModel.m in Sources */,
 				DD4055171D86783100523E17 /* LLChatViewController.m in Sources */,
+				07186D0323A5CFEE001DBACA /* PlayViewController.m in Sources */,
 				DD94FC4F1DD9742A00616F6B /* UINavigationBar+LLExt.m in Sources */,
 				DD4054E21D84DA0B00523E17 /* LLUtils+Popover.m in Sources */,
 				DD55A6C71DB32EBA005F2CFC /* LLContactApplyController.m in Sources */,
@@ -1911,6 +1954,7 @@
 				5E4122E08811E0EBB5AA4DC2 /* AppDelegate.m in Sources */,
 				DD143FA61D94BFA300706DEA /* LLBrandContactSearchController.m in Sources */,
 				DDDB20F11DD3509200BA281F /* LLConfig.m in Sources */,
+				07186CFC23A5CFB3001DBACA /* FilterSelectModalView.m in Sources */,
 				DDEC3AA21DAF726200D71DC3 /* LLSightCapatureController.m in Sources */,
 				DDED8F4F1DBB904F00A858E1 /* LLMessageTextCell.m in Sources */,
 				DDED8F481DBB904F00A858E1 /* LLMessageBaseCell.m in Sources */,
