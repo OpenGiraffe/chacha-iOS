@@ -58,7 +58,7 @@
     }else if([type isEqualToString:@"acp"]){
         acpService=[ApxRTC_ACPService sharedInstance];
         [acpService setupWithVideoConfig:_videoConfig
-                             audioConfig:[LFAudioConfig defaultConfig]
+                             audioConfig:[LFAudioConfig acpConfig]
                                  preview:_preveiw];
         acpService.delegate=self;
     }
