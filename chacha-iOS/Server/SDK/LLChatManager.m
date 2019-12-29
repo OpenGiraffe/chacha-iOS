@@ -40,7 +40,9 @@ static NSDate *lastPlaySoundDate;
 @end
 
 
-@implementation LLChatManager
+@implementation LLChatManager{
+    LLRTCView *_presentView;
+}
 
 CREATE_SHARED_MANAGER(LLChatManager)
 
@@ -158,13 +160,17 @@ CREATE_SHARED_MANAGER(LLChatManager)
     NSString *senderAgent = im.senderAgent;
     [[ApproxySDK getInstance].contactManager asyncGetContactByID:senderAgent success:^(ContactUser *u) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
+            LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:YES];
             [presentView addChatManagerDelegate:self delegateQueue:nil];
             presentView.nickName = u.nickName;
             presentView.connectText = @"通话时长";
             presentView.netTipText = @"对方的网络状况良好";
             presentView.callin = im;
+            NSString *swap = [[NSString alloc] initWithString:senderAgent];
+            presentView.callin.senderAgent = im.recvierAgent;
+            presentView.callin.recvierAgent = swap;
             [presentView show];
+            _presentView = presentView;
         });
     } failure:^(ApxErrorCode *aError) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -174,6 +180,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
             presentView.connectText = @"通话时长";
             presentView.netTipText = @"对方的网络状况不佳";
             [presentView show];
+            _presentView = presentView;
         });
         
     }];
@@ -181,15 +188,54 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 - (void)didReceiveAccept:(ApproxySDKMessage *)aMessage{
     NSLog(@"对方已经接受.. 开始通话..");
-    
+    if(_presentView ){
+        [_presentView didReceiveAccept:aMessage];
+    }
 }
 
 - (void)didReceiveReject:(ApproxySDKMessage *)aMessage{
-    NSLog(@"对方已经拒绝.. 挂机..");
+    NSLog(@"..挂机..");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(_presentView ){
+            [_presentView dismiss];
+        }
+    });
 }
 
 - (void)didReceiveComplete:(ApproxySDKMessage *)aMessage{
     NSLog(@"通话结束..");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if(_presentView ){
+            [_presentView dismiss];
+        }
+    });
+}
+
+- (void) didReceiveVideoFrame:(IMStreamFrame *)frame{
+    if(_presentView ){
+        [_presentView didReceiveVideoFrame:frame];
+    }
+}
+
+- (void) didReceiveAudioFrame:(IMStreamFrame *)frame{
+    if(_presentView ){
+        [_presentView didReceiveAudioFrame:frame];
+    }
+}
+
+- (void) didHandleCallinClick:(NSDictionary *)aDict{
+    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
+    [presentView addChatManagerDelegate:self delegateQueue:nil];
+    NSString *nickName = aDict[@"nickName"];
+    presentView.nickName = nickName?nickName:@"未识别";
+    presentView.connectText = @"通话时长";
+    presentView.netTipText = @"对方的网络状况不是很好";
+    ImCallin *im = [[ImCallin alloc]init];
+    im.senderAgent = aDict[@"senderAgent"];
+    im.recvierAgent = aDict[@"recvierAgent"];
+    presentView.callin = im;
+    [presentView show];
+    _presentView = presentView;
 }
 
 //点击接受按钮之后的回调
@@ -212,20 +258,20 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 - (void)didHandleRejectClick:(NSDictionary *)aDict{
     NSString *talkId = aDict[@"talkId"];
-    NSString *senderAgent = aDict[@"senderAgent"];
+    NSString *recvierAgent = aDict[@"recvierAgent"];
     NSString *isVideo = aDict[@"isVideo"];
     NSString *audioAccept = aDict[@"audioAccept"];
     
     NSString *myName = [[LLUserProfile myUserProfile] nickName];
     NSString *text = [myName stringByAppendingString:@"视频通话"];
     [[LLChatManager sharedManager]
-     sendAcceptMessage:text
-     to:senderAgent
+     sendRejectMessage:text
+     to:recvierAgent
      messageType:kLLChatTypeChat
      messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
          //开始发送流数据...
-         [LLUtils showTextHUD:@"拒绝..."];
+         [LLUtils showTextHUD:@"对方已拒绝..."];
      }];
 }
 

@@ -40,7 +40,7 @@ UIKIT_EXTERN NSString *const kMuteNotification;
  */
 UIKIT_EXTERN NSString *const kVideoCaptureNotification;
 
-@interface LLRTCView : UIView
+@interface LLRTCView : UIView <ApproxySDKChatManagerDelegate>
 
 #pragma mark - properties
 

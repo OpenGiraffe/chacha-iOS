@@ -45,6 +45,7 @@
 #import "MFMailComposeViewController_LL.h"
 #import "LLChatCallView.h"
 #import "LLRTCView.h"
+#import "ApproxySDK.h"
 
 @import MediaPlayer;
 
@@ -2234,14 +2235,10 @@ MFMailComposeViewControllerDelegate
 
 #pragma mark - VideoCall 视频通话
 - (void)presentVideoCallController {
-    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
+    NSMutableDictionary *aDict = [[NSMutableDictionary alloc]init];
     NSString *nickName = self.conversationModel.nickName;
-    presentView.nickName = nickName?nickName:@"未识别";
-    presentView.connectText = @"通话时长";
-    presentView.netTipText = @"对方的网络状况不是很好";
+    [aDict setValue:nickName forKey:@"nickName"];
     
-    [presentView show];
-    //发起呼叫请求
     
     NSString *myName = [[LLUserProfile myUserProfile] nickName];
     NSString *text = [myName stringByAppendingString:@"视频通话"];
@@ -2252,6 +2249,9 @@ MFMailComposeViewControllerDelegate
                              messageType:chatType
                              messageExt:nil
                              completion:nil];
+    [aDict setValue:model.from forKey:@"senderAgent"];
+    [aDict setValue:model.to forKey:@"recvierAgent"];
+    [[LLChatManager sharedManager] didHandleCallinClick:aDict];
     
     [self addModelToDataSourceAndScrollToBottom:model animated:YES];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

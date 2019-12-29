@@ -13,7 +13,10 @@
 #import "ApxRTC_RTMPService.h"
 #import "ApxRTC_ACPService.h"
 #import "FilterSelectModalView.h"
-
+#import "LLUserProfile.h"
+#import "LLChatManager.h"
+#import "LLUtils.h"
+#import "AAPLEAGLLayer.h"
 
 NSString *const kHangUpNotification = @"kHangUpNotification";
 
@@ -109,6 +112,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     BOOL _isFrontCamera;
     FilterSelectModalView *_filterSelectView;
     LFVideoConfig *_videoConfig;
+    AAPLEAGLLayer *_glLayer;
 }
 - (instancetype)initWithIsVideo:(BOOL)isVideo isCallee:(BOOL)isCallee
 {
@@ -134,17 +138,20 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     self.adverseImageView.backgroundColor = [UIColor lightGrayColor];
     self.ownImageView.backgroundColor = [UIColor grayColor];
     self.portraitImageView.backgroundColor = [UIColor clearColor];
-    
+    _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
+    acpService=[ApxRTC_ACPService sharedInstance];
+    acpService.delegate=self;
+
     if (self.isVideo && !self.callee) {
         // 视频通话时，呼叫方的UI初始化
         [self initUIForVideoCaller];
         
-//        // 模拟对方点击通话后的动画效果
+//      // 模拟对方点击通话后的动画效果
         [self performSelector:@selector(connected) withObject:nil afterDelay:0.8];
         _answered = YES;
         _oppositeCamera = YES;
         _localCamera = YES;
-
+        
     } else if (!self.isVideo && !self.callee) {
         // 语音通话时，呼叫方UI初始化
         [self initUIForAudioCaller];
@@ -161,6 +168,13 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         // 视频通话时，被呼叫方UI初始化
         [self initUIForVideoCallee];
     }
+    
+//    _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
+//    acpService=[ApxRTC_ACPService sharedInstance];
+//    [acpService setupWithVideoConfig:_videoConfig
+//                         audioConfig:[LFAudioConfig defaultConfig]
+//                             preview:self.ownImageView];
+//    acpService.delegate=self;
 }
 
 /**
@@ -393,6 +407,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         _btnContainerView.transform = CGAffineTransformMakeTranslation(0, kContainerH);
         
     } completion:^(BOOL finished) {
+        
         [self clearAllSubViews];
         [self removeFromSuperview];
     }];
@@ -406,10 +421,14 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.loudspeakerBtn.selected = YES;
         self.cameraBtn.selected = YES;
         self.inviteBtn.enabled = YES;
+        
         [UIView animateWithDuration:0.5 animations:^{
             self.ownImageView.frame = CGRectMake(kRTCWidth - kMicVideoW - 5 , kRTCHeight - kContainerH - kMicVideoH - 5, kMicVideoW, kMicVideoH);
         } completion:^(BOOL finished) {
-            
+            [acpService setupWithVideoConfig:_videoConfig
+                                 audioConfig:[LFAudioConfig defaultConfig]
+                                     preview:self.ownImageView];
+            [acpService start];//开始发送流数据
         }];
     } else {
         self.cameraBtn.enabled = YES;
@@ -504,13 +523,9 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         // 注册摄像头开启事件[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(videoCapture:) name:kVideoCaptureNotification object:nil];
         
         _isFrontCamera=YES;
-        _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
-        acpService=[ApxRTC_ACPService sharedInstance];
         [acpService setupWithVideoConfig:_videoConfig
-                              audioConfig:[LFAudioConfig defaultConfig]
-                                  preview:self.ownImageView];
-        acpService.delegate=self;
-        
+                             audioConfig:[LFAudioConfig defaultConfig]
+                                 preview:self.ownImageView];
         // 对方和本地都开了摄像头
         if (self.oppositeCamera) {
             self.ownImageView.frame = CGRectMake(kRTCWidth - kMicVideoW - 5 , kRTCHeight - kContainerH - kMicVideoH - 5, kMicVideoW, kMicVideoH);
@@ -519,6 +534,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
             self.cameraBtn.enabled = YES;
             self.inviteBtn.enabled = YES;
             self.cameraBtn.selected = YES;
+            
         } else {
             // 本地开启，对方未开摄像头
             [self.adverseImageView removeFromSuperview];
@@ -581,10 +597,13 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [self dismiss];
     }
     
-    NSDictionary *dict = @{@"isVideo":@(self.isVideo),@"isCaller":@(!self.callee),@"answered":@(self.answered)};
+    NSDictionary *dict = @{@"isVideo":@(self.isVideo),@"isCaller":@(!self.callee),@"answered":@(self.answered),@"recvierAgent":self.callin.recvierAgent};
     [[NSNotificationCenter defaultCenter] postNotificationName:kHangUpNotification object:dict];
     if(self.chatManagerDelegate){
         [self.chatManagerDelegate didHandleRejectClick:dict];
+    }
+    if(acpService){
+        [acpService quit];
     }
 }
 
@@ -851,8 +870,9 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 {
     if (!_adverseImageView) {
         _adverseImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"456.png"]];
+        _glLayer = [[AAPLEAGLLayer alloc] initWithFrame:self.adverseImageView.bounds];
+        [self.adverseImageView.layer addSublayer:_glLayer];
     }
-    
     return _adverseImageView;
 }
 
@@ -1150,4 +1170,82 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     
 }
 
+- (void)inputVideoFrame:(CVPixelBufferRef)pixelBuffer{
+    if(pixelBuffer) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            _glLayer.pixelBuffer = pixelBuffer;
+        });
+        CVPixelBufferRelease(pixelBuffer);
+    }
+}
+- (void)inputAudioFrame:(IMStreamFrame *)frame{
+    
+}
+
+- (void)didReceiveAccept:(ApproxySDKMessage *)aMessage{
+    self.answered = YES;
+    self.callee = YES;
+    self.isVideo = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 接听按钮只在接收方出现，分语音接听和视频接听两种情况
+        if (self.isVideo) {
+            _localCamera = YES;
+            _oppositeCamera = YES;
+            
+            [self clearAllSubViews];
+            // 视频通话接听之后，UI布局与呼叫方一样
+            [self initUIForVideoCaller];
+            // 执行一个小动画
+            [self connected];
+        } else {
+            _localCamera = NO;
+            _oppositeCamera = NO;
+            
+            [UIView animateWithDuration:0.5 animations:^{
+                self.btnContainerView.alpha = 0;
+            } completion:^(BOOL finished) {
+                [self clearAllSubViews];
+                
+                [self initUIForAudioCaller];
+                self.connectLabel.text = @"正在通话中...";
+                
+                [self connected];
+            }];
+        }
+    });
+}
+
+- (void)didReceiveReject:(ApproxySDKMessage *)aMessage{
+    
+}
+
+- (void)didReceiveComplete:(ApproxySDKMessage *)aMessage{
+    
+}
+
+- (void) didReceiveVideoFrame:(IMStreamFrame *)frame{
+    //收到视频帧
+    if(acpService){
+        [acpService didReceiveVideoFrame:frame];
+    }
+}
+
+- (void) didReceiveAudioFrame:(IMStreamFrame *)frame{
+    if(acpService){
+        [acpService didReceiveAudioFrame:frame];
+    }
+}
+
+//点击接受按钮之后的回调
+- (void)didHandleAcceptClick:(NSDictionary *)aDict{
+    
+}
+
+- (void)didHandleRejectClick:(NSDictionary *)aDict{
+    
+}
+
+- (void)didHandleCompleteClick:(NSDictionary *)aDict{
+    
+}
 @end
