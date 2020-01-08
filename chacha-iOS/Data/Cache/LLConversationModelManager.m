@@ -9,6 +9,7 @@
 #import "LLConversationModelManager.h"
 #import "LLChatManager.h"
 #import "LLUtils.h"
+#import "ApproxySDK.h"
 
 @interface LLConversationModelManager ()
 
@@ -88,7 +89,7 @@ CREATE_SHARED_MANAGER(LLConversationModelManager)
     [aConversations enumerateObjectsUsingBlock:^(ApproxySDKConversation * _Nonnull conversation, NSUInteger idx, BOOL * _Nonnull stop) {
         //FIXME: 会话的最新消息为空，这种情况会出现吗？
         if(conversation == nil || conversation.latestMessage == nil){
-            [[EMClient sharedClient].chatManager deleteConversation:conversation.conversationId deleteMessages:YES];
+            [[ApproxySDK getInstance].chatManager deleteConversation:conversation.conversationId deleteMessages:YES];
         }else {
             LLConversationModel *conversationModel = [LLConversationModel conversationModelFromPool:conversation];
             [conversationListModels addObject:conversationModel];

@@ -4,11 +4,8 @@
 //
 
 #import "LLConversationModel.h"
-#import "EMMessage.h"
 #import "LLUtils.h"
 #import "NSDate+LLExt.h"
-#import "EMMessage.h"
-#import "EMTextMessageBody.h"
 #import "LLChatManager.h"
 #import "LLConversationModelManager.h"
 #import "ApproxySDKOptions.h"

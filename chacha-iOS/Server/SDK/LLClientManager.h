@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EMClient.h"
 #import "LLViewController.h"
 #import "ApproxySDKOptions.h"
 #import "ApproxySDKNotify.h"

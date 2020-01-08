@@ -2302,15 +2302,8 @@ MFMailComposeViewControllerDelegate
 //    UILabel *lable = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 100)];
 //    [lable setBackgroundColor:[UIColor redColor]];
 //    [window addSubview:self.chatCallView];
-    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
-    presentView.nickName = @"小萝莉";
-    presentView.connectText = @"通话时长";
-    presentView.netTipText = @"对方的网络状况不是很好";
-    
-    [presentView show];
     
 }
-
 - (void)debug2:(id)sender {
 
     

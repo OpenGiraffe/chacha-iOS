@@ -78,16 +78,16 @@ CREATE_SHARED_MANAGER(LLClientManager)
 - (void)didRegisterFailedWithError:(ApxErrorCode *)error {
     switch (error.errorCode)
     {
-        case EMErrorServerNotReachable:
+        case ApxErrorServerNotReachable:
             [LLUtils showMessageAlertWithTitle:nil message:@"连接服务器失败!"];
             break;
-        case EMErrorUserAlreadyExist:
+        case ApxErrorUserAlreadyExist:
             [LLUtils showMessageAlertWithTitle:nil message:@"用户名已存在"];
             break;
-        case EMErrorNetworkUnavailable:
+        case ApxErrorNetworkUnavailable:
             [LLUtils showMessageAlertWithTitle:nil message:@"网路连接失败"];
             break;
-        case EMErrorServerTimeout:
+        case ApxErrorServerTimeout:
             [LLUtils showMessageAlertWithTitle:nil message:@"连接超时"];
             break;
         default:
@@ -166,7 +166,7 @@ CREATE_SHARED_MANAGER(LLClientManager)
     });
 }
 
-- (void)didAutoLoginWithError:(EMError *)aError {
+- (void)didAutoLoginWithError:(ApxErrorCode *)aError {
     if (aError) {
         [self loginWithResult:NO];
         [self didLoginFailedWithError:aError];
@@ -193,19 +193,19 @@ CREATE_SHARED_MANAGER(LLClientManager)
     [self loginWithResult:NO];
 }
 
-- (void)didLoginFailedWithError:(EMError *)error {
-    switch (error.code)
+- (void)didLoginFailedWithError:(ApxErrorCode *)error {
+    switch (error.errorCode)
     {
-        case EMErrorUserAuthenticationFailed:
+        case LLSDKErrorUserAuthenticationFailed:
             [LLUtils showMessageAlertWithTitle:nil message:@"用户验证失败"];
             break;
-        case EMErrorServerNotReachable:
+        case LLSDKErrorServerNotReachable:
             [LLUtils showMessageAlertWithTitle:nil message:@"连接服务器失败!"];
             break;
-        case EMErrorNetworkUnavailable:
+        case LLSDKErrorNetworkUnavailable:
             [LLUtils showMessageAlertWithTitle:nil message:@"网路连接失败"];
             break;
-        case EMErrorServerTimeout:
+        case LLSDKErrorServerTimeout:
             [LLUtils showMessageAlertWithTitle:nil message:@"连接超时"];
             break;
         default:
@@ -222,8 +222,8 @@ CREATE_SHARED_MANAGER(LLClientManager)
 
 - (void)loadPushOptionsFromServer {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMError *error = nil;
-        EMPushOptions *pushOptions = [[EMClient sharedClient] getPushOptionsFromServerWithError:&error];
+        ApxErrorCode *error = nil;
+        ApxPushOptions *pushOptions = [[ApproxySDK getInstance] getPushOptionsFromServerWithError:&error];
         if (!error) {
             LLPushOptions *llPushOptions = [LLUserProfile myUserProfile].pushOptions;
             llPushOptions.displayStyle = (LLPushDisplayStyle)pushOptions.displayStyle;
@@ -232,7 +232,7 @@ CREATE_SHARED_MANAGER(LLClientManager)
             llPushOptions.noDisturbingEndH = pushOptions.noDisturbingEndH;
             
             NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-            NSString *userName = [EMClient sharedClient].currentUsername;
+            NSString *userName = [[ApproxySDK getInstance] getMyLoginName];
             NSString *key = [NSString stringWithFormat:@"%@_%@",userName, PUSH_OPTIONS_VIBRATE_KEY];
             
             id setting = [userDefaults objectForKey:key];
@@ -260,11 +260,11 @@ CREATE_SHARED_MANAGER(LLClientManager)
 - (void)savePushOptionsToServer {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMPushOptions *pushOptions = [EMClient sharedClient].pushOptions;
+        ApxPushOptions *pushOptions = [ApproxySDK getInstance].pushOptions;
         LLPushOptions *llPushOptions = [LLUserProfile myUserProfile].pushOptions;
         
         NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        NSString *userName = [EMClient sharedClient].currentUsername;
+        NSString *userName = [[ApproxySDK getInstance] getMyLoginName];
         NSString *key = [NSString stringWithFormat:@"%@_%@",userName, PUSH_OPTIONS_VIBRATE_KEY];
         [userDefaults setObject:@(llPushOptions.isVibrateEnabled) forKey:key];
         
@@ -275,16 +275,16 @@ CREATE_SHARED_MANAGER(LLClientManager)
         BOOL isUpdate = NO;
         if (pushOptions.displayStyle != llPushOptions.displayStyle) {
             isUpdate = YES;
-            pushOptions.displayStyle = (EMPushDisplayStyle)llPushOptions.displayStyle;
+            pushOptions.displayStyle = (ApxPushDisplayStyle)llPushOptions.displayStyle;
         }
         
         if (pushOptions.noDisturbStatus != llPushOptions.noDisturbSetting) {
             isUpdate = YES;
-            pushOptions.noDisturbStatus = (EMPushNoDisturbStatus)llPushOptions.noDisturbSetting;
+            pushOptions.noDisturbStatus = (ApxPushNoDisturbStatus)llPushOptions.noDisturbSetting;
         }
         
         if (isUpdate) {
-            EMError *error = [[EMClient sharedClient] updatePushOptionsToServer];
+            ApxErrorCode *error = [[ApproxySDK getInstance] updatePushOptionsToServer];
             if (error) {
                 NSLog(@"更新推送设置失败");
             }

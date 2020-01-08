@@ -9,10 +9,6 @@
 #ifndef LLSDKType_h
 #define LLSDKType_h
 
-#import "EMMessage.h"
-#import "EMMessageBody.h"
-#import "EMConversation.h"
-#import "EMFileMessageBody.h"
 #import "ApproxySDKOptions.h"
 
 static NSString *LLConnectionStateDidChangedNotification = @"LLConnectionStateDidChangedNotification";

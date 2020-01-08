@@ -1134,7 +1134,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 #pragma mark - 消息通知 -
 
-- (void)showNotificationWithMessage:(EMMessage *)message
+- (void)showNotificationWithMessage:(ApproxySDKMessage *)message
 {
     LLPushOptions *options = [LLUserProfile myUserProfile].pushOptions;
     //发送本地推送
@@ -1142,34 +1142,34 @@ CREATE_SHARED_MANAGER(LLChatManager)
     notification.fireDate = [NSDate date]; //触发通知的时间
 
     if (options.displayStyle == kLLPushDisplayStyleMessageSummary) {
-        EMMessageBody *messageBody = message.body;
+        ApxMessageBody *messageBody = message.body;
         NSString *messageStr = nil;
         switch (messageBody.type) {
-            case EMMessageBodyTypeText:
+            case ApxMsgType_Text:
             {
                 if (!message.ext)
-                    messageStr = ((EMTextMessageBody *)messageBody).text;
+                    messageStr = messageBody.im.text;
                 else {
                     messageStr = @"发来一个表情";
                 }
             }
                 break;
-            case EMMessageBodyTypeImage:
+            case ApxMsgType_Img:
             {
                 messageStr = @"发来一张图片";
             }
                 break;
-            case EMMessageBodyTypeLocation:
+            case ApxMsgType_Loc:
             {
                 messageStr = @"分享了一个地理位置";
             }
                 break;
-            case EMMessageBodyTypeVoice:
+            case ApxMsgType_Audio:
             {
                 messageStr = @"发来一段语音";
             }
                 break;
-            case EMMessageBodyTypeVideo:{
+            case ApxMsgType_Video:{
                 messageStr = @"发来一段视频";
             }
                 break;
@@ -1177,7 +1177,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
                 break;
         }
     
-        if (messageBody.type == EMMessageBodyTypeText) {
+        if (messageBody.type == ApxMsgType_Text) {
             notification.alertBody = [NSString stringWithFormat:@"%@:%@", message.from, messageStr];
         }else {
             notification.alertBody = [NSString stringWithFormat:@"%@%@", message.from, messageStr];

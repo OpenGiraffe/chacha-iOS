@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "LLMessageModel.h"
 #import "LLConversationModel.h"
-#import "EMSDK.h"
 
 @interface LLMessageModelManager : NSObject
 

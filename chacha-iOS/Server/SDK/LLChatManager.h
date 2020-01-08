@@ -7,8 +7,6 @@
 #import "LLConversationListController.h"
 #import "LLChatViewController.h"
 #import "LLConversationModel.h"
-#import "EMChatManagerDelegate.h"
-#import "EMClient.h"
 #import "LLMessageModel.h"
 #import "LLSDKType.h"
 #import "LLSDKError.h"

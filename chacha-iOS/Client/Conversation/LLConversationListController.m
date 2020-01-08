@@ -9,7 +9,6 @@
 #import "LLConversationListController.h"
 #import "LLChatManager.h"
 #import "LLConversationModel.h"
-#import "EMClient.h"
 #import "LLConversationListCell.h"
 #import "LLConfig.h"
 #import "LLUtils.h"

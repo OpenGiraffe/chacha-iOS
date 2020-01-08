@@ -4,8 +4,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EMConversation.h"
-#import "EMMessage.h"
 #import "LLMessageModel.h"
 #import "ApproxySDKOptions.h"
 

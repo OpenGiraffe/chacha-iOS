@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "LLSDK.h"
+#import "ApproxySDKOptions.h"
 
 /*!
  *  \~chinese
@@ -15,9 +16,9 @@
  */
 typedef NS_ENUM(NSInteger, LLPushDisplayStyle) {
     //简单显示"您有一条新消息"
-    kLLPushDisplayStyleSimpleBanner = EMPushDisplayStyleSimpleBanner,
+    kLLPushDisplayStyleSimpleBanner = ApxPushDisplayStyleSimpleBanner,
     //显示消息内容
-    kLLPushDisplayStyleMessageSummary = EMPushDisplayStyleMessageSummary
+    kLLPushDisplayStyleMessageSummary = ApxPushDisplayStyleMessageSummary
 };
 
 /*!
@@ -26,11 +27,11 @@ typedef NS_ENUM(NSInteger, LLPushDisplayStyle) {
  */
 typedef NS_ENUM(NSInteger, LLPushNoDisturbSetting) {
     //全天免打扰
-    kLLPushNoDisturbSettingDay = EMPushNoDisturbStatusDay,
+    kLLPushNoDisturbSettingDay = ApxPushNoDisturbStatusDay,
     //自定义时间段免打扰
-    kLLPushNoDisturbSettingCustom = EMPushNoDisturbStatusCustom,
+    kLLPushNoDisturbSettingCustom = ApxPushNoDisturbStatusCustom,
     //关闭免打扰
-    kLLPushNoDisturbSettingClose = EMPushNoDisturbStatusClose,
+    kLLPushNoDisturbSettingClose = ApxPushNoDisturbStatusClose,
 };
 
 

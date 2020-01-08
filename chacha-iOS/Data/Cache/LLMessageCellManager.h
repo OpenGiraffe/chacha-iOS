@@ -11,6 +11,7 @@
 #import "LLMessageBaseCell.h"
 #import "LLMessageImageCell.h"
 #import "LLMessageTextCell.h"
+#import "LLMessageRtcCell.h"
 #import "LLMessageGifCell.h"
 #import "LLMessageLocationCell.h"
 #import "LLMessageDateCell.h"

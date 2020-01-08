@@ -8,12 +8,11 @@
 
 #import "LLContactManager.h"
 #import "LLUtils.h"
-#import "EMSDK.h"
 #import "ApproxySDK.h"
 
 #define CONTACT_QUEUE_ID "CONTACT_QUEUE_ID"
 
-@interface LLContactManager () <EMContactManagerDelegate>
+@interface LLContactManager ()
 
 @property (nonatomic) dispatch_queue_t contact_queue;
 
@@ -31,7 +30,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
     if (self) {
         _contact_queue = dispatch_queue_create(CONTACT_QUEUE_ID, DISPATCH_QUEUE_SERIAL);
         
-        [[EMClient sharedClient].contactManager addDelegate:self delegateQueue:_contact_queue];
+//        [[ApproxySDK getInstance].contactManager addDelegate:self delegateQueue:_contact_queue];
         
     }
     
@@ -42,7 +41,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
 #pragma mark - 获取好友 -
 
 - (void)getContacts:(void (^)(NSArray<LLContactModel *> *))complete {
-    NSArray *buddyList = [[EMClient sharedClient].contactManager getContacts];
+    NSArray *buddyList = [[ApproxySDK getInstance].contactManager getContacts];
     
     NSMutableArray<LLContactModel *> *allContacts = [NSMutableArray arrayWithCapacity:buddyList.count + 1];
     for (NSString *buddy in buddyList) {
@@ -229,7 +228,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
         ApplyEntity * newEntity= [[ApplyEntity alloc] init];
         newEntity.applicantUsername = userName;
         
-        NSString *loginName = [[EMClient sharedClient] currentUsername];
+        NSString *loginName = [[ApproxySDK getInstance] getMyLoginName];
         newEntity.receiverUsername = loginName;
         
         [[InvitationManager sharedInstance] addInvitation:newEntity loginUser:loginName];
@@ -246,7 +245,7 @@ CREATE_SHARED_MANAGER(LLContactManager)
         dispatch_async(dispatch_get_main_queue(), ^{
             [LLUtils hideHUD:HUD animated:YES];
             if (!error) {
-                NSString *loginUsername = [[EMClient sharedClient] currentUsername];
+                NSString *loginUsername = [[ApproxySDK getInstance] getMyLoginName];
                 [[InvitationManager sharedInstance] removeInvitation:entity loginUser:loginUsername];
             }else {
                 [LLUtils showMessageAlertWithTitle:nil message:@"同意添加好友时发生错误"];

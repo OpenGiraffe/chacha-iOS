@@ -109,13 +109,13 @@ CREATE_SHARED_MANAGER(LLMessageCellManager)
         case kLLMessageBodyTypeVideo:
             return [LLMessageVideoCell class];
         case kLLMessageBodyTypeCallin:
-            return [LLMessageTextCell class];
+            return [LLMessageRtcCell class];
         case kLLMessageBodyTypeAccept:
-            return [LLMessageTextCell class];
+            return [LLMessageRtcCell class];
         case kLLMessageBodyTypeReject:
-            return [LLMessageTextCell class];
+            return [LLMessageRtcCell class];
         case kLLMessageBodyTypeComplete:
-            return [LLMessageTextCell class];
+            return [LLMessageRtcCell class];
         default:
             return Nil;
     }

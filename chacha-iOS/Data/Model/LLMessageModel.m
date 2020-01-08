@@ -12,8 +12,6 @@
 #import "LLUserProfile.h"
 #import "LLUtils.h"
 #import "LLEmotionModelManager.h"
-#import "EMImageMessageBody.h"
-#import "EMSDK.h"
 #import "LLConfig.h"
 #import "UIKit+LLExt.h"
 #import "LLChatManager+MessageExt.h"
