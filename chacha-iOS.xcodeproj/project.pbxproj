@@ -20,6 +20,10 @@
 		075DE9DC239F2FE4008C9902 /* LLRTCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 075DE9D9239F2FE3008C9902 /* LLRTCButton.m */; };
 		075DE9DD239F2FE4008C9902 /* LLRTCView.m in Sources */ = {isa = PBXBuildFile; fileRef = 075DE9DA239F2FE3008C9902 /* LLRTCView.m */; };
 		076615072383FA41000A0C9A /* libapproxySDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076615062383FA41000A0C9A /* libapproxySDK.a */; };
+		07A3F9D923C6D33E00779944 /* LLCityIconFont.m in Sources */ = {isa = PBXBuildFile; fileRef = 07A3F9D823C6D33E00779944 /* LLCityIconFont.m */; };
+		07A3F9DC23C6D3E500779944 /* UIImage+LLCityIconFont.m in Sources */ = {isa = PBXBuildFile; fileRef = 07A3F9DB23C6D3E500779944 /* UIImage+LLCityIconFont.m */; };
+		07A3F9DF23C6D49600779944 /* LLCityIconInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 07A3F9DE23C6D49600779944 /* LLCityIconInfo.m */; };
+		07A3F9E023C740F200779944 /* iconfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 07A3F9D523C6ABC300779944 /* iconfont.ttf */; };
 		5E4122E08811E0EBB5AA4DC2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E41296DC217873C62A365DE /* AppDelegate.m */; };
 		5E412F26264EAFAD9063F20C /* LLCollectionTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E412B5873C1BA92248C4493 /* LLCollectionTextCell.m */; };
 		DD066A6A1D5306A2009EB4BC /* Emotion.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DD066A691D5306A2009EB4BC /* Emotion.bundle */; };
@@ -265,6 +269,13 @@
 		075DE9DA239F2FE3008C9902 /* LLRTCView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLRTCView.m; sourceTree = "<group>"; };
 		075DE9DB239F2FE4008C9902 /* LLRTCView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLRTCView.h; sourceTree = "<group>"; };
 		076615062383FA41000A0C9A /* libapproxySDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapproxySDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		07A3F9D523C6ABC300779944 /* iconfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = iconfont.ttf; sourceTree = "<group>"; };
+		07A3F9D723C6D30F00779944 /* LLCityIconFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLCityIconFont.h; sourceTree = "<group>"; };
+		07A3F9D823C6D33E00779944 /* LLCityIconFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLCityIconFont.m; sourceTree = "<group>"; };
+		07A3F9DA23C6D3C400779944 /* UIImage+LLCityIconFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIImage+LLCityIconFont.h"; sourceTree = "<group>"; };
+		07A3F9DB23C6D3E500779944 /* UIImage+LLCityIconFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LLCityIconFont.m"; sourceTree = "<group>"; };
+		07A3F9DD23C6D47800779944 /* LLCityIconInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLCityIconInfo.h; sourceTree = "<group>"; };
+		07A3F9DE23C6D49600779944 /* LLCityIconInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLCityIconInfo.m; sourceTree = "<group>"; };
 		5E41224EF07118FC49275287 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "chacha-iOS/AppDelegate.h"; sourceTree = SOURCE_ROOT; };
 		5E412773A8BD0D9DB6CBD14F /* LLCollectionTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLCollectionTextCell.h; sourceTree = "<group>"; };
 		5E41296DC217873C62A365DE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "chacha-iOS/AppDelegate.m"; sourceTree = SOURCE_ROOT; };
@@ -1200,6 +1211,7 @@
 		DD8C48B91D3A6063003DF258 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				07A3F9D523C6ABC300779944 /* iconfont.ttf */,
 				DD143FBF1D96A13300706DEA /* Monaco.ttf */,
 				DD066A691D5306A2009EB4BC /* Emotion.bundle */,
 				DDDBB2531D3F3D74007D5726 /* user@2x.png */,
@@ -1246,6 +1258,12 @@
 				DD94FC461DD9742A00616F6B /* UITextView+LLDebugOnly.m */,
 				DD94FC471DD9742A00616F6B /* UIView+LLExt.h */,
 				DD94FC481DD9742A00616F6B /* UIView+LLExt.m */,
+				07A3F9D723C6D30F00779944 /* LLCityIconFont.h */,
+				07A3F9DD23C6D47800779944 /* LLCityIconInfo.h */,
+				07A3F9DE23C6D49600779944 /* LLCityIconInfo.m */,
+				07A3F9D823C6D33E00779944 /* LLCityIconFont.m */,
+				07A3F9DA23C6D3C400779944 /* UIImage+LLCityIconFont.h */,
+				07A3F9DB23C6D3E500779944 /* UIImage+LLCityIconFont.m */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -1645,7 +1663,7 @@
 			attributes = {
 				CLASSPREFIX = LL;
 				LastUpgradeCheck = 0800;
-				ORGANIZATIONNAME = GYJZH;
+				ORGANIZATIONNAME = LUT;
 				TargetAttributes = {
 					DD8C485E1D3A40BC003DF258 = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -1678,6 +1696,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07A3F9E023C740F200779944 /* iconfont.ttf in Resources */,
 				DD2986721DD9FFAA0074E318 /* LICENSE in Resources */,
 				DDED8F1C1DBB8F1400A858E1 /* CellGreySelected@2x.png in Resources */,
 				DDDBB2541D3F3D74007D5726 /* user@2x.png in Resources */,
@@ -1772,6 +1791,7 @@
 				DDCA7F511D91772100EBE1FC /* LLEmotionInputView.m in Sources */,
 				DD94FC631DD9748A00616F6B /* LLChatManager.m in Sources */,
 				DDED8F4B1DBB904F00A858E1 /* LLMessageGifCell.m in Sources */,
+				07A3F9D923C6D33E00779944 /* LLCityIconFont.m in Sources */,
 				DD94FC2D1DD9727F00616F6B /* LLWebViewController.m in Sources */,
 				DD34A0541DD369C2006131E9 /* LLUserGeneralOptions.m in Sources */,
 				DD8C48641D3A40BC003DF258 /* main.m in Sources */,
@@ -1858,6 +1878,7 @@
 				DD55A6C11DB200FF005F2CFC /* LLContactWeChatIdSearchController.m in Sources */,
 				DD4054851D8105C500523E17 /* LLConversationListCell.m in Sources */,
 				DD2986741DD9FFAA0074E318 /* README.mdown in Sources */,
+				07A3F9DF23C6D49600779944 /* LLCityIconInfo.m in Sources */,
 				DDED8E551DBB754900A858E1 /* LLGaoDeLocationViewController.m in Sources */,
 				DD34A0641DD74CB6006131E9 /* LLPushOptions.m in Sources */,
 				DD4054C91D83AED000523E17 /* LLUtils+IPhone.m in Sources */,
@@ -1907,6 +1928,7 @@
 				DDED8F6D1DBCD96200A858E1 /* LLMessageModelManager.m in Sources */,
 				075169D6239E54DB00D3262B /* LLChatCallView.m in Sources */,
 				DD34A0611DD42A92006131E9 /* LLVideoDisplayView.m in Sources */,
+				07A3F9DC23C6D3E500779944 /* UIImage+LLCityIconFont.m in Sources */,
 				DDCA7F501D91772100EBE1FC /* LLCollectionEmotionTip.m in Sources */,
 				DD94FC641DD9748A00616F6B /* LLClientManager.m in Sources */,
 				5E412F26264EAFAD9063F20C /* LLCollectionTextCell.m in Sources */,

@@ -7,11 +7,11 @@
 //
 
 #import "LLMessageBaseCell.h"
-#import "LLMessageVoiceCell.h"
+#import "LLMessageTextCell.h"
 #import "LLMessageModel.h"
 
-@interface LLMessageRtcCell : LLMessageVoiceCell
+@interface LLMessageRtcCell : LLMessageBaseCell
 
 + (UIFont *)font;
-
++ (NSAttributedString *)videoIconString;
 @end

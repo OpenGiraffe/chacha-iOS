@@ -1,370 +1,298 @@
 //
-//  LLMessageVoiceCell.m
+//  LLMessageTextCell.m
 //  LLWeChat
 //
-//  Created by GYJZH on 8/30/16.
+//  Created by GYJZH on 7/21/16.
 //  Copyright © 2016 GYJZH. All rights reserved.
 //
 
 #import "LLMessageRtcCell.h"
-#import "LLColors.h"
 #import "LLUtils.h"
+#import "LLConfig.h"
 #import "UIKit+LLExt.h"
+#import "LLSimpleTextLabel.h"
+#import "LLUserProfile.h"
 
-#define OFFSET_Y 5
-#define RECORD_ANIMATION_KEY @"RecordAnimate"
+
+//Label的约束
+#define LABEL_BUBBLE_LEFT 12
+#define LABEL_BUBBLE_RIGHT 12
+#define LABEL_BUBBLE_TOP 14
+#define LABEL_BUBBLE_BOTTOM 12
+
+#define CONTENT_MIN_WIDTH  53
+#define CONTENT_MIN_HEIGHT 41
+
+static CGFloat preferredMaxTextWidth;
 
 @interface LLMessageRtcCell ()
 
-@property (strong, nonatomic) UIImageView *voiceImageView;
-@property (nonatomic) UILabel *durationLabel;
-@property (nonatomic) UIView *isMediaPlayedIndicator;
-
-@property (nonatomic) UIImageView *downloadingImageView;
-
+@property (nonatomic) LLSimpleTextLabel *contentLabel;
+@property (nonatomic) CGRect iconSize;
+@property (nonatomic) NSAttributedString *videoIconString;
 @end
 
-@implementation LLMessageRtcCell
+
+
+@implementation LLMessageRtcCell {
+    UITapGestureRecognizer *doubleTap;
+}
+
++ (void)initialize {
+    if (self == [LLMessageTextCell class]) {
+        preferredMaxTextWidth = SCREEN_WIDTH * CHAT_BUBBLE_MAX_WIDTH_FACTOR;
+    }
+}
+
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        _voiceImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, OFFSET_Y + (AVATAR_HEIGHT - 17)/2, 12.5, 17)];
-        _voiceImageView.contentMode = UIViewContentModeCenter;
-        _voiceImageView.animationDuration = 1;
-        [self.contentView addSubview:_voiceImageView];
+        self.contentLabel = [[LLSimpleTextLabel alloc] init];
+        self.contentLabel.scrollEnabled = NO;
+        self.contentLabel.scrollsToTop = NO;
+        self.contentLabel.editable = NO;
+        self.contentLabel.selectable = NO;
+        self.contentLabel.textContainerInset = UIEdgeInsetsZero;
+        self.contentLabel.textContainer.lineFragmentPadding = 0;
+        self.contentLabel.font = [self.class font];
+        self.contentLabel.textAlignment = NSTextAlignmentLeft;
+        self.contentLabel.backgroundColor = [UIColor clearColor];
+        self.contentLabel.translatesAutoresizingMaskIntoConstraints = NO;
         
-        _durationLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, OFFSET_Y + 20, 100, 20)];
-        _durationLabel.font = [UIFont systemFontOfSize:16];
-        _durationLabel.textColor = kLLTextColor_lightGray_7;
-        _durationLabel.textAlignment = NSTextAlignmentLeft;
-        [self.contentView addSubview:_durationLabel];
+        WEAK_SELF;
+        self.contentLabel.longPressAction = ^(LLLabelRichTextData *data,UIGestureRecognizerState state) {
+            weakSelf.bubbleImage.highlighted = NO;
+            if (!data)return;
+            if (data.type == kLLLabelRichTextTypeURL) {
+                if (state == UIGestureRecognizerStateBegan) {
+                    [weakSelf.delegate textLinkDidLongPressed:data.url userinfo:weakSelf];
+                }
+            }else {
+                if (state == UIGestureRecognizerStateBegan) {
+                    [weakSelf contentLongPressedBeganInView:nil];
+                    [weakSelf.contentLabel swallowTouch];
+                }else if (state == UIGestureRecognizerStateEnded) {
+                    
+                }
+            }
+            
+        };
+        self.contentLabel.tapAction = ^(LLLabelRichTextData *data) {
+            weakSelf.bubbleImage.highlighted = NO;
+            if (!data)return;
+            if (data.type == kLLLabelRichTextTypeURL) {
+                [weakSelf.delegate textLinkDidTapped:data.url userinfo:weakSelf];
+            }else if (data.type == kLLLabelRichTextTypePhoneNumber) {
+                [weakSelf.delegate textPhoneNumberDidTapped:data.phoneNumber userinfo:weakSelf];
+            }
+        };
         
-        _isMediaPlayedIndicator = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
-        _isMediaPlayedIndicator.backgroundColor = kLLBackgroundColor_SlightDardRed;
-        _isMediaPlayedIndicator.layer.cornerRadius = 5;
-        _isMediaPlayedIndicator.clipsToBounds = YES;
-        [self.contentView addSubview:_isMediaPlayedIndicator];
+        [self.contentView addSubview:self.contentLabel];
         
-        self.bubbleImage.frame = CGRectMake(0, -BUBBLE_TOP_BLANK + OFFSET_Y, 100, AVATAR_HEIGHT + BUBBLE_TOP_BLANK + BUBBLE_BOTTOM_BLANK);
+        doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(contentDoubleTapped:)];
+        doubleTap.delegate = self;
+        doubleTap.numberOfTapsRequired = 2;
+        doubleTap.numberOfTouchesRequired = 1;
+        [self.contentView addGestureRecognizer:doubleTap];
+        //        [tap requireGestureRecognizerToFail:doubleTap];
         
     }
     
     return self;
 }
 
-- (void)prepareForUse:(BOOL)isFromMe {
-    [super prepareForUse:isFromMe];
-    
-    CGRect frame = self.avatarImage.frame;
-    frame.origin.y = OFFSET_Y;
-    self.avatarImage.frame = frame;
-    
-}
-
 - (void)setMessageModel:(LLMessageModel *)messageModel {
-    _messageModel = messageModel;
-    self.isCellSelected = messageModel.isSelected;
+    BOOL needUpdateText = [messageModel checkNeedsUpdateForReuse];
+    [super setMessageModel:messageModel];
     
-    if (messageModel.isMediaPlaying) {
-        [self startVoicePlaying];
-    }else {
-        [self stopVoicePlaying];
-    }
-    
-    self.isMediaPlayedIndicator.hidden = messageModel.fromMe || messageModel.isMediaPlayed;
-    self.durationLabel.text = [NSString stringWithFormat:@"%.0f''", round(messageModel.mediaDuration)];
-    [self.durationLabel sizeToFit];
-    
-    if (self.messageModel.isFromMe) {
-        if ([messageModel checkNeedsUpdateUploadStatus]){
-            [self updateMessageUploadStatus];
-        }
-    }else {
-        if ([messageModel checkNeedsUpdateDownloadStatus]) {
-            [self updateMessageDownloadStatus];
-        }
-    }
-    
-    if ([messageModel checkNeedsUpdateForReuse]) {
-        if (messageModel.needAnimateVoiceCell) {
-            messageModel.needAnimateVoiceCell = NO;
-            [self layoutSubviewsWithAnimation:YES];
-        }else {
-            [self layoutMessageContentViews:self.messageModel.isFromMe];
-            [self layoutMessageStatusViews:self.messageModel.isFromMe];
-        }
-    }
-    
-    [messageModel clearNeedsUpdateForReuse];
-    
-}
-
-- (BOOL)isVoicePlaying {
-    return self.voiceImageView.isAnimating;
-}
-
-- (void)stopVoicePlaying {
-    self.voiceImageView.image = self.messageModel.isFromMe ?
-    [UIImage imageNamed:@"SenderVoiceNodePlaying"] :
-    [UIImage imageNamed:@"ReceiverVoiceNodePlaying"];
-    [self.voiceImageView stopAnimating];
-    self.voiceImageView.animationImages = nil;
-    self.isMediaPlayedIndicator.hidden = YES;
-}
-
-- (void)startVoicePlaying {
-    self.voiceImageView.animationImages = self.messageModel.isFromMe ?
-    @[[UIImage imageNamed:@"SenderVoiceNodePlaying001"],
-      [UIImage imageNamed:@"SenderVoiceNodePlaying002"],
-      [UIImage imageNamed:@"SenderVoiceNodePlaying003"]] :
-    @[[UIImage imageNamed:@"ReceiverVoiceNodePlaying001"],
-      [UIImage imageNamed:@"ReceiverVoiceNodePlaying002"],
-      [UIImage imageNamed:@"ReceiverVoiceNodePlaying003"]];
-    [self.voiceImageView startAnimating];
-    self.isMediaPlayedIndicator.hidden = YES;
-}
-
-- (void)updateVoicePlayingStatus {
-    if (self.messageModel.isMediaPlaying != self.isVoicePlaying) {
-        if (self.messageModel.isMediaPlaying) {
-            [self startVoicePlaying];
-        }else {
-            [self stopVoicePlaying];
-        }
+    if (needUpdateText) {
+        NSMutableAttributedString *text = messageModel.attributedText;
+        [text appendAttributedString: [self.class videoIconString]];
+        self.contentLabel.attributedText = text;
+        self.contentLabel.font = [self.class font];
     }
 }
 
-#pragma mark - 布局 -
-//目前只支持发送方动画，接收方在收到语音消息后没有动画
-- (void)layoutSubviewsWithAnimation:(BOOL)isFromMe {
-    if (!isFromMe)
-        return;
-    
-    CGRect frame = self.bubbleImage.frame;
-    frame.size.width = MIN_CELL_WIDTH + BUBBLE_LEFT_BLANK + BUBBLE_RIGHT_BLANK;
-    frame.origin.x = CGRectGetMinX(self.avatarImage.frame) - CGRectGetWidth(frame) - CONTENT_AVATAR_MARGIN;
-    self.bubbleImage.frame = frame;
-    
-    frame = self.durationLabel.frame;
-    frame.origin.x = CGRectGetMinX(self.bubbleImage.frame) - self.durationLabel.intrinsicContentSize.width;
-    frame.origin.y = OFFSET_Y + 10;
-    self.durationLabel.frame = frame;
-    
-    frame = self.voiceImageView.frame;
-    frame.origin.x = CGRectGetMaxX(self.bubbleImage.frame) - BUBBLE_LEFT_BLANK - 15 - CGRectGetWidth(frame);
-    self.voiceImageView.frame = frame;
-    
-    [self layoutMessageStatusViews:isFromMe];
-    
-    [UIView animateWithDuration:DEFAULT_DURATION animations:^{
-        CGRect frame = self.bubbleImage.frame;
-        frame.size.width = [self cellWidth] + BUBBLE_LEFT_BLANK + BUBBLE_RIGHT_BLANK;
-        frame.origin.x = CGRectGetMinX(self.avatarImage.frame) - CGRectGetWidth(frame) - CONTENT_AVATAR_MARGIN;
-        self.bubbleImage.frame = frame;
-        
-        frame = self.durationLabel.frame;
-        frame.origin.x = CGRectGetMinX(self.bubbleImage.frame) - self.durationLabel.intrinsicContentSize.width;
-        frame.origin.y = OFFSET_Y + 20;
-        self.durationLabel.frame = frame;
-        
-        frame = self.voiceImageView.frame;
-        frame.origin.x = CGRectGetMaxX(self.bubbleImage.frame) - BUBBLE_LEFT_BLANK - 15 - CGRectGetWidth(frame);
-        self.voiceImageView.frame = frame;
-        
-        [self layoutMessageStatusViews:isFromMe];
-        
-    }];
-    
-}
 
 - (void)layoutMessageContentViews:(BOOL)isFromMe {
-    CGRect frame;
+    NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithAttributedString: self.messageModel.attributedText];
+    [text appendAttributedString: [self.class videoIconString]];
+    
+    CGSize textSize = [self.class sizeForLabel:text];
+    CGSize size = textSize;
+    size.width += LABEL_BUBBLE_LEFT + LABEL_BUBBLE_RIGHT;
+    size.height += LABEL_BUBBLE_TOP + LABEL_BUBBLE_BOTTOM;
+    if (size.width < CONTENT_MIN_WIDTH) {
+        size.width = CONTENT_MIN_WIDTH;
+    }else {
+        size.width = ceil(size.width);
+    }
+    
+    if (size.height < CONTENT_MIN_HEIGHT) {
+        size.height = CONTENT_MIN_HEIGHT;
+    }else {
+        size.height = ceil(size.height);
+    }
     
     if (isFromMe) {
-        frame = self.bubbleImage.frame;
-        frame.size.width = [self cellWidth] + BUBBLE_LEFT_BLANK + BUBBLE_RIGHT_BLANK;
+        CGRect frame = CGRectMake(0,
+                                  CONTENT_SUPER_TOP - BUBBLE_TOP_BLANK,
+                                  size.width + BUBBLE_LEFT_BLANK + BUBBLE_RIGHT_BLANK,
+                                  size.height + BUBBLE_TOP_BLANK + BUBBLE_BOTTOM_BLANK);
         frame.origin.x = CGRectGetMinX(self.avatarImage.frame) - CGRectGetWidth(frame) - CONTENT_AVATAR_MARGIN;
         self.bubbleImage.frame = frame;
         
-        frame = self.voiceImageView.frame;
-        frame.origin.x = CGRectGetMaxX(self.bubbleImage.frame) - BUBBLE_LEFT_BLANK - 15 - CGRectGetWidth(frame);
-        self.voiceImageView.frame = frame;
-        
-        frame = self.durationLabel.frame;
-        frame.origin.x = CGRectGetMinX(self.bubbleImage.frame) - self.durationLabel.intrinsicContentSize.width;
-        frame.origin.y = OFFSET_Y + 20;
-        self.durationLabel.frame = frame;
+        self.contentLabel.frame = CGRectMake(CGRectGetMinX(self.bubbleImage.frame) + LABEL_BUBBLE_RIGHT + BUBBLE_LEFT_BLANK,
+                                             CGRectGetMinY(self.bubbleImage.frame) + LABEL_BUBBLE_TOP + BUBBLE_TOP_BLANK,
+                                             textSize.width+12, textSize.height);
         
     }else {
-        frame = self.bubbleImage.frame;
-        frame.size.width = [self cellWidth] + BUBBLE_LEFT_BLANK + BUBBLE_RIGHT_BLANK;
-        frame.origin.x = CONTENT_AVATAR_MARGIN + CGRectGetMaxX(self.avatarImage.frame);
-        self.bubbleImage.frame = frame;
+        self.bubbleImage.frame = CGRectMake(CONTENT_AVATAR_MARGIN + CGRectGetMaxX(self.avatarImage.frame),
+                                            CONTENT_SUPER_TOP - BUBBLE_TOP_BLANK, size.width + BUBBLE_LEFT_BLANK + BUBBLE_RIGHT_BLANK, size.height +
+                                            BUBBLE_TOP_BLANK + BUBBLE_BOTTOM_BLANK);
         
-        frame = self.voiceImageView.frame;
-        frame.origin.x = CGRectGetMinX(self.bubbleImage.frame) + BUBBLE_LEFT_BLANK + 15;
-        self.voiceImageView.frame = frame;
-        
-        frame = self.durationLabel.frame;
-        frame.origin.x = CGRectGetMaxX(self.bubbleImage.frame);
-        frame.origin.y = OFFSET_Y + 20;
-        self.durationLabel.frame = frame;
-        
-        frame = _isMediaPlayedIndicator.frame;
-        frame.origin.x = CGRectGetMaxX(self.bubbleImage.frame);
-        _isMediaPlayedIndicator.frame = frame;
-        
-    }
-}
-
-- (void)layoutMessageStatusViews:(BOOL)isFromMe {
-    if (isFromMe) {
-        _indicatorView.center = CGPointMake(CGRectGetMinX(self.bubbleImage.frame) - CGRectGetWidth(_indicatorView.frame)/2 - ACTIVITY_VIEW_X_OFFSET + BUBBLE_LEFT_BLANK, CGRectGetMidY(self.bubbleImage.frame) + ACTIVITY_VIEW_Y_OFFSET);
-        
-        _statusButton.center = CGPointMake(CGRectGetMinX(self.durationLabel.frame) - CGRectGetWidth(_statusButton.frame)/2 - ACTIVITY_VIEW_X_OFFSET, CGRectGetMidY(self.bubbleImage.frame) + ACTIVITY_VIEW_Y_OFFSET);
-    }else {
-        _indicatorView.center = CGPointMake(CGRectGetMaxX(self.durationLabel.frame) + CGRectGetWidth(_indicatorView.frame)/2 + ACTIVITY_VIEW_X_OFFSET, CGRectGetMidY(self.bubbleImage.frame) + ACTIVITY_VIEW_Y_OFFSET);
-        
-        _statusButton.center = CGPointMake(CGRectGetMaxX(self.durationLabel.frame) + CGRectGetWidth(_statusButton.frame)/2 + ACTIVITY_VIEW_X_OFFSET, CGRectGetMidY(self.bubbleImage.frame) + ACTIVITY_VIEW_Y_OFFSET);
-    }
-}
-
-- (CGFloat)cellWidth {
-    return MIN_CELL_WIDTH + (MAX_CELL_WIDTH - MIN_CELL_WIDTH) * sin(self.messageModel.mediaDuration / MAX_RECORD_TIME_ALLOWED * M_PI / 2);
-}
-
-- (void)updateMessageUploadStatus {
-    switch (self.messageModel.messageStatus) {
-        case kLLMessageStatusPending:
-        case kLLMessageStatusFailed:
-            goto LABEL_MessageStatusFailed;
-            
-        case kLLMessageStatusDelivering:
-        case kLLMessageStatusWaiting:
-            //如果录音文件时长小于20秒，就不出现ActivityIndicator了，按发送成功处理
-            if (self.messageModel.mediaDuration > 20) {
-                goto LABEL_MessageStatusDelivering;
-            }else {
-                goto LABEL_MessageStatusSuccessed;
-            }
-            
-        case kLLMessageStatusSuccessed:
-            goto LABEL_MessageStatusSuccessed;
-        default:
-            break;
+        self.contentLabel.frame = CGRectMake(CGRectGetMinX(self.bubbleImage.frame) + LABEL_BUBBLE_LEFT + BUBBLE_LEFT_BLANK,
+                                             CGRectGetMinY(self.bubbleImage.frame) + LABEL_BUBBLE_TOP + BUBBLE_TOP_BLANK,
+                                             textSize.width+12, textSize.height);
     }
     
-    
-LABEL_MessageStatusDelivering:
-    HIDE_STATUS_BUTTON;
-    SHOW_INDICATOR_VIEW;
-    self.durationLabel.hidden = YES;
-    self.voiceImageView.hidden = YES;
-    goto END;
-    
-LABEL_MessageStatusSuccessed:
-    HIDE_STATUS_BUTTON;
-    HIDE_INDICATOR_VIEW;
-    self.durationLabel.hidden = NO;
-    self.voiceImageView.hidden = NO;
-    goto END;
-    
-LABEL_MessageStatusFailed:
-    SHOW_STATUS_BUTTON;
-    HIDE_INDICATOR_VIEW;
-    self.voiceImageView.hidden = NO;
-    self.durationLabel.hidden = NO;
-    
-END:
-    [_messageModel clearNeedsUpdateUploadStatus];
-    
 }
 
-
-- (void)updateMessageDownloadStatus {
-    switch (self.messageModel.messageDownloadStatus) {
-        case kLLMessageDownloadStatusWaiting:
-        case kLLMessageDownloadStatusDownloading:
-            HIDE_STATUS_BUTTON;
-            SHOW_INDICATOR_VIEW;
-            break;
-        case kLLMessageDownloadStatusPending:
-        case kLLMessageDownloadStatusFailed:
-            SHOW_STATUS_BUTTON;
-            HIDE_INDICATOR_VIEW;
-            break;
-        case kLLMessageDownloadStatusSuccessed:
-            HIDE_STATUS_BUTTON;
-            HIDE_INDICATOR_VIEW;
-            break;
-            
-        default:
-            break;
-    }
-    
-    [_messageModel clearNeedsUpdateDownloadStatus];
++ (CGSize)sizeForLabel:(NSAttributedString *)text {
+    CGRect frame = [text boundingRectWithSize:CGSizeMake(preferredMaxTextWidth, MAXFLOAT) options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading) context:nil];
+    return frame.size;
 }
+
++ (UIFont *)font {
+    static UIFont *_font;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+//        _font = [UIFont systemFontOfSize:LL_MESSAGE_FONT_SIZE];
+        _font = [UIFont fontWithName:@"iconfont" size:LL_MESSAGE_FONT_SIZE];
+    });
+    return _font;
+}
+
++ (NSAttributedString *)videoIconString {
+    static NSAttributedString *_videoIcon;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+//        _videoIcon = [[NSAttributedString alloc] initWithString:@"\U0000E6A9"];
+        _videoIcon = [[NSAttributedString alloc] initWithString:@"\U0000E74F"];
+    });
+    return _videoIcon;
+}
+
 
 + (CGFloat)heightForModel:(LLMessageModel *)model {
-    return AVATAR_HEIGHT + CONTENT_SUPER_BOTTOM + OFFSET_Y;
+    NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithAttributedString: model.attributedText];
+    [text appendAttributedString: [self.class videoIconString]];
+    CGSize size = [self sizeForLabel:text];
+    
+    CGFloat bubbleHeight = size.height + LABEL_BUBBLE_TOP + LABEL_BUBBLE_BOTTOM;
+    if (bubbleHeight < CONTENT_MIN_HEIGHT)
+        bubbleHeight = CONTENT_MIN_HEIGHT;
+    else
+        bubbleHeight = ceil(bubbleHeight);
+    
+    return bubbleHeight + CONTENT_SUPER_BOTTOM;
+}
+
+#pragma mark - 手势
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if (gestureRecognizer == doubleTap) {
+        if ([LLUserProfile myUserProfile].userOptions.doubleTapToShowTextMessage) {
+            CGPoint bubblePoint = [touch locationInView:self.bubbleImage];
+            if (CGRectContainsPoint(self.bubbleImage.bounds, bubblePoint) && ![self.contentLabel shouldReceiveTouchAtPoint:[touch locationInView:self.contentLabel]]) {
+                return YES;
+            }
+        }
+        return NO;
+    }
+    
+    return [super gestureRecognizer:gestureRecognizer shouldReceiveTouch:touch];
 }
 
 
-#pragma mark - 手势 -
+- (void)contentDoubleTapped:(UITapGestureRecognizer *)tap {
+    [self.delegate textCellDidDoubleTapped:self];
+}
 
 - (UIView *)hitTestForTapGestureRecognizer:(CGPoint)point {
-    CGPoint pointInView = [self.contentView convertPoint:point toView:self.bubbleImage];
+    CGPoint bubblePoint = [self.contentView convertPoint:point toView:self.bubbleImage];
     
-    if ([self.bubbleImage pointInside:pointInView withEvent:nil]) {
+    if (CGRectContainsPoint(self.bubbleImage.bounds, bubblePoint) && ![self.contentLabel shouldReceiveTouchAtPoint:[self.contentView convertPoint:point toView:self.contentLabel]]) {
         return self.bubbleImage;
     }
-    
     return nil;
 }
 
-- (UIView *)hitTestForlongPressedGestureRecognizer:(CGPoint)point  {
+- (UIView *)hitTestForlongPressedGestureRecognizer:(CGPoint)point {
     return [self hitTestForTapGestureRecognizer:point];
 }
 
-
-- (void)contentTouchBeganInView:(UIView *)view {
+- (void)contentLongPressedBeganInView:(UIView *)view {
     self.bubbleImage.highlighted = YES;
+    [self showMenuControllerInRect:self.bubbleImage.bounds inView:self.bubbleImage];
+    
 }
 
 - (void)contentTouchCancelled {
     self.bubbleImage.highlighted = NO;
 }
 
-- (void)contentEventTappedInView:(UIView *)view {
+- (void)willBeginScrolling {
     self.bubbleImage.highlighted = NO;
+    [self.contentLabel clearLinkBackground];
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    if (self.hidden || !self.userInteractionEnabled || self.alpha <= 0.01)
+        return nil;
     
-    [self.delegate cellDidTapped:self];
+    if (LLMessageCell_isEditing) {
+        if ([self.contentView pointInside:[self convertPoint:point toView:self.contentView] withEvent:event]) {
+            return self.contentView;
+        }
+    }else {
+        if ([self.contentLabel pointInside:[self convertPoint:point toView:self.contentLabel] withEvent:event]) {
+            return self.contentLabel;
+        }else if ([self.contentView pointInside:[self convertPoint:point toView:self.contentView] withEvent:event]) {
+            return self.contentView;
+        }
+    }
+    
+    return nil;
 }
 
-- (void)contentLongPressedBeganInView:(UIView *)view {
-    self.bubbleImage.highlighted = YES;
-    [self showMenuControllerInRect:self.bubbleImage.bounds inView:self.bubbleImage];
-}
-
-
-#pragma mark - 菜单
+#pragma mark - 弹出菜单
 
 - (NSArray<NSString *> *)menuItemNames {
-    return @[@"听筒播放", @"收藏", @"转文字", @"删除", @"更多..."];
+    return @[@"删除", @"更多"];
 }
 
 - (NSArray<NSString *> *)menuItemActionNames {
-    return @[@"playAction:", @"favoriteAction:", @"translateToWordsAction:",@"deleteAction:", @"moreAction:"];
+    return @[@"deleteAction:", @"moreAction:"];
 }
 
-- (void)playAction:(id)sender {
-    [self contentEventTappedInView:nil];
+- (void)copyAction:(id)sender {
+    [LLUtils copyToPasteboard:self.messageModel.text];
 }
 
-- (void)translateToWordsAction:(id)sender {
+- (void)transforAction:(id)sender {
     
 }
+
+- (void)favoriteAction:(id)sender {
+    
+}
+
+- (void)translateAction:(id)sender {
+    
+}
+
 
 
 
