@@ -651,6 +651,7 @@ MFMailComposeViewControllerDelegate
         case kLLMessageBodyTypeVoice:
         case kLLMessageBodyTypeImage:
         case kLLMessageBodyTypeCallin:
+        case kLLMessageBodyTypeCancel:
         case kLLMessageBodyTypeAccept:
         case kLLMessageBodyTypeReject:
         case kLLMessageBodyTypeComplete:
@@ -2239,9 +2240,7 @@ MFMailComposeViewControllerDelegate
     NSString *nickName = self.conversationModel.nickName;
     [aDict setValue:nickName forKey:@"nickName"];
     
-    
-    NSString *myName = [[LLUserProfile myUserProfile] nickName];
-    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    NSString *text = [NSString stringWithFormat:@"通话时长 00:00 "];
     LLChatType chatType = chatTypeForConversationType(self.conversationModel.conversationType);
     LLMessageModel *model = [[LLChatManager sharedManager]
                              sendCallMessage:text
@@ -2251,13 +2250,10 @@ MFMailComposeViewControllerDelegate
                              completion:nil];
     [aDict setValue:model.from forKey:@"senderAgent"];
     [aDict setValue:model.to forKey:@"recvierAgent"];
+    [aDict setValue:model.messageId forKey:@"talkId"];
     [[LLChatManager sharedManager] didHandleCallinClick:aDict];
     
-    [self addModelToDataSourceAndScrollToBottom:model animated:YES];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        //开始视频、预览、推流等 测试
-        
-    });
+//    [self addModelToDataSourceAndScrollToBottom:model animated:YES];
 }
 
 - (void)removeSightController {

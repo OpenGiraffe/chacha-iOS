@@ -90,6 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
                         messageType:(LLChatType)messageType
                          messageExt:(nullable NSDictionary *)messageExt
                          completion:(void (^ __nullable)(LLMessageModel *model, LLSDKError *error))completion;
+- (LLMessageModel *)sendCancelMessage:(NSString *)text
+                                   to:(NSString *)toUser
+                          messageType:(LLChatType)messageType
+                           messageExt:(NSDictionary *)messageExt
+                           completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion;
 - (LLMessageModel *)sendAcceptMessage:(NSString *)text
                                  to:(NSString *)toUser
                         messageType:(LLChatType)messageType

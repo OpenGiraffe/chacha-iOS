@@ -123,7 +123,6 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.callee = isCallee;
         self.isHanged = YES;
         self.clipsToBounds = YES;
-        
         [self setupUI];
     }
     
@@ -146,18 +145,22 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         // 视频通话时，呼叫方的UI初始化
         [self initUIForVideoCaller];
         
-//      // 模拟对方点击通话后的动画效果
-        [self performSelector:@selector(connected) withObject:nil afterDelay:0.8];
-        _answered = YES;
+////      // 模拟对方点击通话后的动画效果
+//        [self performSelector:@selector(connected) withObject:nil afterDelay:0.8];
+        _answered = NO;
         _oppositeCamera = YES;
         _localCamera = YES;
+        
+        [acpService setupWithVideoConfig:_videoConfig
+                             audioConfig:[LFAudioConfig defaultConfig]
+                                 preview:self.ownImageView];
         
     } else if (!self.isVideo && !self.callee) {
         // 语音通话时，呼叫方UI初始化
         [self initUIForAudioCaller];
         
-        [self performSelector:@selector(connected) withObject:nil afterDelay:0.8];
-        _answered = YES;
+//        [self performSelector:@selector(connected) withObject:nil afterDelay:0.8];
+        _answered = NO;
         _oppositeCamera = NO;
         _localCamera = NO;
         
@@ -425,6 +428,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [UIView animateWithDuration:0.5 animations:^{
             self.ownImageView.frame = CGRectMake(kRTCWidth - kMicVideoW - 5 , kRTCHeight - kContainerH - kMicVideoH - 5, kMicVideoW, kMicVideoH);
         } completion:^(BOOL finished) {
+            if(self.callee)
             [acpService setupWithVideoConfig:_videoConfig
                                  audioConfig:[LFAudioConfig defaultConfig]
                                      preview:self.ownImageView];
@@ -597,10 +601,14 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [self dismiss];
     }
     
-    NSDictionary *dict = @{@"isVideo":@(self.isVideo),@"isCaller":@(!self.callee),@"answered":@(self.answered),@"recvierAgent":self.callin.recvierAgent};
+    NSDictionary *dict = @{@"isVideo":@(self.isVideo),@"isCaller":@(!self.callee),@"answered":@(self.answered),@"recvierAgent":self.callin.recvierAgent,@"talkId":self.callin.callId};
     [[NSNotificationCenter defaultCenter] postNotificationName:kHangUpNotification object:dict];
     if(self.chatManagerDelegate){
-        [self.chatManagerDelegate didHandleRejectClick:dict];
+        if(!self.callee && !self.answered){//呼叫方+未连接成功
+            [self.chatManagerDelegate didHandleCancelClick:dict];
+        }else{//其它情况 都属于拒绝连接
+            [self.chatManagerDelegate didHandleRejectClick:dict];
+        }
     }
     if(acpService){
         [acpService quit];

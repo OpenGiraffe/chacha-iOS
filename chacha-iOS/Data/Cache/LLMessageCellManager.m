@@ -110,6 +110,8 @@ CREATE_SHARED_MANAGER(LLMessageCellManager)
             return [LLMessageVideoCell class];
         case kLLMessageBodyTypeCallin:
             return [LLMessageRtcCell class];
+        case kLLMessageBodyTypeCancel:
+            return [LLMessageRtcCell class];
         case kLLMessageBodyTypeAccept:
             return [LLMessageRtcCell class];
         case kLLMessageBodyTypeReject:

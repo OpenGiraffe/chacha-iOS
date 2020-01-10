@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, LLMessageBodyType) {
     kLLMessageBodyTypeLocation = ApxMsgType_Loc,
     kLLMessageBodyTypeFile = ApxMsgType_File,
     kLLMessageBodyTypeCallin = ApxMsgType_CallinVA,
+    kLLMessageBodyTypeCancel = ApxMsgType_CancelVA,
     kLLMessageBodyTypeAccept = ApxMsgType_AcceptVA,
     kLLMessageBodyTypeReject = ApxMsgType_RejectVA,
     kLLMessageBodyTypeComplete = ApxMsgType_Complete,

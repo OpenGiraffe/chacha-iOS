@@ -223,21 +223,36 @@ CREATE_SHARED_MANAGER(LLChatManager)
     }
 }
 
+//点击开始视频按钮之后的回调
 - (void) didHandleCallinClick:(NSDictionary *)aDict{
-    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
+    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:NO];
     [presentView addChatManagerDelegate:self delegateQueue:nil];
     NSString *nickName = aDict[@"nickName"];
     presentView.nickName = nickName?nickName:@"未识别";
-    presentView.connectText = @"通话时长";
+    presentView.connectText = @"00:00";
     presentView.netTipText = @"对方的网络状况不是很好";
     ImCallin *im = [[ImCallin alloc]init];
     im.senderAgent = aDict[@"senderAgent"];
     im.recvierAgent = aDict[@"recvierAgent"];
+    im.callId = aDict[@"talkId"];
     presentView.callin = im;
     [presentView show];
     _presentView = presentView;
 }
 
+//呼叫方点击了取消按钮
+- (void) didHandleCancelClick:(NSDictionary *)aDict{
+    NSString *recvierAgent = aDict[@"recvierAgent"];
+    NSString *callId = aDict[@"talkId"];
+    NSString *text = [NSString stringWithFormat:@"已取消 "];
+    [[LLChatManager sharedManager]
+     sendCancelMessage:text
+     to:recvierAgent
+     messageType:kLLChatTypeChat
+     messageExt:aDict
+     completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
+     }];
+}
 //点击接受按钮之后的回调
 - (void)didHandleAcceptClick:(NSDictionary *)aDict{
     NSString *senderAgent = aDict[@"senderAgent"];
@@ -256,6 +271,9 @@ CREATE_SHARED_MANAGER(LLChatManager)
     
 }
 
+
+
+//点击挂机之后的按钮回调
 - (void)didHandleRejectClick:(NSDictionary *)aDict{
     NSString *talkId = aDict[@"talkId"];
     NSString *recvierAgent = aDict[@"recvierAgent"];
@@ -719,12 +737,32 @@ CREATE_SHARED_MANAGER(LLChatManager)
     message.chatType = (ApxChatType)messageType;
     message.messageId = im.szMsgSrcID;
     
-    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    [self sendMessage:model needInsertToDB:YES];//发送视频通话的时候不插入记录
-    
+    LLMessageModel *model = [[LLMessageModel alloc] initWithMessage:message];
+    [self sendMessage:model needInsertToDB:NO];//发送视频通话的时候不插入记录
     return model;
 }
 
+#pragma mark - 发送取消呼叫消息
+- (LLMessageModel *)sendCancelMessage:(NSString *)text
+                                   to:(NSString *)toUser
+                          messageType:(LLChatType)messageType
+                           messageExt:(NSDictionary *)messageExt
+                           completion:(void (^)(LLMessageModel *model, LLSDKError *error))completion {
+    
+    NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
+    ImCancel *im = [[ImCancel alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
+    im.text = text;
+    im.callId = messageExt[@"talkId"];
+    ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
+    ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
+    
+    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
+    [self sendMessage:model needInsertToDB:YES];
+    
+    return model;
+}
 #pragma mark - 发送视频接受消息
 - (LLMessageModel *)sendAcceptMessage:(NSString *)text
                                    to:(NSString *)toUser
@@ -741,8 +779,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
     message.chatType = (ApxChatType)messageType;
     message.messageId = im.szMsgSrcID;
     
-    LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    [self sendMessage:model needInsertToDB:YES];
+    LLMessageModel *model = [[LLMessageModel alloc] initWithMessage:message];
+    [self sendMessage:model needInsertToDB:NO];
     
     return model;
 }

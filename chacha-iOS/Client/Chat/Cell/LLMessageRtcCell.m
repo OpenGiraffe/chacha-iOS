@@ -146,6 +146,8 @@ static CGFloat preferredMaxTextWidth;
         self.contentLabel.frame = CGRectMake(CGRectGetMinX(self.bubbleImage.frame) + LABEL_BUBBLE_RIGHT + BUBBLE_LEFT_BLANK,
                                              CGRectGetMinY(self.bubbleImage.frame) + LABEL_BUBBLE_TOP + BUBBLE_TOP_BLANK,
                                              textSize.width+12, textSize.height);
+//        NSLog(@"x: %f, y:%f, w:%f, h:%f",self.contentLabel.frame.origin.x,self.contentLabel.frame.origin.y,
+//              self.contentLabel.frame.size.width,self.contentLabel.frame.size.height);
         
     }else {
         self.bubbleImage.frame = CGRectMake(CONTENT_AVATAR_MARGIN + CGRectGetMaxX(self.avatarImage.frame),
@@ -179,7 +181,7 @@ static CGFloat preferredMaxTextWidth;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
 //        _videoIcon = [[NSAttributedString alloc] initWithString:@"\U0000E6A9"];
-        _videoIcon = [[NSAttributedString alloc] initWithString:@"\U0000E74F"];
+        _videoIcon = [[NSAttributedString alloc] initWithString:@"\U0000E74F  "];
     });
     return _videoIcon;
 }
