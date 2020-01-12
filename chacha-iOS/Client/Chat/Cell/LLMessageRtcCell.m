@@ -120,6 +120,7 @@ static CGFloat preferredMaxTextWidth;
     [text appendAttributedString: [self.class videoIconString]];
     
     CGSize textSize = [self.class sizeForLabel:text];
+    textSize.width += 12;//需要补充摄像机icon的宽度
     CGSize size = textSize;
     size.width += LABEL_BUBBLE_LEFT + LABEL_BUBBLE_RIGHT;
     size.height += LABEL_BUBBLE_TOP + LABEL_BUBBLE_BOTTOM;
@@ -145,7 +146,7 @@ static CGFloat preferredMaxTextWidth;
         
         self.contentLabel.frame = CGRectMake(CGRectGetMinX(self.bubbleImage.frame) + LABEL_BUBBLE_RIGHT + BUBBLE_LEFT_BLANK,
                                              CGRectGetMinY(self.bubbleImage.frame) + LABEL_BUBBLE_TOP + BUBBLE_TOP_BLANK,
-                                             textSize.width+12, textSize.height);
+                                             textSize.width, textSize.height);
 //        NSLog(@"x: %f, y:%f, w:%f, h:%f",self.contentLabel.frame.origin.x,self.contentLabel.frame.origin.y,
 //              self.contentLabel.frame.size.width,self.contentLabel.frame.size.height);
         
@@ -156,7 +157,7 @@ static CGFloat preferredMaxTextWidth;
         
         self.contentLabel.frame = CGRectMake(CGRectGetMinX(self.bubbleImage.frame) + LABEL_BUBBLE_LEFT + BUBBLE_LEFT_BLANK,
                                              CGRectGetMinY(self.bubbleImage.frame) + LABEL_BUBBLE_TOP + BUBBLE_TOP_BLANK,
-                                             textSize.width+12, textSize.height);
+                                             textSize.width, textSize.height);
     }
     
 }

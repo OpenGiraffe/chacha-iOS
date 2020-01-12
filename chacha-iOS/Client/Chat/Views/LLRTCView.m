@@ -411,6 +411,10 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         
     } completion:^(BOOL finished) {
         
+        if(acpService){
+            [acpService quit];
+        }
+        
         [self clearAllSubViews];
         [self removeFromSuperview];
     }];
@@ -601,12 +605,26 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [self dismiss];
     }
     
-    NSDictionary *dict = @{@"isVideo":@(self.isVideo),@"isCaller":@(!self.callee),@"answered":@(self.answered),@"recvierAgent":self.callin.recvierAgent,@"talkId":self.callin.callId};
+    NSDate *vaBeginTime = self.callin.vaBeginTime;
+    NSTimeInterval val = [[NSDate date] timeIntervalSinceDate:vaBeginTime];
+    NSString * talkTimeString = [ApproxySDKUtil stringWithNSTimeInterval:val];
+    
+    NSDictionary *dict = @{
+                           @"isVideo":@(self.isVideo),
+                           @"isCaller":@(!self.callee),
+                           @"answered":@(self.answered),
+                           @"senderAgent":self.callin.senderAgent,
+                           @"recvierAgent":self.callin.recvierAgent,
+                           @"talkId":self.callin.callId,
+                           @"talkTime":talkTimeString
+                           };
     [[NSNotificationCenter defaultCenter] postNotificationName:kHangUpNotification object:dict];
     if(self.chatManagerDelegate){
-        if(!self.callee && !self.answered){//呼叫方+未连接成功
+        if(!self.callee && !self.answered){//呼叫方+未连接成功 =》取消
             [self.chatManagerDelegate didHandleCancelClick:dict];
-        }else{//其它情况 都属于拒绝连接
+        }else if(self.answered){//呼叫方或接收方+连接成功 =》通话完成
+            [self.chatManagerDelegate didHandleCompleteClick:dict];
+        }else{//接收方+未连接成功 =》拒接
             [self.chatManagerDelegate didHandleRejectClick:dict];
         }
     }
@@ -731,6 +749,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         NSMutableDictionary *d = [[NSMutableDictionary alloc] initWithDictionary:dict];
         [d setObject:_callin.callId forKey:@"talkId"];
         [d setObject:_callin.senderAgent forKey:@"senderAgent"];
+        [d setObject:_callin.recvierAgent forKey:@"recvierAgent"];
         [d setObject:_callin.dst_ip forKey:@"dst_ip"];
         [d setObject:_callin.dst_port forKey:@"dst_port"];
         [d setObject:_callin.uid forKey:@"uid"];
@@ -1127,9 +1146,11 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 - (void)setAnswered:(BOOL)answered
 {
     _answered = answered;
-    if (!self.callee) {
-        [self connected];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!self.callee) {
+            [self connected];
+        }
+    });
 }
 
 - (void)setOppositeCamera:(BOOL)oppositeCamera

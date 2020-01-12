@@ -153,11 +153,12 @@ CREATE_SHARED_MANAGER(LLChatManager)
 }
 
 # pragma mark - 音视频通话
-//视频通话相关
+//被叫方：接收到呼叫事件
 - (void)didReceiveCall:(ApproxySDKMessage *)aMessage{
     
     ImCallin *im = (ImCallin *)aMessage.body.im;
     NSString *senderAgent = im.senderAgent;
+    //显示等待接受界面
     [[ApproxySDK getInstance].contactManager asyncGetContactByID:senderAgent success:^(ContactUser *u) {
         dispatch_async(dispatch_get_main_queue(), ^{
             LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:YES];
@@ -186,13 +187,27 @@ CREATE_SHARED_MANAGER(LLChatManager)
     }];
 }
 
+//被叫方：呼叫方已经取消呼叫
+- (void)didReceiveCancel:(ApproxySDKMessage *)aMessage{
+    NSLog(@"对方已经取消..");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        LLMessageModel *model = [LLMessageModel messageModelFromPool:aMessage];
+        [self didReceiveMessages: [[NSArray alloc] initWithObjects:aMessage, nil]];
+        if(_presentView ){
+            [_presentView dismiss];
+        }
+    });
+}
+
+//呼叫方：被叫方已经接受通话
 - (void)didReceiveAccept:(ApproxySDKMessage *)aMessage{
     NSLog(@"对方已经接受.. 开始通话..");
     if(_presentView ){
         [_presentView didReceiveAccept:aMessage];
     }
 }
-
+//呼叫方：被叫方已经拒绝通话
 - (void)didReceiveReject:(ApproxySDKMessage *)aMessage{
     NSLog(@"..挂机..");
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -202,28 +217,36 @@ CREATE_SHARED_MANAGER(LLChatManager)
     });
 }
 
+//呼叫方或被叫方：对方点击了通话完成
 - (void)didReceiveComplete:(ApproxySDKMessage *)aMessage{
     NSLog(@"通话结束..");
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        LLMessageModel *model = [LLMessageModel messageModelFromPool:aMessage];
+        LLConversationModel *conversation = [[LLConversationModelManager sharedManager] conversationModelForConversationId:model.conversationId];
+        [conversation.sdk_conversation insertMessage:model.sdk_message];
+        
         if(_presentView ){
             [_presentView dismiss];
         }
     });
 }
 
+//收到视频帧
 - (void) didReceiveVideoFrame:(IMStreamFrame *)frame{
     if(_presentView ){
         [_presentView didReceiveVideoFrame:frame];
     }
 }
 
+//收到音频帧
 - (void) didReceiveAudioFrame:(IMStreamFrame *)frame{
     if(_presentView ){
         [_presentView didReceiveAudioFrame:frame];
     }
 }
 
-//点击开始视频按钮之后的回调
+//呼叫方：点击开始视频按钮之后的回调
 - (void) didHandleCallinClick:(NSDictionary *)aDict{
     LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:NO];
     [presentView addChatManagerDelegate:self delegateQueue:nil];
@@ -235,12 +258,13 @@ CREATE_SHARED_MANAGER(LLChatManager)
     im.senderAgent = aDict[@"senderAgent"];
     im.recvierAgent = aDict[@"recvierAgent"];
     im.callId = aDict[@"talkId"];
+    im.vaBeginTime = [NSDate date];
     presentView.callin = im;
     [presentView show];
     _presentView = presentView;
 }
 
-//呼叫方点击了取消按钮
+//呼叫方：点击了取消按钮
 - (void) didHandleCancelClick:(NSDictionary *)aDict{
     NSString *recvierAgent = aDict[@"recvierAgent"];
     NSString *callId = aDict[@"talkId"];
@@ -253,61 +277,56 @@ CREATE_SHARED_MANAGER(LLChatManager)
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
      }];
 }
-//点击接受按钮之后的回调
+
+//被叫方：点击接受按钮之后的回调
 - (void)didHandleAcceptClick:(NSDictionary *)aDict{
     NSString *senderAgent = aDict[@"senderAgent"];
+    NSString *recvierAgent = aDict[@"recvierAgent"];
     
     NSString *myName = [[LLUserProfile myUserProfile] nickName];
-    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    NSString *text = [myName stringByAppendingString:@"通话时长:00:00 "];
     [[LLChatManager sharedManager]
                              sendAcceptMessage:text
-                             to:senderAgent
+                             to:recvierAgent
                              messageType:kLLChatTypeChat
                              messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
-         //开始发送流数据...
-         [LLUtils showTextHUD:@"开始发送流数据..."];
      }];
-    
 }
 
-
-
-//点击挂机之后的按钮回调
+//被叫方：点击挂机之后的按钮回调
 - (void)didHandleRejectClick:(NSDictionary *)aDict{
     NSString *talkId = aDict[@"talkId"];
     NSString *recvierAgent = aDict[@"recvierAgent"];
     NSString *isVideo = aDict[@"isVideo"];
     NSString *audioAccept = aDict[@"audioAccept"];
     
-    NSString *myName = [[LLUserProfile myUserProfile] nickName];
-    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    NSString *text = [NSString stringWithFormat:@"已拒绝 "];
     [[LLChatManager sharedManager]
      sendRejectMessage:text
      to:recvierAgent
      messageType:kLLChatTypeChat
      messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
-         //开始发送流数据...
-         [LLUtils showTextHUD:@"对方已拒绝..."];
      }];
 }
 
+//呼叫方或被叫方：点击通话完成
 - (void)didHandleCompleteClick:(NSDictionary *)aDict{
     NSString *talkId = aDict[@"talkId"];
     NSString *senderAgent = aDict[@"senderAgent"];
+    NSString *recvierAgent = aDict[@"recvierAgent"];
     NSString *isVideo = aDict[@"isVideo"];
     NSString *audioAccept = aDict[@"audioAccept"];
+    NSString *talkTime = aDict[@"talkTime"];
     
-    NSString *myName = [[LLUserProfile myUserProfile] nickName];
-    NSString *text = [myName stringByAppendingString:@"视频通话"];
+    NSString *text = [NSString stringWithFormat:@"通话时长 %@ ",talkTime];
     [[LLChatManager sharedManager]
      sendCompleteMessage:text
-     to:senderAgent
+     to:recvierAgent
      messageType:kLLChatTypeChat
      messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
-         //开始发送流数据...
          [LLUtils showTextHUD:@"通话结束..."];
      }];
 }
@@ -799,9 +818,21 @@ CREATE_SHARED_MANAGER(LLChatManager)
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;
     message.messageId = im.szMsgSrcID;
+
+    LLMessageModel *model0 = [[LLMessageModel alloc] initWithMessage:message];
+    [self sendMessage:model0 needInsertToDB:NO];//先将数据发送出去 然后再保存
+    
+    im = [[ImReject alloc]initWithSenderAgent:toUser recvierAgent:senderAgent];
+    im.text = text;
+    body = [[ApxMessageBody alloc]initWithIm:im];
+    message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:toUser to:senderAgent body:body ext:messageExt];
+    message.chatType = (ApxChatType)messageType;
+    message.messageId = im.szMsgSrcID;
+    message.direction = ApxMessageDirectionReceive;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    [self sendMessage:model needInsertToDB:YES];//拒绝通话的时候插入记录
+    LLConversationModel *conversation = [[LLConversationModelManager sharedManager] conversationModelForConversationId:model.conversationId];
+    [conversation.sdk_conversation insertMessage:model.sdk_message];
     
     return model;
 }
@@ -822,7 +853,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     message.messageId = im.szMsgSrcID;
     
     LLMessageModel *model = [LLMessageModel messageModelFromPool:message];
-    [self sendMessage:model needInsertToDB:YES];//拒绝通话的时候插入记录
+    [self sendMessage:model needInsertToDB:YES];//通话完成的时候插入记录
     
     return model;
 }

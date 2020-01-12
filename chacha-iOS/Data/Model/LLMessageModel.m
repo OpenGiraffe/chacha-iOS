@@ -500,9 +500,29 @@ static NSMutableDictionary<NSString *, UIImage *> *tmpImageDict;
         case ApxMsgType_Loc:
             typeTitle = @"[位置]";
             break;
-         case ApxMsgType_Audio:
+        case ApxMsgType_Audio:
             typeTitle = @"[语音]";
             break;
+        case ApxMsgType_CallinVA:{
+            ImCallin *im = (ImCallin *)message.body.im;
+            typeTitle = im.text;
+            break;
+        }
+        case ApxMsgType_CancelVA:{
+            ImCancel *im = (ImCancel *)message.body.im;
+            typeTitle = im.text;
+            break;
+        }
+        case ApxMsgType_RejectVA:{
+            ImReject *im = (ImReject *)message.body.im;
+            typeTitle = im.text;
+            break;
+        }
+        case ApxMsgType_Complete:{
+            ImComplete *im = (ImComplete *)message.body.im;
+            typeTitle = im.text;
+            break;
+        }
         case ApxMsgType_File:
             if ([message.ext[MESSAGE_EXT_TYPE_KEY] isEqualToString:MESSAGE_EXT_LOCATION_KEY]) {
                 typeTitle = @"位置";
