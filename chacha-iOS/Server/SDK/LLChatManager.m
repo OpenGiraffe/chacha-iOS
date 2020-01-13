@@ -302,6 +302,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
      messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
      }];
+    //重置设备参数
+    [[ApproxySDK getInstance] resetDeviceWithIndex:[NSNumber numberWithInt:0] miIndex:[NSNumber numberWithInt:0]];
 }
 
 //被叫方：点击接受按钮之后的回调
@@ -338,6 +340,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
          
      }];
+    //重置设备参数
+    [[ApproxySDK getInstance] resetDeviceWithIndex:[NSNumber numberWithInt:0] miIndex:[NSNumber numberWithInt:0]];
 }
 
 //呼叫方或被叫方：点击通话完成
@@ -358,6 +362,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
          [LLUtils showTextHUD:@"通话结束..."];
      }];
+    //重置设备参数
+    [[ApproxySDK getInstance] resetDeviceWithIndex:[NSNumber numberWithInt:0] miIndex:[NSNumber numberWithInt:0]];
 }
 
 

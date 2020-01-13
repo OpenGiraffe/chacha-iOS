@@ -449,6 +449,10 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.cameraBtn.enabled = YES;
         self.inviteBtn.enabled = YES;
         self.btnContainerView.alpha = 1.0;
+        if(self.callee)
+        [acpService setupWithVideoConfig:_videoConfig
+                             audioConfig:[LFAudioConfig defaultConfig]
+                                 preview:self.ownImageView];
         [acpService start];//开始发送流数据
     }
 }
