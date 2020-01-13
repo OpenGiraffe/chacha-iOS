@@ -2236,22 +2236,34 @@ MFMailComposeViewControllerDelegate
 
 #pragma mark - VideoCall 视频通话
 - (void)presentVideoCallController {
-    NSMutableDictionary *aDict = [[NSMutableDictionary alloc]init];
-    NSString *nickName = self.conversationModel.nickName;
-    [aDict setValue:nickName forKey:@"nickName"];
+    LLActionSheet *actionSheet = [[LLActionSheet alloc] initWithTitle:@""];
+    LLActionSheetAction *videoCallAction = [LLActionSheetAction actionWithTitle:@"\U0000E74F 视频通话"
+                                                                        handler:^(LLActionSheetAction *action) {
+                                                                            NSMutableDictionary *aDict = [[NSMutableDictionary alloc]init];
+                                                                            NSString *nickName = self.conversationModel.nickName;
+                                                                            NSString *recvierAgent = self.conversationModel.conversationId;
+                                                                            
+                                                                            [aDict setValue:nickName forKey:@"nickName"];
+                                                                            [aDict setValue:recvierAgent forKey:@"recvierAgent"];
+                                                                            [aDict setValue:@"videoCall" forKey:@"talkType"];
+                                                                            [[LLChatManager sharedManager] didHandleCallinClick:aDict];
+                                                                        }];
+
+    LLActionSheetAction *audioCallAction = [LLActionSheetAction actionWithTitle:@"\U0000E6F0 语音通话"
+                                                                handler:^(LLActionSheetAction *action) {
+                                                                    NSMutableDictionary *aDict = [[NSMutableDictionary alloc]init];
+                                                                    NSString *nickName = self.conversationModel.nickName;
+                                                                    NSString *recvierAgent = self.conversationModel.conversationId;
+                                                                    
+                                                                    [aDict setValue:nickName forKey:@"nickName"];
+                                                                    [aDict setValue:recvierAgent forKey:@"recvierAgent"];
+                                                                    [aDict setValue:@"audioCall" forKey:@"talkType"];
+                                                                    [[LLChatManager sharedManager] didHandleCallinClick:aDict];
+                                                                }] ;
     
-    NSString *text = [NSString stringWithFormat:@"通话时长 00:00 "];
-    LLChatType chatType = chatTypeForConversationType(self.conversationModel.conversationType);
-    LLMessageModel *model = [[LLChatManager sharedManager]
-                             sendCallMessage:text
-                             to:self.conversationModel.conversationId
-                             messageType:chatType
-                             messageExt:nil
-                             completion:nil];
-    [aDict setValue:model.from forKey:@"senderAgent"];
-    [aDict setValue:model.to forKey:@"recvierAgent"];
-    [aDict setValue:model.messageId forKey:@"talkId"];
-    [[LLChatManager sharedManager] didHandleCallinClick:aDict];
+    [actionSheet addActions:@[videoCallAction, audioCallAction]];
+    [actionSheet showInWindow:[LLUtils popOverWindow]];
+    
     
 //    [self addModelToDataSourceAndScrollToBottom:model animated:YES];
 }

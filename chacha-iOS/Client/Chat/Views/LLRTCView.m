@@ -140,7 +140,14 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     _videoConfig=[[LFVideoConfig alloc] init:LFVideoConfigQuality_Hight3 isLandscape:NO];
     acpService=[ApxRTC_ACPService sharedInstance];
     acpService.delegate=self;
-
+    if(self.isVideo){
+        [acpService videoEnable:TRUE];
+        [acpService audioEnable:TRUE];
+    }else{
+        [acpService videoEnable:FALSE];
+        [acpService audioEnable:TRUE];
+    }
+    
     if (self.isVideo && !self.callee) {
         // 视频通话时，呼叫方的UI初始化
         [self initUIForVideoCaller];
@@ -442,6 +449,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.cameraBtn.enabled = YES;
         self.inviteBtn.enabled = YES;
         self.btnContainerView.alpha = 1.0;
+        [acpService start];//开始发送流数据
     }
 }
 
@@ -735,7 +743,6 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
             self.btnContainerView.alpha = 0;
         } completion:^(BOOL finished) {
             [self clearAllSubViews];
-            
             [self initUIForAudioCaller];
             self.connectLabel.text = @"正在通话中...";
             
@@ -754,6 +761,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [d setObject:_callin.dst_port forKey:@"dst_port"];
         [d setObject:_callin.uid forKey:@"uid"];
         [d setObject:_callin.uid_ex forKey:@"uid_ex"];
+        [d setObject:_callin.callType forKey:@"callType"];
         [self.chatManagerDelegate didHandleAcceptClick:d];
     }
 }
@@ -1215,6 +1223,21 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     self.answered = YES;
     self.callee = YES;
     self.isVideo = YES;
+    
+    ImCallVA *im = (ImCallVA *)aMessage.body.im;
+    if([im.callType intValue]== 3){
+        if(acpService){
+            [acpService videoEnable:TRUE];
+            [acpService audioEnable:TRUE];
+            self.isVideo = YES;
+        }
+    }else{
+        if(acpService){
+            [acpService videoEnable:FALSE];
+            [acpService audioEnable:TRUE];
+            self.isVideo = NO;
+        }
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         // 接听按钮只在接收方出现，分语音接听和视频接听两种情况
         if (self.isVideo) {

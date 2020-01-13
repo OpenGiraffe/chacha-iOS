@@ -161,7 +161,13 @@ CREATE_SHARED_MANAGER(LLChatManager)
     //显示等待接受界面
     [[ApproxySDK getInstance].contactManager asyncGetContactByID:senderAgent success:^(ContactUser *u) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:YES];
+            LLRTCView *presentView = nil;
+            NSNumber *callType = im.callType;
+            if([callType intValue] == ApxCallVA_AudioVideo){
+                presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:YES];
+            }else{
+                presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
+            }
             [presentView addChatManagerDelegate:self delegateQueue:nil];
             presentView.nickName = u.nickName;
             presentView.connectText = @"通话时长";
@@ -221,7 +227,6 @@ CREATE_SHARED_MANAGER(LLChatManager)
 - (void)didReceiveComplete:(ApproxySDKMessage *)aMessage{
     NSLog(@"通话结束..");
     dispatch_async(dispatch_get_main_queue(), ^{
-        
         LLMessageModel *model = [LLMessageModel messageModelFromPool:aMessage];
         LLConversationModel *conversation = [[LLConversationModelManager sharedManager] conversationModelForConversationId:model.conversationId];
         [conversation.sdk_conversation insertMessage:model.sdk_message];
@@ -248,9 +253,29 @@ CREATE_SHARED_MANAGER(LLChatManager)
 
 //呼叫方：点击开始视频按钮之后的回调
 - (void) didHandleCallinClick:(NSDictionary *)aDict{
-    LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:NO];
-    [presentView addChatManagerDelegate:self delegateQueue:nil];
+    LLRTCView *presentView = nil;
+    NSString *callType = aDict[@"callType"];
+    if([callType isEqualToString:@"videoCall"]){
+        presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:NO];
+    }else{
+        presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
+    }
+    
+    NSString *recvierAgent = aDict[@"recvierAgent"];
     NSString *nickName = aDict[@"nickName"];
+    NSString *text = @"";
+    NSString *talkType = aDict[@"talkType"];
+    NSNumber *callTypeNumber = [NSNumber numberWithInt:[aDict[@"talkType"] isEqualToString:@"videoCall"] ? 3: 1 ];//3音频+视频 1仅音频
+    LLMessageModel *model = [[LLChatManager sharedManager]
+                             sendCallMessage:text
+                             to:recvierAgent
+                             messageType:kLLChatTypeChat
+                             messageExt:aDict
+                             completion:nil];
+    [aDict setValue:model.messageId forKey:@"talkId"];
+    [aDict setValue:model.from forKey:@"senderAgent"];
+    
+    [presentView addChatManagerDelegate:self delegateQueue:nil];
     presentView.nickName = nickName?nickName:@"未识别";
     presentView.connectText = @"00:00";
     presentView.netTipText = @"对方的网络状况不是很好";
@@ -258,6 +283,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     im.senderAgent = aDict[@"senderAgent"];
     im.recvierAgent = aDict[@"recvierAgent"];
     im.callId = aDict[@"talkId"];
+    im.callType = callTypeNumber;
     im.vaBeginTime = [NSDate date];
     presentView.callin = im;
     [presentView show];
@@ -282,6 +308,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 - (void)didHandleAcceptClick:(NSDictionary *)aDict{
     NSString *senderAgent = aDict[@"senderAgent"];
     NSString *recvierAgent = aDict[@"recvierAgent"];
+    NSString *callType = aDict[@"callType"];
     
     NSString *myName = [[LLUserProfile myUserProfile] nickName];
     NSString *text = [myName stringByAppendingString:@"通话时长:00:00 "];
@@ -291,6 +318,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
                              messageType:kLLChatTypeChat
                              messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
+         
      }];
 }
 
@@ -308,6 +336,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
      messageType:kLLChatTypeChat
      messageExt:aDict
      completion:^(LLMessageModel * _Nonnull model, LLSDKError * _Nonnull error){
+         
      }];
 }
 
@@ -751,6 +780,9 @@ CREATE_SHARED_MANAGER(LLChatManager)
     NSString *senderAgent =[[ApproxySDK getInstance] getMySelfUid];
     ImCallin *im = [[ImCallin alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
     im.text = text;
+    NSNumber *callTypeNumber = [NSNumber numberWithInt:[messageExt[@"talkType"] isEqualToString:@"videoCall"] ? ApxCallVA_AudioVideo: ApxCallVA_OnlyAudio ];//3音频+视频 1仅音频
+    im.callType = callTypeNumber;
+    
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;
@@ -793,6 +825,9 @@ CREATE_SHARED_MANAGER(LLChatManager)
     ImAccept *im = [[ImAccept alloc]initWithSenderAgent:senderAgent recvierAgent:toUser];
     im.text = text;
     im.callId = messageExt[@"talkId"];
+    NSNumber *callTypeNumber = [NSNumber numberWithInt:[messageExt[@"talkType"] isEqualToString:@"videoCall"] ? ApxCallVA_AudioVideo: ApxCallVA_OnlyAudio ];//3音频+视频 1仅音频
+    im.callType = callTypeNumber;
+    
     ApxMessageBody *body = [[ApxMessageBody alloc]initWithIm:im];
     ApproxySDKMessage *message = [[ApproxySDKMessage alloc]initWithConversationID:toUser from:senderAgent to:toUser body:body ext:messageExt];
     message.chatType = (ApxChatType)messageType;

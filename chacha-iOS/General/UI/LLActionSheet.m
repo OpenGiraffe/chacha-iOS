@@ -187,9 +187,11 @@ LLActionSheetAction *LL_ActionSheetSeperator = nil;
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:frame];
         titleLabel.backgroundColor = [UIColor whiteColor];
         titleLabel.textColor = TITLE_FONT_COLOR;
-        titleLabel.font = [UIFont systemFontOfSize:TITLE_FONT_SIZE];
+//      titleLabel.font = [UIFont systemFontOfSize:TITLE_FONT_SIZE];
+        titleLabel.font = [UIFont fontWithName:@"iconfont" size:TITLE_FONT_SIZE];
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.text = self.title;
+        
         return titleLabel;
     }else {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -205,7 +207,8 @@ LLActionSheetAction *LL_ActionSheetSeperator = nil;
             
             UIColor *buttonTitleColor = data.style == kLLActionStyleDefault ? ACTION_FONT_DEFAULT_COLOR : ACTION_FONT_DESTRUCTIVE_COLOR;
             [button setTitleColor:buttonTitleColor forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:ACTION_FONT_SIZE];
+//            button.titleLabel.font = [UIFont systemFontOfSize:ACTION_FONT_SIZE];
+            button.titleLabel.font = [UIFont fontWithName:@"iconfont" size:TITLE_FONT_SIZE];
             
             CALayer *line = [CALayer layer];
             line.backgroundColor = kLLBackgroundColor_lightGray.CGColor;
