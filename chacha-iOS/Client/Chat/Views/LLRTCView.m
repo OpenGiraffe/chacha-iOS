@@ -1158,11 +1158,11 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 - (void)setAnswered:(BOOL)answered
 {
     _answered = answered;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!self.callee) {
-            [self connected];
-        }
-    });
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if (!self.callee) {
+//            [self connected];
+//        }
+//    });
 }
 
 - (void)setOppositeCamera:(BOOL)oppositeCamera
