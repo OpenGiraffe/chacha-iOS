@@ -159,7 +159,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         _localCamera = YES;
         
         [acpService setupWithVideoConfig:_videoConfig
-                             audioConfig:[LFAudioConfig defaultConfig]
+                             audioConfig:[LFAudioConfig acpConfig]
                                  preview:self.ownImageView];
         
     } else if (!self.isVideo && !self.callee) {
@@ -441,7 +441,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         } completion:^(BOOL finished) {
             if(self.callee)
             [acpService setupWithVideoConfig:_videoConfig
-                                 audioConfig:[LFAudioConfig defaultConfig]
+                                 audioConfig:[LFAudioConfig acpConfig]
                                      preview:self.ownImageView];
             [acpService start];//开始发送流数据
         }];
@@ -451,7 +451,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.btnContainerView.alpha = 1.0;
         if(self.callee)
         [acpService setupWithVideoConfig:_videoConfig
-                             audioConfig:[LFAudioConfig defaultConfig]
+                             audioConfig:[LFAudioConfig acpConfig]
                                  preview:self.ownImageView];
         [acpService start];//开始发送流数据
     }
@@ -544,7 +544,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         
         _isFrontCamera=YES;
         [acpService setupWithVideoConfig:_videoConfig
-                             audioConfig:[LFAudioConfig defaultConfig]
+                             audioConfig:[LFAudioConfig acpConfig]
                                  preview:self.ownImageView];
         // 对方和本地都开了摄像头
         if (self.oppositeCamera) {
