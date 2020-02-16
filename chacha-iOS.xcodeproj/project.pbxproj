@@ -11,8 +11,6 @@
 		07186CE823A5C8F3001DBACA /* TvViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CE523A5C8F3001DBACA /* TvViewController.m */; };
 		07186CFB23A5CFB3001DBACA /* FilterSelectModalView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07186CF923A5CFB3001DBACA /* FilterSelectModalView.xib */; };
 		07186CFC23A5CFB3001DBACA /* FilterSelectModalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */; };
-		07186D0223A5CFEE001DBACA /* PlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07186CFD23A5CFEE001DBACA /* PlayViewController.xib */; };
-		07186D0323A5CFEE001DBACA /* PlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFE23A5CFEE001DBACA /* PlayViewController.m */; };
 		07186D0423A5CFEE001DBACA /* ModalWindowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFF23A5CFEE001DBACA /* ModalWindowView.m */; };
 		0726F36D23C5E7840083B5FE /* LLMessageRtcCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F36C23C5E7840083B5FE /* LLMessageRtcCell.m */; };
 		075169D1239E47DA00D3262B /* LLChatCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 075169D0239E47DA00D3262B /* LLChatCallView.xib */; };
@@ -254,10 +252,7 @@
 		07186CF823A5CFB3001DBACA /* FilterSelectModalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterSelectModalView.h; sourceTree = "<group>"; };
 		07186CF923A5CFB3001DBACA /* FilterSelectModalView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterSelectModalView.xib; sourceTree = "<group>"; };
 		07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterSelectModalView.m; sourceTree = "<group>"; };
-		07186CFD23A5CFEE001DBACA /* PlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayViewController.xib; sourceTree = "<group>"; };
-		07186CFE23A5CFEE001DBACA /* PlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayViewController.m; sourceTree = "<group>"; };
 		07186CFF23A5CFEE001DBACA /* ModalWindowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModalWindowView.m; sourceTree = "<group>"; };
-		07186D0023A5CFEE001DBACA /* PlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayViewController.h; sourceTree = "<group>"; };
 		07186D0123A5CFEE001DBACA /* ModalWindowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalWindowView.h; sourceTree = "<group>"; };
 		0726F36B23C5E7840083B5FE /* LLMessageRtcCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLMessageRtcCell.h; sourceTree = "<group>"; };
 		0726F36C23C5E7840083B5FE /* LLMessageRtcCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLMessageRtcCell.m; sourceTree = "<group>"; };
@@ -731,9 +726,6 @@
 			children = (
 				07186D0123A5CFEE001DBACA /* ModalWindowView.h */,
 				07186CFF23A5CFEE001DBACA /* ModalWindowView.m */,
-				07186D0023A5CFEE001DBACA /* PlayViewController.h */,
-				07186CFE23A5CFEE001DBACA /* PlayViewController.m */,
-				07186CFD23A5CFEE001DBACA /* PlayViewController.xib */,
 				07186CF823A5CFB3001DBACA /* FilterSelectModalView.h */,
 				07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */,
 				07186CF923A5CFB3001DBACA /* FilterSelectModalView.xib */,
@@ -1711,7 +1703,6 @@
 				DDDB20B21DD1682500BA281F /* LLImageDownloadFailView.xib in Resources */,
 				DDED8F201DBB8F1400A858E1 /* FriendsSendsPicturesQuitBigIcon@2x.png in Resources */,
 				DD0B87941D4B237700FD896D /* Emotions.plist in Resources */,
-				07186D0223A5CFEE001DBACA /* PlayViewController.xib in Resources */,
 				DDED8F2B1DBB8F1400A858E1 /* MMVideoPreviewPlayHL@2x.png in Resources */,
 				DDED8F251DBB8F1400A858E1 /* FriendsSendsPicturesSelectIcon.png in Resources */,
 				DDED8F211DBB8F1400A858E1 /* FriendsSendsPicturesSelectBigNIcon.png in Resources */,
@@ -1854,7 +1845,6 @@
 				DDCA7F341D9175B300EBE1FC /* LLChatVoiceTipView.m in Sources */,
 				DD34A0531DD369C2006131E9 /* LLContactModel.m in Sources */,
 				DD4055171D86783100523E17 /* LLChatViewController.m in Sources */,
-				07186D0323A5CFEE001DBACA /* PlayViewController.m in Sources */,
 				DD94FC4F1DD9742A00616F6B /* UINavigationBar+LLExt.m in Sources */,
 				DD4054E21D84DA0B00523E17 /* LLUtils+Popover.m in Sources */,
 				DD55A6C71DB32EBA005F2CFC /* LLContactApplyController.m in Sources */,

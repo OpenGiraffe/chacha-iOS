@@ -180,16 +180,6 @@ CREATE_SHARED_MANAGER(LLChatManager)
             _presentView = presentView;
         });
     } failure:^(ApxErrorCode *aError) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            LLRTCView *presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:YES];
-            [presentView addChatManagerDelegate:self delegateQueue:nil];
-            presentView.nickName = @"未识别";
-            presentView.connectText = @"通话时长";
-            presentView.netTipText = @"对方的网络状况不佳";
-            [presentView show];
-            _presentView = presentView;
-        });
-        
     }];
 }
 
@@ -254,8 +244,8 @@ CREATE_SHARED_MANAGER(LLChatManager)
 //呼叫方：点击开始视频按钮之后的回调
 - (void) didHandleCallinClick:(NSDictionary *)aDict{
     LLRTCView *presentView = nil;
-    NSString *callType = aDict[@"callType"];
-    if([callType isEqualToString:@"videoCall"]){
+    NSString *talkType = aDict[@"talkType"];
+    if([talkType isEqualToString:@"videoCall"]){
         presentView = [[LLRTCView alloc] initWithIsVideo:YES isCallee:NO];
     }else{
         presentView = [[LLRTCView alloc] initWithIsVideo:NO isCallee:NO];
@@ -264,8 +254,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
     NSString *recvierAgent = aDict[@"recvierAgent"];
     NSString *nickName = aDict[@"nickName"];
     NSString *text = @"";
-    NSString *talkType = aDict[@"talkType"];
-    NSNumber *callTypeNumber = [NSNumber numberWithInt:[aDict[@"talkType"] isEqualToString:@"videoCall"] ? 3: 1 ];//3音频+视频 1仅音频
+    NSNumber *callTypeNumber = [NSNumber numberWithInt:[talkType isEqualToString:@"videoCall"] ? 3: 1 ];//3音频+视频 1仅音频
     LLMessageModel *model = [[LLChatManager sharedManager]
                              sendCallMessage:text
                              to:recvierAgent
@@ -310,7 +299,7 @@ CREATE_SHARED_MANAGER(LLChatManager)
 - (void)didHandleAcceptClick:(NSDictionary *)aDict{
     NSString *senderAgent = aDict[@"senderAgent"];
     NSString *recvierAgent = aDict[@"recvierAgent"];
-    NSString *callType = aDict[@"callType"];
+    NSNumber *callType = aDict[@"callType"];
     
     NSString *myName = [[LLUserProfile myUserProfile] nickName];
     NSString *text = [myName stringByAppendingString:@"通话时长:00:00 "];

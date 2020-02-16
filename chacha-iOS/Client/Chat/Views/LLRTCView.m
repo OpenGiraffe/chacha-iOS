@@ -766,6 +766,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         [d setObject:_callin.uid forKey:@"uid"];
         [d setObject:_callin.uid_ex forKey:@"uid_ex"];
         [d setObject:_callin.callType forKey:@"callType"];
+        [d setObject:[_callin.callType intValue] == ApxCallVA_AudioVideo ? @"videoCall":@"audioCall" forKey:@"talkType"];
         [self.chatManagerDelegate didHandleAcceptClick:d];
     }
 }
