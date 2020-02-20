@@ -600,6 +600,8 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.loudSpeaker = NO;
         [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
     }
+    //让我的App占用听筒或扬声器
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
 }
 
 - (void)inviteClick
@@ -1217,7 +1219,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         dispatch_sync(dispatch_get_main_queue(), ^{
             _glLayer.pixelBuffer = pixelBuffer;
         });
-        CVPixelBufferRelease(pixelBuffer);
+        //CVPixelBufferRelease(pixelBuffer);
     }
 }
 - (void)inputAudioFrame:(IMStreamFrame *)frame{
