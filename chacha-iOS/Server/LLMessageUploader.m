@@ -77,7 +77,6 @@
 }
 
 - (void)uploadBlock:(LLMessageModel *)messageModel {
-    NSLog(@"Before Wait");
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 
     BOOL needProgress = NO;

@@ -113,6 +113,10 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     FilterSelectModalView *_filterSelectView;
     LFVideoConfig *_videoConfig;
     AAPLEAGLLayer *_glLayer;
+    NSTimer *_timer;
+    /** 通话时长 **/
+    NSInteger _talkingSecond;
+    BOOL _isConnected;//连接成功
 }
 - (instancetype)initWithIsVideo:(BOOL)isVideo isCallee:(BOOL)isCallee
 {
@@ -123,10 +127,47 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         self.callee = isCallee;
         self.isHanged = YES;
         self.clipsToBounds = YES;
+        
+        __weak typeof(self) weakSelf = self;
+        _timer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+            [weakSelf timerTick:timer];
+        }];
+        
+        _isConnected = NO;//初始化为未连接
+        _talkingSecond = 0;//初始化为0
         [self setupUI];
     }
     
     return self;
+}
+
+//传入 秒  得到 xx:xx:xx
+-(NSString *)getMMSSFromSS:(NSInteger) seconds{
+    
+    //format of minute
+    NSString *str_minute = [NSString stringWithFormat:@"%02ld",(seconds%3600)/60];
+    //format of second
+    NSString *str_second = [NSString stringWithFormat:@"%02ld",seconds%60];
+    
+    //format of time
+    NSString *format_time = nil;
+    if(seconds/3600 > 0){
+        //format of hour
+        NSString *str_hour = [NSString stringWithFormat:@"%02ld",seconds/3600];
+        format_time = [NSString stringWithFormat:@"%@:%@:%@",str_hour,str_minute,str_second];
+    }else{
+        format_time = [NSString stringWithFormat:@"%@:%@",str_minute,str_second];
+    }
+    return format_time;
+}
+
+-(void)timerTick:(NSTimer *)timer{
+    if(_isConnected){
+        _talkingSecond+=1;//递增一秒
+        NSString *timeSTR = [self getMMSSFromSS:_talkingSecond];
+        self.connectLabel.text = timeSTR;
+        [_microBtn setTitle:timeSTR forState:UIControlStateNormal];
+    }
 }
 
 /**
@@ -416,6 +457,12 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
         _swichBtn.transform = CGAffineTransformMakeTranslation(0, -CGRectGetMaxY(_swichBtn.frame));
         _btnContainerView.transform = CGAffineTransformMakeTranslation(0, kContainerH);
         
+        //当最小化语音通话按钮时 此时关闭窗口 也要将此按钮关闭
+        if(_microBtn){
+            [self.microBtn removeFromSuperview];
+            self.microBtn = nil;
+        }
+        
     } completion:^(BOOL finished) {
         
         if(acpService){
@@ -455,6 +502,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
                                  preview:self.ownImageView];
         [acpService start];//开始发送流数据
     }
+    _isConnected = YES;
 }
 
 - (void)clearAllSubViews
@@ -488,11 +536,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     _answerBtn = nil;
 }
 
-- (void)dealloc
-{
-     NSLog(@"%s",__func__);
-    [self clearAllSubViews];
-}
+
 
 #pragma mark - 按钮点击事件
 
@@ -1307,4 +1351,13 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 - (void)didHandleCompleteClick:(NSDictionary *)aDict{
     
 }
+
+- (void)dealloc
+{
+    NSLog(@"LLRTCView dealloc ...%s",__func__);
+    [self clearAllSubViews];
+    [_timer invalidate];
+    _timer = nil;
+}
 @end
+

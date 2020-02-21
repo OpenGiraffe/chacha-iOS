@@ -77,5 +77,4 @@ UIKIT_EXTERN NSString *const kVideoCaptureNotification;
 
 - (void)addChatManagerDelegate:(id<ApproxySDKChatManagerDelegate>)aDelegate
                  delegateQueue:(dispatch_queue_t)aQueue;
-
 @end
