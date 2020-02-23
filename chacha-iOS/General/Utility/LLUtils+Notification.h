@@ -13,5 +13,4 @@
 + (UIUserNotificationType)getCurrentRegistedNotificationType;
 
 + (BOOL)isEnabledNotification;
-
 @end

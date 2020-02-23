@@ -278,6 +278,7 @@
     
     //密码错误 跳转到登录页面
 //    [[LLUtils appDelegate] showRootControllerForLoginStatus:false];
+    [[LLClientManager sharedManager] didAutoLoginWithError:ApxErrorCode.User_LoginPassError];
 }
 
 - (void) onLoginSta:(id)o{
@@ -308,6 +309,8 @@
     //获取个人用户信息
     [[ApproxySDK getInstance] getMyInfo:completeBlock];
     
+    //加载推送信息等
+    [[LLClientManager sharedManager] didAutoLoginWithError:nil];
 }
 
 - (void) onReceiveMessages:(id)o {

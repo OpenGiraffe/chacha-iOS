@@ -222,37 +222,38 @@ CREATE_SHARED_MANAGER(LLClientManager)
 
 - (void)loadPushOptionsFromServer {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        ApxErrorCode *error = nil;
-        ApxPushOptions *pushOptions = [[ApproxySDK getInstance] getPushOptionsFromServerWithError:&error];
-        if (!error) {
-            LLPushOptions *llPushOptions = [LLUserProfile myUserProfile].pushOptions;
-            llPushOptions.displayStyle = (LLPushDisplayStyle)pushOptions.displayStyle;
-            llPushOptions.noDisturbSetting = (LLPushNoDisturbSetting)pushOptions.noDisturbStatus;
-            llPushOptions.noDisturbingStartH = pushOptions.noDisturbingStartH;
-            llPushOptions.noDisturbingEndH = pushOptions.noDisturbingEndH;
-            
-            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-            NSString *userName = [[ApproxySDK getInstance] getMyLoginName];
-            NSString *key = [NSString stringWithFormat:@"%@_%@",userName, PUSH_OPTIONS_VIBRATE_KEY];
-            
-            id setting = [userDefaults objectForKey:key];
-            if (setting) {
-                llPushOptions.isVibrateEnabled = [setting boolValue];
+        [[ApproxySDK getInstance] getPushOptionsFromServer:^(ApxPushOptions *options, ApxErrorCode *errorCode) {
+            if (errorCode && errorCode.errorCode == 1000) {
+                LLPushOptions *llPushOptions = [LLUserProfile myUserProfile].pushOptions;
+                llPushOptions.displayStyle = (LLPushDisplayStyle)options.displayStyle;
+                llPushOptions.noDisturbSetting = (LLPushNoDisturbSetting)options.noDisturbStatus;
+                llPushOptions.noDisturbingStartH = options.noDisturbingStartH;
+                llPushOptions.noDisturbingEndH = options.noDisturbingEndH;
+                llPushOptions.isAlertSoundEnabled = options.isAlertSoundEnabled;
+                llPushOptions.isVibrateEnabled = options.isVibrateEnabled;
+                llPushOptions.isMomentsUpdateEnabled = options.isMomentsUpdateEnabled;
+                
+//                NSString *key = [NSString stringWithFormat:@"%@_%@",userName, PUSH_OPTIONS_VIBRATE_KEY];
+//
+//                id setting = [userDefaults objectForKey:key];
+//                if (setting) {
+//                    llPushOptions.isVibrateEnabled = [setting boolValue];
+//                }else {
+//                    llPushOptions.isVibrateEnabled = YES;
+//                }
+//
+//                key = [NSString stringWithFormat:@"%@_%@",userName, PUSH_OPTIONS_SOUND_KEY];
+//                setting = [userDefaults objectForKey:key];
+//                if (setting) {
+//                    llPushOptions.isAlertSoundEnabled = [setting boolValue];
+//                }else {
+//                    llPushOptions.isAlertSoundEnabled = YES;
+//                }
+                
             }else {
-                llPushOptions.isVibrateEnabled = YES;
+                NSLog(@"PushOptions Error");
             }
-            
-            key = [NSString stringWithFormat:@"%@_%@",userName, PUSH_OPTIONS_SOUND_KEY];
-            setting = [userDefaults objectForKey:key];
-            if (setting) {
-                llPushOptions.isAlertSoundEnabled = [setting boolValue];
-            }else {
-                llPushOptions.isAlertSoundEnabled = YES;
-            }
-
-        }else {
-            NSLog(@"PushOptions Error");
-        }
+        }];
     });
 }
 
@@ -282,12 +283,28 @@ CREATE_SHARED_MANAGER(LLClientManager)
             isUpdate = YES;
             pushOptions.noDisturbStatus = (ApxPushNoDisturbStatus)llPushOptions.noDisturbSetting;
         }
+        if (pushOptions.isAlertSoundEnabled != llPushOptions.isAlertSoundEnabled) {
+            isUpdate = YES;
+            pushOptions.isAlertSoundEnabled = llPushOptions.isAlertSoundEnabled;
+        }
+        if (pushOptions.isVibrateEnabled != llPushOptions.isVibrateEnabled) {
+            isUpdate = YES;
+            pushOptions.isVibrateEnabled = llPushOptions.isVibrateEnabled;
+        }
+        if (pushOptions.isMomentsUpdateEnabled != llPushOptions.isMomentsUpdateEnabled) {
+            isUpdate = YES;
+            pushOptions.isMomentsUpdateEnabled = llPushOptions.isMomentsUpdateEnabled;
+        }
         
         if (isUpdate) {
-            ApxErrorCode *error = [[ApproxySDK getInstance] updatePushOptionsToServer];
-            if (error) {
-                NSLog(@"更新推送设置失败");
-            }
+            [[ApproxySDK getInstance] updatePushOptionsToServer:^(ApxErrorCode *err) {
+                if (err && err.errorCode == 1000) {
+                    NSLog(@"更新推送设置成功");
+                }else{
+                    NSLog(@"更新推送设置失败");
+                }
+            }];
+            
         }
            
     });

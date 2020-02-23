@@ -44,7 +44,8 @@ void _SystemSoundFinishedPlayingCallback(SystemSoundID sound_id, void* user_data
 
 // 播放短声音
 + (void)playShortSound:(NSString *)soundName soundExtension:(NSString *)soundExtension {
-    NSURL *audioPath = [[NSBundle mainBundle] URLForResource:soundName withExtension:soundExtension];
+     NSURL *audioPath = [[NSBundle mainBundle] URLForResource:soundName withExtension:soundExtension];
+//    NSString *audioPath = [[NSBundle mainBundle] pathForResource:soundName ofType:soundExtension];
     // 创建系统声音，同时返回一个ID
     SystemSoundID soundID;
     AudioServicesCreateSystemSoundID((__bridge CFURLRef)(audioPath), &soundID);

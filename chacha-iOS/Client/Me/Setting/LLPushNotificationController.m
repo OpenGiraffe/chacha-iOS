@@ -107,7 +107,7 @@
     if (!cell) {
         cell = [LLTableViewCell cellWithStyle:kLLTableViewCellStyleValueLeft reuseIdentifier:TABLE_CELL_ID];
         switch (indexPath.section) {
-            case 0:
+            case 0://接受新消息通知
                 cell.accessoryType_LL = kLLTableViewCellAccessoryText;
                 cell.rightTextValue = isEnabledNotification ? @"已开启" : @"已关闭";
                 break;
