@@ -16,7 +16,7 @@
 #import "LLUserProfile.h"
 #import "LLChatManager.h"
 #import "LLUtils.h"
-#import "AAPLEAGLLayer.h"
+#import "ApxVideoPlayer.h"
 
 NSString *const kHangUpNotification = @"kHangUpNotification";
 
@@ -112,7 +112,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
     BOOL _isFrontCamera;
     FilterSelectModalView *_filterSelectView;
     LFVideoConfig *_videoConfig;
-    AAPLEAGLLayer *_glLayer;
+    ApxVideoPlayer *_glLayer;
     NSTimer *_timer;
     /** 通话时长 **/
     NSInteger _talkingSecond;
@@ -956,7 +956,7 @@ NSString *const kVideoCaptureNotification = @"kVideoCaptureNotification";
 {
     if (!_adverseImageView) {
         _adverseImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"456.png"]];
-        _glLayer = [[AAPLEAGLLayer alloc] initWithFrame:self.adverseImageView.bounds];
+        _glLayer = [[ApxVideoPlayer alloc] initWithFrame:self.adverseImageView.bounds];
         [self.adverseImageView.layer addSublayer:_glLayer];
     }
     return _adverseImageView;
