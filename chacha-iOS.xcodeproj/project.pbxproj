@@ -13,6 +13,7 @@
 		07186CFC23A5CFB3001DBACA /* FilterSelectModalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFA23A5CFB3001DBACA /* FilterSelectModalView.m */; };
 		07186D0423A5CFEE001DBACA /* ModalWindowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07186CFF23A5CFEE001DBACA /* ModalWindowView.m */; };
 		0726F36D23C5E7840083B5FE /* LLMessageRtcCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F36C23C5E7840083B5FE /* LLMessageRtcCell.m */; };
+		07509439242CEE420065F4D5 /* libapproxySDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 07509438242CEE420065F4D5 /* libapproxySDK.a */; };
 		075169D1239E47DA00D3262B /* LLChatCallView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 075169D0239E47DA00D3262B /* LLChatCallView.xib */; };
 		075169D6239E54DB00D3262B /* LLChatCallView.m in Sources */ = {isa = PBXBuildFile; fileRef = 075169D5239E54DB00D3262B /* LLChatCallView.m */; };
 		075DE9DC239F2FE4008C9902 /* LLRTCButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 075DE9D9239F2FE3008C9902 /* LLRTCButton.m */; };
@@ -21,7 +22,6 @@
 		07A3F9DC23C6D3E500779944 /* UIImage+LLCityIconFont.m in Sources */ = {isa = PBXBuildFile; fileRef = 07A3F9DB23C6D3E500779944 /* UIImage+LLCityIconFont.m */; };
 		07A3F9DF23C6D49600779944 /* LLCityIconInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 07A3F9DE23C6D49600779944 /* LLCityIconInfo.m */; };
 		07A3F9E023C740F200779944 /* iconfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 07A3F9D523C6ABC300779944 /* iconfont.ttf */; };
-		07DE1A35242C835500B33456 /* libapproxySDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 07DE1A34242C835500B33456 /* libapproxySDK.a */; };
 		5E4122E08811E0EBB5AA4DC2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E41296DC217873C62A365DE /* AppDelegate.m */; };
 		5E412F26264EAFAD9063F20C /* LLCollectionTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E412B5873C1BA92248C4493 /* LLCollectionTextCell.m */; };
 		DD066A6A1D5306A2009EB4BC /* Emotion.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DD066A691D5306A2009EB4BC /* Emotion.bundle */; };
@@ -256,6 +256,7 @@
 		07186D0123A5CFEE001DBACA /* ModalWindowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModalWindowView.h; sourceTree = "<group>"; };
 		0726F36B23C5E7840083B5FE /* LLMessageRtcCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLMessageRtcCell.h; sourceTree = "<group>"; };
 		0726F36C23C5E7840083B5FE /* LLMessageRtcCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LLMessageRtcCell.m; sourceTree = "<group>"; };
+		07509438242CEE420065F4D5 /* libapproxySDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapproxySDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		075169D0239E47DA00D3262B /* LLChatCallView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LLChatCallView.xib; sourceTree = "<group>"; };
 		075169D4239E54DB00D3262B /* LLChatCallView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLChatCallView.h; sourceTree = "<group>"; };
 		075169D5239E54DB00D3262B /* LLChatCallView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLChatCallView.m; sourceTree = "<group>"; };
@@ -270,7 +271,6 @@
 		07A3F9DB23C6D3E500779944 /* UIImage+LLCityIconFont.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIImage+LLCityIconFont.m"; sourceTree = "<group>"; };
 		07A3F9DD23C6D47800779944 /* LLCityIconInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LLCityIconInfo.h; sourceTree = "<group>"; };
 		07A3F9DE23C6D49600779944 /* LLCityIconInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LLCityIconInfo.m; sourceTree = "<group>"; };
-		07DE1A34242C835500B33456 /* libapproxySDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libapproxySDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E41224EF07118FC49275287 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = "chacha-iOS/AppDelegate.h"; sourceTree = SOURCE_ROOT; };
 		5E412773A8BD0D9DB6CBD14F /* LLCollectionTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LLCollectionTextCell.h; sourceTree = "<group>"; };
 		5E41296DC217873C62A365DE /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = "chacha-iOS/AppDelegate.m"; sourceTree = SOURCE_ROOT; };
@@ -682,7 +682,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				07DE1A35242C835500B33456 /* libapproxySDK.a in Frameworks */,
+				07509439242CEE420065F4D5 /* libapproxySDK.a in Frameworks */,
 				DDEEF79E1DDAF10800FCCE5A /* libcrypto.a in Frameworks */,
 				DDEEF79F1DDAF10800FCCE5A /* libcurl.a in Frameworks */,
 				DDEEF7A01DDAF10800FCCE5A /* libssl.a in Frameworks */,
@@ -959,7 +959,7 @@
 		DD4C47F71D3B35C200ED4EA9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				07DE1A34242C835500B33456 /* libapproxySDK.a */,
+				07509438242CEE420065F4D5 /* libapproxySDK.a */,
 				DDEEF79B1DDAF10800FCCE5A /* libcrypto.a */,
 				DDEEF79C1DDAF10800FCCE5A /* libcurl.a */,
 				DDEEF79D1DDAF10800FCCE5A /* libssl.a */,
