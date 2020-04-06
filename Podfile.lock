@@ -1,3 +1,31 @@
-PODFILE CHECKSUM: 5c9d26c1affc2273348f047181a77ee95444e3a3
+PODS:
+  - CocoaLumberjack (3.5.3):
+    - CocoaLumberjack/Core (= 3.5.3)
+  - CocoaLumberjack/Core (3.5.3)
+  - libPhoneNumber-iOS (0.9.15)
+  - linphone-sdk (4.3.1):
+    - linphone-sdk/basic-frameworks (= 4.3.1)
+  - linphone-sdk/basic-frameworks (4.3.1)
 
-COCOAPODS: 1.8.4
+DEPENDENCIES:
+  - CocoaLumberjack (= 3.5.3)
+  - libPhoneNumber-iOS
+  - linphone-sdk (from `liblinphone`)
+
+SPEC REPOS:
+  trunk:
+    - CocoaLumberjack
+    - libPhoneNumber-iOS
+
+EXTERNAL SOURCES:
+  linphone-sdk:
+    :path: liblinphone
+
+SPEC CHECKSUMS:
+  CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
+  libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
+  linphone-sdk: c0423f79d7ba18e89515402a62ea687f7e6fc82a
+
+PODFILE CHECKSUM: 84b40767b057606aa5868a383b612c30996d6814
+
+COCOAPODS: 1.9.1
